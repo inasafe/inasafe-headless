@@ -1,0 +1,26 @@
+# These are development related folder
+.idea
+venv
+.DS_Store
+
+# These are docker volumes that should be excluded from VCS
+src/*
+/hazards/*
+/exposures/*
+/impacts/*
+/aggregations/*
+deployment/test/impacts/*
+
+# These are exceptions of above
+!src/README.md
+!hazards/README.md
+!exposures/README.md
+!impacts/README.md
+!aggregations/README.md
+!deployment/test/hazards
+!deployment/test/exposures
+!deployment/test/aggregations
+!deployment/test/impacts/README.md
+
+# exclude apt-cacher ng
+71-apt-cacher-ng

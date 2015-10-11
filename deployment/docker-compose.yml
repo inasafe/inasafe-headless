@@ -1,0 +1,20 @@
+
+
+inasafeheadless: &inasafeheadless
+  build: docker-prod
+  hostname: inasafeheadless
+  volumes:
+    - ../src:/home/inasafe/src
+    - ../hazards:/home/hazards
+    - ../exposures:/home/exposures
+    - ../aggregations:/home/aggregations
+    - ../impacts:/home/impacts
+
+inasafeheadlesstest:
+  <<: *inasafeheadless
+  volumes:
+    - ../src:/home/inasafe/src
+    - ./test/hazards:/home/hazards
+    - ./test/exposures:/home/exposures
+    - ./test/aggregations:/home/aggregations
+    - ./test/impacts:/home/impacts

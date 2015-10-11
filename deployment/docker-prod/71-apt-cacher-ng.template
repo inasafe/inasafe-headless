@@ -1,0 +1,5 @@
+# Please copy the template to 71-apt-cacher-ng and modify the proxy accordingly
+#Acquire::http { Proxy "http://192.168.0.101:3142"; };
+#Acquire::http { Proxy "http://192.168.2.9:3142"; };
+#Acquire::http { Proxy "http://192.168.0.131:3142"; };
+#Acquire::http { Proxy "http://192.168.1.12:3142"; };
