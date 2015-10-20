@@ -1,99 +1,47 @@
-# Deploying with docker
+# README Under construction
 
-**Note:** This documentation is intentionally generic so that it can
-be copy-pasted between projects - do not put project specific details here.
+This README is under construction and documented the least possible way to 
+set this all up and running
 
-This document explains how to do various sysadmin related tasks when your
-site has been deployed under docker. These deployment modes are supported:
+# Architecture
 
-* **production**: no debug etc is enabled, has its own discrete database. Configure
-  your production environment in core.settings.prod_docker - this
-  DJANGO_SETTINGS_MODULE is used when running in production mode.
-* **staging**: Configure your staging environment in core.settings.staging_docker -
-  this DJANGO_SETTINGS_MODULE is used when running in production mode.
-
-# Build your docker images and run them
-
-## Production
-
-You can simply run the provided script and it will build and deploy the docker
-images for you in **production mode**.
+InaSAFE Headless currently running in docker to be easily deployable and run.
+To build the image, simply execute this command from ```deployment``` folder
 
 ```
-cd deployment
-# allow pg volume to be written to
-sudo chmod -R a+rwX pg/postgres_data/
-make deploy
-sudo chmod -R a+rwX static
+make build
 ```
 
-Now point your browser at the ip of the web container on port 8080 or to the
-host port mapping as defined in the fig.yml file.
+The image will be built using docker-compose tools. The configuration file is
+located at docker-compose.yml.
 
-
-To make a superuser account do:
-
-```
-make shell
-python manage.py createsuperuser
-exit
-```
-
-## Staging
-
-The procedure is exactly the same as production, but you should preceed 
-each command with 'staging' e.g. ``make staging-deploy``.
-
-**Note:** VERY IMPORTANT - for staging deployment you should use a **separate
-git checkout**  from the production checkout as the code from the git checkout
-is shared into the source tree.
-
-## Using make
-
-The following key make commands are provided for production:
-
-* **build** - build production containers
-* **run** - builds then runs db and uwsgi services
-* **collectstatic** - collect static in production instance
-* **migrate** - run django migrations in production instance
-
-Additional make commands are provided in the Makefile - please see there
-for details.
-
-#### Arbitrary commands
-
-Running arbitrary management commands is easy 
-
-
-## Setup nginx reverse proxy
-
-You should create a new nginx virtual host - please see
-``*-nginx.conf`` in the deployment directory for examples. There is
-one provided for production and one for staging.
-
-Simply add the example file (renaming them as needed) to your 
-``/etc/nginx/sites-enabled/`` directory and then modify the contents to 
-match your local filesystem paths. Then use
+To checkout the latest InaSAFE folder, execute:
 
 ```
-sudo nginx -t
+make checkout
 ```
 
-To verify that your configuration is correct and then reload / restart nginx
-e.g.
+When you run the docker-compose command over and over again. You will have
+stale containers filling up your memory. To clean up stale containers:
 
 ```
-sudo /etc/init.d/nginx restart
+make clean
 ```
 
+# Testing
 
-### Managing containers
+To test that the image can be run correctly. Execute bash script in deployment 
+folder that is prefixed with __test___
 
-Please refer to the general [fig documentation](http://www.fig.sh/cli.hyml)
-for further notes on how to manage the infrastructure using fig.
+# Running
 
-# Configuration options
+To run a specific function, please refer to the test file to see the example.
+For example, to get the metadata, check out ```test_metadata.sh```. See 
+instructions:
 
-You can configure the base port used and various other options like the
-image organisation namespace and postgis user/pass by editing the ``fig*.yml``
-files.
+```
+docker-compose -p test \
+    run \
+    -e LAYER_FILENAME=$LAYER_FILENAME \
+    inasafeheadless /run-script.sh read_metadata
+```
