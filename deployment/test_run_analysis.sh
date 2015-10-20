@@ -9,6 +9,12 @@ AGGREGATION=/home/aggregations/district_osm_jakarta.shp
 IMPACT=/home/impacts/raster_flood_raster_population
 FUNCTION=FloodEvacuationRasterHazardFunction
 
+# copying test files
+
+cp ../src/inasafe/safe/test/data/hazard/continuous_flood_20_20.* ../hazards/
+cp ../src/inasafe/safe/test/data/exposure/pop_binary_raster_20_20.* ../exposures/
+cp ../src/inasafe/safe/test/data/boundaries/district_osm_jakarta.* ../aggregations/
+
 docker-compose -p test build
 docker-compose -p test \
     run \
@@ -17,4 +23,4 @@ docker-compose -p test \
     -e AGGREGATION=$AGGREGATION \
     -e IMPACT=$IMPACT \
     -e FUNCTION=$FUNCTION \
-    inasafeheadlesstest /run-analysis.sh
+    inasafeheadless /run-script.sh run_analysis

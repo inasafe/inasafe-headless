@@ -10,4 +10,4 @@ source run-env-linux.sh /usr
 
 export PYTHONPATH=$PYTHONPATH:/usr/share/qgis/python/plugins/
 
-xvfb-run -a --server-args="-screen 0, 1024x768x24" python /run_analysis.py $1 $2 $3 $4
+xvfb-run -a --server-args="-screen 0, 1024x768x24" python "/helper_script/$1.py"

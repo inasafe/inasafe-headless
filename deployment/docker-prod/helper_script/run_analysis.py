@@ -148,6 +148,7 @@ def analysis_execution():
         analysis.exposure_layer = exposure_layer
         analysis.exposure_keyword = keywords_io.read_keywords(exposure_layer)
         if aggregation_layer:
+            print 'Using aggregation layer'
             analysis.aggregation_layer = aggregation_layer
             analysis.aggregation_keyword = keywords_io.read_keywords(
                 aggregation_layer)
