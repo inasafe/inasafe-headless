@@ -19,9 +19,17 @@ RUN apt-get -y install rpl pwgen git inotify-tools
 #-------------Application Specific Stuff ----------------------------------------------------
 # Install QGIS 2.4, git, xvfb
 RUN apt-get -y install git xvfb python-pip
+ADD REQUIREMENTS.txt /REQUIREMENTS.txt
+RUN pip install -r /REQUIREMENTS.txt
 
 ADD run-script.sh /run-script.sh
 RUN chmod +x /run-script.sh
 ADD helper_script/* /helper_script/
+
+RUN ln -s /home/inasafe/src/inasafe/bin/inasafe /usr/bin/inasafe
+
+# RUN echo "export PYTHONPATH=$PYTHONPATH:/home/inasafe/src/inasafe/" >> /root/.bashrc
+
+RUN echo "source /home/inasafe/src/inasafe/run-env-linux.sh /usr" >> /root/.bashrc
 
 WORKDIR /home/inasafe/src/inasafe/

@@ -168,6 +168,5 @@ def analysis_execution():
 
     copy_impact_layer(impact, arg.impact_filename)
 
-
 if __name__ == '__main__':
     analysis_execution()

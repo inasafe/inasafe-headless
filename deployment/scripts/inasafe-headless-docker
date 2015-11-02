@@ -1,0 +1,8 @@
+#!/bin/bash
+
+cd "$INASAFE_HEADLESS_DIR/deployment"
+
+docker-compose -p prod \
+    run \
+    inasafeheadless \
+    /run-script.sh inasafe "$1"
