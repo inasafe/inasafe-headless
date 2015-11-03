@@ -2,7 +2,15 @@
 
 cd "$INASAFE_HEADLESS_DIR/deployment"
 
-docker-compose -p prod \
+cat docker-compose.yml > docker-compose-prod.yml
+if [ ! -z "$2" ]; then
+    echo -e "    - $2:$2" >> docker-compose-prod.yml
+fi
+if [ ! -z "$3" ]; then
+    echo -e "    - $3:$3" >> docker-compose-prod.yml
+fi
+
+docker-compose -f docker-compose-prod.yml -p prod \
     run \
     inasafeheadless \
     /run-script.sh inasafe "$1"
