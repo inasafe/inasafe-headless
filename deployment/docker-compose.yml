@@ -1,7 +1,33 @@
 
+db: &db
+  image: kartoza/postgis:9.3-2.1
+  # we want the database to restart for each deploy
+  # so we don't persist the data
+  environment:
+    - USERNAME=docker
+    - PASS=docker
+
+rabbitmq:
+  image: library/rabbitmq
+  hostname: rabbitmq
+  environment:
+     - RABBIT_PASSWORD=rabbit_test_password
+     - USER=rabbit_user
+     - RABBITMQ_NODENAME=rabbit
+  links:
+    - db:db
+
+outputhost:
+  build: docker-apache
+  hostname: inasafe-apache
+  volumes:
+    - ./web:/var/www
+  ports:
+    - "62001:80"
 
 inasafeheadless: &inasafeheadless
   build: docker-prod
+  dockerfile: Dockerfile-dev
   hostname: inasafeheadless
   volumes:
     - ../src:/home/inasafe/src
@@ -9,3 +35,18 @@ inasafeheadless: &inasafeheadless
     - ../exposures:/home/exposures
     - ../aggregations:/home/aggregations
     - ../impacts:/home/impacts
+    - ./web:/home/web
+  environment:
+    - INASAFE_SOURCE_DIR=/home/inasafe/src/inasafe
+    - InaSAFEQGIS=/home/inasafe/src/inasafe
+    - INASAFE_HEADLESS_BROKER_HOST=rabbitmq
+    - INASAFE_HEADLESS_DB_USERNAME=docker
+    - INASAFE_HEADLESS_DB_PASS=docker
+    - C_FORCE_ROOT=True
+    - INASAFE_HEADLESS_DEPLOY_OUTPUT_DIR=/home/web
+    - INASAFE_HEADLESS_DEPLOY_OUTPUT_URL="http://docker-inasafe-headless:62001/"
+  ports:
+    - "62000:22"
+  links:
+    - rabbitmq:rabbitmq
+    - db:db

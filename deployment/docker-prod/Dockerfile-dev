@@ -45,11 +45,15 @@ RUN pip install -r /REQUIREMENTS.txt
 ADD run-script.sh /run-script.sh
 RUN chmod +x /run-script.sh
 ADD helper_script/* /helper_script/
+ADD start-dev.sh /start-dev.sh
+ADD dev-bashrc.sh /dev-bashrc.sh
 
 RUN ln -s /home/inasafe/src/inasafe/bin/inasafe /usr/bin/inasafe
 
 # RUN echo "export PYTHONPATH=$PYTHONPATH:/home/inasafe/src/inasafe/" >> /root/.bashrc
 
-RUN echo "source /home/inasafe/src/inasafe/run-env-linux.sh /usr" >> /root/.bashrc
+RUN echo "source /dev-bashrc.sh" >> /root/.bashrc
 
 WORKDIR /home/inasafe/src/inasafe/
+
+CMD ["/start-dev.sh"]

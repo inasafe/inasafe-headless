@@ -3,14 +3,16 @@
 cd "$INASAFE_HEADLESS_DIR/deployment"
 
 cat docker-compose.yml > docker-compose-prod.yml
-if [ ! -z "$2" ]; then
-    echo -e "    - $2:$2" >> docker-compose-prod.yml
+if [ "$1" == "setup" ]; then
+	if [ ! -z "$2" ]; then
+		echo -e "    - $2:$2" >> docker-compose-prod.yml
+	fi
+	if [ ! -z "$3" ]; then
+		echo -e "    - $3:$3" >> docker-compose-prod.yml
+	fi
+else
+	docker-compose -f docker-compose-prod.yml -p prod \
+		run --rm \
+		inasafeheadless \
+		/run-script.sh inasafe "$1"
 fi
-if [ ! -z "$3" ]; then
-    echo -e "    - $3:$3" >> docker-compose-prod.yml
-fi
-
-docker-compose -f docker-compose-prod.yml -p prod \
-    run \
-    inasafeheadless \
-    /run-script.sh inasafe "$1"

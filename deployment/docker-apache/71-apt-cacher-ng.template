@@ -1,0 +1,7 @@
+# This is a template for apt-cacher-ng.
+# To use this, simply copy-paste as 71-apt-cacher-ng file and modified the
+# proxy address.
+#Acquire::http { Proxy "http://192.168.1.6:3142"; };
+#Acquire::http { Proxy "http://192.168.0.18:3142"; };
+#Acquire::http { Proxy "http://192.168.2.3:3142"; };
+#Acquire::http { Proxy "http://192.168.1.13:3142"; };

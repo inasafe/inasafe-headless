@@ -5,7 +5,7 @@ PROJECT_ID := inasafeheadless
 #    P R O D U C T I O N     C O M M A N D S
 # ----------------------------------------------------------------------------
 
-default: build clean
+default: deploy
 
 clean:
 	@echo
@@ -27,3 +27,18 @@ checkout:
 	@echo "Checkout latest InaSAFE develop code"
 	@echo "------------------------------------------------------------------"
 	@`pwd`/setup.sh checkout develop
+
+deploy: clean build
+	@echo
+	@echo "------------------------------------------------------------------"
+	@echo "Deploy in production mode"
+	@echo "------------------------------------------------------------------"
+	@docker-compose -p $(PROJECT_ID) up -d inasafeheadless
+	@docker-compose -p $(PROJECT_ID) up -d outputhost
+
+kill:
+	@echo
+	@echo "------------------------------------------------------------------"
+	@echo "Kill instance in production mode"
+	@echo "------------------------------------------------------------------"
+	@docker-compose -p $(PROJECT_ID) kill
