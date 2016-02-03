@@ -27,3 +27,6 @@ deployment/test/impacts/*
 
 # exclude custom compose prod conf
 deployment/docker-compose-prod.yml
+
+# exclude custom env variable
+deployment/run-env-linux.sh

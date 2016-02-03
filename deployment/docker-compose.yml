@@ -39,7 +39,7 @@ inasafeheadless: &inasafeheadless
   environment:
     - INASAFE_SOURCE_DIR=/home/inasafe/src/inasafe
     - InaSAFEQGIS=/home/inasafe/src/inasafe
-    - INASAFE_HEADLESS_BROKER_HOST=rabbitmq
+    - INASAFE_HEADLESS_BROKER_HOST=amqp://guest:guest@rabbitmq:5672//
     - INASAFE_HEADLESS_DB_USERNAME=docker
     - INASAFE_HEADLESS_DB_PASS=docker
     - C_FORCE_ROOT=True
