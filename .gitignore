@@ -10,8 +10,10 @@ src/*
 /impacts/*
 /aggregations/*
 deployment/test/impacts/*
+deployment/web/*
 
 # These are exceptions of above
+!.gitkeep
 !src/README.md
 !hazards/README.md
 !exposures/README.md
