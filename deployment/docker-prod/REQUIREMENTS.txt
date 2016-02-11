@@ -6,3 +6,6 @@ SQLAlchemy
 nosexcover
 nose
 coverage
+flower
+pytz==2015.7
+redis

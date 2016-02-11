@@ -36,7 +36,9 @@ inasafeheadless: &inasafeheadless
     - ../aggregations:/home/aggregations
     - ../impacts:/home/impacts
     - ./web:/home/web
+    - ./tmp:/home/tmp
   environment:
+    - DISPLAY=:99
     - INASAFE_SOURCE_DIR=/home/inasafe/src/inasafe
     - InaSAFEQGIS=/home/inasafe/src/inasafe
     - INASAFE_HEADLESS_BROKER_HOST=amqp://guest:guest@rabbitmq:5672//
@@ -44,9 +46,17 @@ inasafeheadless: &inasafeheadless
     - INASAFE_HEADLESS_DB_PASS=docker
     - C_FORCE_ROOT=True
     - INASAFE_HEADLESS_DEPLOY_OUTPUT_DIR=/home/web
-    - INASAFE_HEADLESS_DEPLOY_OUTPUT_URL="http://docker-inasafe-headless:62001/"
+    - INASAFE_HEADLESS_DEPLOY_OUTPUT_URL=http://outputhost/
   ports:
     - "62000:22"
+    - "62002:5555"
   links:
     - rabbitmq:rabbitmq
     - db:db
+    - outputhost:outputhost
+
+worker:
+  <<: *inasafeheadless
+  command: ["/start-dev.sh", "celery-worker"]
+  ports:
+    - "62003:22"
