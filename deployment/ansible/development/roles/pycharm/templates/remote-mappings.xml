@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="RemoteMappingsManager">
+    <list>
+      <list>
+        <remote-mappings
+                server-id="python@ssh://root@{{ interpreters.inasafe_headless.domain_alias }}:{{ interpreters.inasafe_headless.ssh_port }}/usr/bin/python">
+          <settings>
+            <list>
+              <mapping local-root="$PROJECT_DIR$/inasafe" remote-root="/usr/share/qgis/python/plugins/inasafe" />
+              <mapping local-root="$PROJECT_DIR$/src/headless" remote-root="/home/app/headless" />
+            </list>
+          </settings>
+        </remote-mappings>
+      </list>
+    </list>
+  </component>
+</project>

@@ -1,0 +1,15 @@
+version: "2"
+services:
+
+  inasafe-headless-worker:
+    build: docker-headless
+    command: {{ inasafe_headless_worker.command }}
+    env_file:
+      - ./docker-headless/headless-rest.env
+    volumes:
+      - ../inasafe:/usr/share/qgis/python/plugins/inasafe
+      - ../src/headless:/home/app/headless
+      - ./pycharm-helpers/inasafe-headless:/root/.pycharm_helpers
+    ports:
+      # expose ssh ports
+      - "{{ docker_port_forward.inasafe_headless.ssh }}:22"

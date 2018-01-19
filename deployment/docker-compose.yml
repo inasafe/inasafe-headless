@@ -1,0 +1,25 @@
+version: '2'
+services:
+
+  rabbitmq:
+    image: library/rabbitmq
+    restart: on-failure
+
+  inasafe-headless-worker:
+    build: docker-headless
+    command: /docker-entrypoint.sh prod inasafe-headless-worker
+    working_dir: /home/app
+    env_file:
+      - ./docker-headless/headless-rest.env
+    volumes:
+      - ../inasafe:/usr/share/qgis/python/plugins/inasafe
+      - ../src/headless:/home/app/headless
+    environment:
+      - PYTHONPATH=/usr/share/qgis/python:/usr/share/qgis/python/plugins:/usr/share/qgis/python/plugins/inasafe:/home/app
+      - DISPLAY=:99
+      - C_FORCE_ROOT=True
+      - INASAFE_LOCALE=id
+      - INASAFE_HEADLESS_BROKER_HOST=amqp://guest:guest@rabbitmq:5672/
+      - INASAFE_WORK_DIR=/home/headless
+    links:
+      - rabbitmq
