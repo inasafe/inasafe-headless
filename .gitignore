@@ -32,3 +32,8 @@ deployment/docker-compose-prod.yml
 
 # exclude custom env variable
 deployment/run-env-linux.sh
+deployment/ansible/development/group_vars/all.yml
+deployment/ansible/development/site.retry
+deployment/ansible/tmp/*
+deployment/docker-compose.override.yml
+inasafe/*
