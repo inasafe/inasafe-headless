@@ -1,0 +1,67 @@
+---
+- name: gather os specific variables
+  include_vars:
+    file: "{{ pycharm_version }}/{{ ansible_distribution }}.yml"
+
+- name: customize /etc/hosts
+  become: yes
+  become_user: root
+  lineinfile:
+    dest: /etc/hosts
+    regexp: '.*{{ interpreters.inasafe_headless.domain_alias }}$'
+    line: '{{ interpreters.inasafe_headless.ipaddress }} {{ interpreters.inasafe_headless.domain_alias }}'
+    state: present
+
+- name: customize project configuration
+  template:
+    src: inasafe-headless.iml
+    dest: '{{ project_path }}/.idea/inasafe-headless.iml'
+    owner: '{{ remote_user }}'
+    group: '{{ remote_group }}'
+    mode: "u=rw,g=rw,o=r"
+
+- name: customize remote-mappings configurations
+  template:
+    src: remote-mappings.xml
+    dest: '{{ project_path }}/.idea/remote-mappings.xml'
+    owner: '{{ remote_user }}'
+    group: '{{ remote_group }}'
+    mode: "u=rw,g=rw,o=r"
+
+- name: customize vcs configurations
+  template:
+    src: vcs.xml
+    dest: '{{ project_path }}/.idea/vcs.xml'
+    owner: '{{ remote_user }}'
+    group: '{{ remote_group }}'
+    mode: "u=rw,g=rw,o=r"
+
+- name: customize dockerized python interpreter
+  template:
+    src: 'python-interpreter/{{ item }}'
+    dest: '{{ project_path }}/deployment/ansible/tmp/{{ item }}'
+    owner: '{{ remote_user }}'
+    group: '{{ remote_group }}'
+    mode: "u=rw,g=rw,o=r"
+  with_items:
+    - inasafe-headless.xml.j2
+
+- name: inject python interpreter definitions
+  command: python inject_python_interpreter.py "{{ pycharm_settings_path }}/options/jdk.table.xml" "{{ project_path }}/deployment/ansible/tmp/{{ item }}"
+  with_items:
+    - inasafe-headless.xml.j2
+  args:
+    chdir: "{{ project_path }}/deployment/ansible/development/roles/pycharm/files/"
+
+- name: customize run/debug configurations
+  template:
+    src: workspace-configuration.xml.j2
+    dest: '{{ project_path }}/deployment/ansible/tmp/workspace-configuration.xml'
+    owner: '{{ remote_user }}'
+    group: '{{ remote_group }}'
+    mode: "u=rw,g=rw,o=r"
+
+- name: inject run/debug configurations
+  command: python inject_run_configurations.py "{{ project_path }}/.idea/workspace.xml" "{{ project_path }}/deployment/ansible/tmp/workspace-configuration.xml"
+  args:
+    chdir: "{{ project_path }}/deployment/ansible/development/roles/pycharm/files/"

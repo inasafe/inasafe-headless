@@ -1,0 +1,10 @@
+---
+- name: checkout InaSAFE source code
+  git:
+    repo: '{{ inasafe.repo }}'
+    remote: '{{ inasafe.remote }}'
+    dest: '{{ project_path }}/inasafe'
+    version: '{{ inasafe.version }}'
+    depth: '{{ inasafe.depth }}'
+    force: no
+    update: yes

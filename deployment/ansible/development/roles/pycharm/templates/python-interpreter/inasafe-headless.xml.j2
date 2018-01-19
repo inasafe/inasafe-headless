@@ -1,0 +1,25 @@
+
+    <jdk version="2">
+      <name value="{{ interpreters.inasafe_headless.name }}" />
+      <type value="Python SDK" />
+      <version value="Python 2.7.6" />
+      <homePath value="ssh://root@{{ interpreters.inasafe_headless.domain_alias }}:{{ interpreters.inasafe_headless.ssh_port }}/usr/bin/python" />
+      <roots>
+        <classPath>
+          <root type="composite">
+            <root type="simple" url="file://$APPLICATION_HOME_DIR$/helpers/python-skeletons" />
+          </root>
+        </classPath>
+        <sourcePath>
+          <root type="composite" />
+        </sourcePath>
+      </roots>
+      <additional HOST="{{ interpreters.inasafe_headless.domain_alias }}" PORT="{{ interpreters.inasafe_headless.ssh_port }}" ANONYMOUS="false" USERNAME="root" PASSWORD="dfcedfc5dfc9dfc1dfcfdfd8" PRIVATE_KEY_FILE="" MY_KNOWN_HOSTS_FILE="" PASSPHRASE="" USE_KEY_PAIR="false" INTERPRETER_PATH="/usr/bin/python" HELPERS_PATH="{{ interpreters.inasafe_headless.pycharm_helpers }}" INITIALIZED="false" VALID="true" SKELETONS_PATH="" VERSION="Python 2.7.6">
+        <PathMappingSettings>
+          <option name="pathMappings">
+            <list>
+            </list>
+          </option>
+        </PathMappingSettings>
+      </additional>
+    </jdk>
