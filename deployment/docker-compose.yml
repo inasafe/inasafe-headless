@@ -9,8 +9,6 @@ services:
     build: docker-headless
     command: /docker-entrypoint.sh prod inasafe-headless-worker
     working_dir: /home/app
-    env_file:
-      - ./docker-headless/headless-rest.env
     volumes:
       - ../inasafe:/usr/share/qgis/python/plugins/inasafe
       - ../src/headless:/home/app/headless

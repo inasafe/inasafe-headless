@@ -11,7 +11,7 @@ interpreters:
     domain_alias: 'docker-inasafe-headless'
     ssh_port: &inasafe_headless_ssh_port 35107
     pycharm_helpers: /root/.pycharm_helpers
-    ipaddress: &inasafe_headless_host_ip 192.168.1.7
+    ipaddress: &inasafe_headless_host_ip 192.168.100.4
 
 inasafe:
   repo: https://github.com/inasafe/inasafe.git

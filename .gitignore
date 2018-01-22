@@ -36,4 +36,5 @@ deployment/ansible/development/group_vars/all.yml
 deployment/ansible/development/site.retry
 deployment/ansible/tmp/*
 deployment/docker-compose.override.yml
-inasafe/*
+inasafe/
+deployment/pycharm-helpers/
