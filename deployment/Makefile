@@ -1,6 +1,6 @@
 SHELL := /bin/bash
 
-PROJECT_ID := headless
+PROJECT_ID := realtime
 
 default: build deploy status
 
@@ -28,10 +28,10 @@ up:
 	@docker-compose -p $(PROJECT_ID) up -d
 
 worker-shell:
-	@docker-compose -p $(PROJECT_ID) exec inasafe-headless-worker /bin/bash
+	@docker-compose -p $(PROJECT_ID) exec inasafe-realtime-worker /bin/bash
 
 worker-logs:
-	@docker-compose -p $(PROJECT_ID) logs -f --tail=30 inasafe-headless-worker
+	@docker-compose -p $(PROJECT_ID) logs -f --tail=30 inasafe-realtime-worker
 
 shakemap-monitor-shell:
 	@docker-compose -p $(PROJECT_ID) exec inasafe-shakemap-monitor /bin/bash
@@ -40,12 +40,16 @@ shakemap-monitor-logs:
 	@docker-compose -p $(PROJECT_ID) logs -f --tail=30 inasafe-shakemap-monitor
 
 package-tests:
-	@docker-compose -p $(PROJECT_ID) exec inasafe-headless-worker python -m unittest discover -s headless -v
+	@docker-compose -p $(PROJECT_ID) exec inasafe-realtime-worker python -m unittest discover -s realtime -v
 
 coverage-tests:
-	@-docker-compose -p $(PROJECT_ID) exec inasafe-headless-worker coverage run --branch --source=headless -m unittest discover -s headless -v
-	@echo "Copying coverage files"
-	@docker-compose -p $(PROJECT_ID) exec inasafe-headless-worker cp .coverage headless/.coverage
+	@-docker-compose -p $(PROJECT_ID) exec inasafe-realtime-worker coverage run --branch --source=realtime -m unittest discover -s realtime -v
+
+travis-coverage-tests:
+	@-docker-compose -p $(PROJECT_ID) exec `bash <(curl -s https://codecov.io/env)` inasafe-realtime-worker coverage run --branch --source=realtime -m unittest discover -s realtime -v && codecov
+
+check-flake8:
+	@flake8 ../src/
 
 down:
 	@docker-compose -p $(PROJECT_ID) down
