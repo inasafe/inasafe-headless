@@ -1,0 +1,55 @@
+sudo: required
+
+language: python
+
+python:
+  - "2.7"
+
+env:
+  - ON_TRAVIS=True
+
+virtualenv:
+  system_site_packages: true
+
+services:
+  - docker
+
+branches:
+  only:
+    - develop
+
+before_install:
+  - sudo apt-get -y update
+  - sudo apt-get -y install libssl-dev
+  - sudo pip install -r REQUIREMENTS-TRAVIS.txt
+
+install:
+  # build current docker image
+  - pushd deployment
+  - cp ansible/development/group_vars/all.travis.yml ansible/development/group_vars/all.yml
+  - make setup-ansible ANSIBLE_ARGS="--extra-vars='ansible_sudo_pass=\"\"' --extra-vars='pycharm_version=\"\"' --skip-tags=development"
+  - make build
+  - make up
+  - make status
+  - popd
+
+script:
+  - pushd deployment
+  - make check-flake8
+  - make coverage-tests
+  - popd
+
+after_script:
+  # Clean up
+  - pushd deployment
+  - make down
+  - popd
+
+after_success:
+  - pushd src
+  # Fix path (codecov.yml doesn't work)
+  # Replace parent directory to travis directory, because we are running
+  # coverage using docker mount
+  - sed -i 's/home\/app/home\/travis\/build\/inasafe\/inasafe-headless\/src/g' .coverage
+  - codecov
+  - popd
