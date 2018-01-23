@@ -6,7 +6,7 @@ services:
     command: {{ inasafe_headless_worker.command }}
     volumes:
       - ../inasafe:/usr/share/qgis/python/plugins/inasafe
-      - ../src/headless:/home/app/headless
+      - ../src:/home/app
       - ./pycharm-helpers/inasafe-headless:/root/.pycharm_helpers
     ports:
       # expose ssh ports
