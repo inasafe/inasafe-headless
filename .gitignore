@@ -7,9 +7,10 @@ venv
 # These are exceptions of above
 !.gitkeep
 
-deployment/ansible/development/group_vars/all.yml
-deployment/ansible/development/site.retry
-deployment/ansible/tmp/*
-deployment/docker-compose.override.yml
+/deployment/ansible/development/group_vars/all.yml
+/deployment/ansible/development/site.retry
+/deployment/ansible/tmp/*
+/deployment/docker-compose.override.yml
+/deployment/pycharm-helpers/
 /inasafe
-deployment/pycharm-helpers/
+/src/.coverage
