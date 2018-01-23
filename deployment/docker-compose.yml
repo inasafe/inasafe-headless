@@ -11,7 +11,7 @@ services:
     working_dir: /home/app
     volumes:
       - ../inasafe:/usr/share/qgis/python/plugins/inasafe
-      - ../src/headless:/home/app/headless
+      - ../src:/home/app
     environment:
       - PYTHONPATH=/usr/share/qgis/python:/usr/share/qgis/python/plugins:/usr/share/qgis/python/plugins/inasafe:/home/app
       - DISPLAY=:99
