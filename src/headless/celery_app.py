@@ -14,7 +14,7 @@ packages = (
 
 
 # initialize qgis_app
-from safe.test.utilities import get_qgis_app
+from safe.test.utilities import get_qgis_app  # noqa
 QGIS_APP, CANVAS, IFACE, PARENT = get_qgis_app()
 
 
