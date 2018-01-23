@@ -18,7 +18,6 @@ class TestHeadlessCeleryTask(unittest.TestCase):
     def test_get_keywords(self):
         """Test get_keywords task."""
         layer_path = os.path.join(dir_path, 'data', 'places.geojson')
-        print layer_path
         self.assertTrue(os.path.exists(layer_path))
         result = get_keywords.delay(layer_path)
         keywords = result.get()

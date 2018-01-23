@@ -4,6 +4,7 @@ services:
   rabbitmq:
     image: library/rabbitmq
     restart: on-failure
+    network_mode: bridge
 
   inasafe-headless-worker:
     build: docker-headless
@@ -21,3 +22,4 @@ services:
       - INASAFE_WORK_DIR=/home/headless
     links:
       - rabbitmq
+    network_mode: bridge

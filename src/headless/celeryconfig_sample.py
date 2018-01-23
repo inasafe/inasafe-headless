@@ -12,7 +12,7 @@ __date__ = '1/28/16'
 
 
 # This is a default value
-broker_url = os.environ.get('INASAFE_HEADLESS_broker_host')
+broker_url = os.environ.get('INASAFE_HEADLESS_BROKER_HOST')
 
 result_backend = broker_url
 
