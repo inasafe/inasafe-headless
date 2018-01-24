@@ -21,24 +21,32 @@ __revision__ = '$Format:%H$'
 
 dir_path = os.path.dirname(os.path.realpath(__file__))
 
+# Layers
+earthquake_layer_uri = os.path.join(
+    dir_path, 'data', 'input_layers', 'earthquake.asc')
+shakemap_layer_uri = os.path.join(
+    dir_path, 'data', 'input_layers', 'grid-use_ascii.tif')
+place_layer_uri = os.path.join(
+    dir_path, 'data', 'input_layers', 'places.geojson')
+aggregation_layer_uri = os.path.join(
+    dir_path, 'data', 'input_layers', 'small_grid.geojson')
+
 
 class TestHeadlessCeleryTask(unittest.TestCase):
     """Unit test for Headless Celery tasks."""
 
     def test_get_keywords(self):
         """Test get_keywords task."""
-        layer_path = os.path.join(dir_path, 'data', 'places.geojson')
-        self.assertTrue(os.path.exists(layer_path))
-        result = get_keywords.delay(layer_path)
+        self.assertTrue(os.path.exists(place_layer_uri))
+        result = get_keywords.delay(place_layer_uri)
         keywords = result.get()
         self.assertIsNotNone(keywords)
         self.assertEqual(
             keywords['layer_purpose'], layer_purpose_exposure['key'])
         self.assertEqual(keywords['exposure'], exposure_place['key'])
 
-        layer_path = os.path.join(dir_path, 'data', 'earthquake.asc')
-        self.assertTrue(os.path.exists(layer_path))
-        result = get_keywords.delay(layer_path)
+        self.assertTrue(os.path.exists(earthquake_layer_uri))
+        result = get_keywords.delay(earthquake_layer_uri)
         keywords = result.get()
         self.assertIsNotNone(keywords)
         self.assertEqual(
@@ -47,9 +55,8 @@ class TestHeadlessCeleryTask(unittest.TestCase):
         time_zone = keywords['extra_keywords'][extra_keyword_time_zone['key']]
         self.assertEqual(time_zone, 'Asia/Jakarta')
 
-        layer_path = os.path.join(dir_path, 'data', 'small_grid.geojson')
-        self.assertTrue(os.path.exists(layer_path))
-        result = get_keywords.delay(layer_path)
+        self.assertTrue(os.path.exists(aggregation_layer_uri))
+        result = get_keywords.delay(aggregation_layer_uri)
         keywords = result.get()
         self.assertIsNotNone(keywords)
         self.assertEqual(
@@ -57,20 +64,16 @@ class TestHeadlessCeleryTask(unittest.TestCase):
 
     def test_run_analysis(self):
         """Test run analysis synchronously."""
-        # Layers
-        exposure_uri = os.path.join(dir_path, 'data', 'places.geojson')
-        hazard_uri = os.path.join(dir_path, 'data', 'earthquake.asc')
-        aggregation_uri = os.path.join(dir_path, 'data', 'small_grid.geojson')
-
         # With aggregation
-        result = run_analysis(hazard_uri, exposure_uri, aggregation_uri)
+        result = run_analysis(
+            earthquake_layer_uri, place_layer_uri, aggregation_layer_uri)
         self.assertEqual(ANALYSIS_SUCCESS, result['status'])
         self.assertLess(0, len(result['output']))
         for key, layer_uri in result['output'].items():
             self.assertTrue(os.path.exists(layer_uri))
 
         # No aggregation
-        result = run_analysis(hazard_uri, exposure_uri)
+        result = run_analysis(earthquake_layer_uri, place_layer_uri)
         self.assertEqual(ANALYSIS_SUCCESS, result['status'])
         self.assertLess(0, len(result['output']))
         for key, layer_uri in result['output'].items():
@@ -78,13 +81,9 @@ class TestHeadlessCeleryTask(unittest.TestCase):
 
     def test_run_analysis_async(self):
         """Test run analysis asynchronously."""
-        # Layers
-        exposure_uri = os.path.join(dir_path, 'data', 'places.geojson')
-        hazard_uri = os.path.join(dir_path, 'data', 'earthquake.asc')
-        aggregation_uri = os.path.join(dir_path, 'data', 'small_grid.geojson')
-
         # With aggregation
-        result = run_analysis.delay(hazard_uri, exposure_uri, aggregation_uri)
+        result = run_analysis.delay(
+            earthquake_layer_uri, place_layer_uri, aggregation_layer_uri)
         result_dict = result.get()
         self.assertEqual(ANALYSIS_SUCCESS, result_dict['status'])
         self.assertLess(0, len(result_dict['output']))
@@ -92,7 +91,7 @@ class TestHeadlessCeleryTask(unittest.TestCase):
             self.assertTrue(os.path.exists(layer_uri))
 
         # No aggregation
-        result = run_analysis.delay(hazard_uri, exposure_uri)
+        result = run_analysis.delay(earthquake_layer_uri, place_layer_uri)
         result_dict = result.get()
         self.assertEqual(ANALYSIS_SUCCESS, result_dict['status'])
         self.assertLess(0, len(result_dict['output']))
@@ -102,17 +101,14 @@ class TestHeadlessCeleryTask(unittest.TestCase):
 
     def test_generate_contour(self):
         """Test generate_contour task synchronously."""
-        # Layer
-        shakemap_uri = os.path.join(dir_path, 'data', 'grid-use_ascii.tif')
-        result = generate_contour(shakemap_uri)
+        result = generate_contour(shakemap_layer_uri)
         self.assertIsNotNone(result)
         self.assertTrue(os.path.exists(result))
 
     def test_generate_contour_async(self):
         """Test generate_contour task asynchronously."""
         # Layer
-        shakemap_uri = os.path.join(dir_path, 'data', 'grid-use_ascii.tif')
-        result = generate_contour.delay(shakemap_uri)
+        result = generate_contour.delay(shakemap_layer_uri)
         contour_result = result.get()
         self.assertIsNotNone(contour_result)
         self.assertTrue(os.path.exists(contour_result))
