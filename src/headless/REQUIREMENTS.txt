@@ -1,10 +1,6 @@
 requests>=2.6.2
 tzlocal==1.2
-docopt
-celery
-SQLAlchemy
+celery==4.1.0
 nosexcover
-nose
-coverage
-redis
-flower
+nose2==0.6.5
+coverage==4.4.2
