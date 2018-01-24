@@ -26,6 +26,9 @@ task_routes = {
     'headless.tasks.inasafe_wrapper.run_analysis': {
         'queue': 'inasafe-headless-analysis'
     },
+    'headless.tasks.inasafe_wrapper.run_multi_exposure_analysis': {
+        'queue': 'inasafe-headless-analysis'
+    },
     'headless.tasks.inasafe_wrapper.generate_report': {
         'queue': 'inasafe-headless-reporting'
     },

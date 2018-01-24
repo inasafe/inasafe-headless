@@ -4,7 +4,11 @@
 import os
 import unittest
 from headless.tasks.inasafe_wrapper import (
-    get_keywords, run_analysis, generate_contour)
+    get_keywords,
+    run_analysis,
+    generate_contour,
+    run_multi_exposure_analysis
+)
 
 from safe.definitions.layer_purposes import (
     layer_purpose_exposure, layer_purpose_hazard, layer_purpose_aggregation)
@@ -30,6 +34,10 @@ place_layer_uri = os.path.join(
     dir_path, 'data', 'input_layers', 'places.geojson')
 aggregation_layer_uri = os.path.join(
     dir_path, 'data', 'input_layers', 'small_grid.geojson')
+population_multi_fields_layer_uri = os.path.join(
+    dir_path, 'data', 'input_layers', 'population_multi_fields.geojson')
+buildings_layer_uri = os.path.join(
+    dir_path, 'data', 'input_layers', 'buildings.geojson')
 
 
 class TestHeadlessCeleryTask(unittest.TestCase):
@@ -92,6 +100,55 @@ class TestHeadlessCeleryTask(unittest.TestCase):
 
         # No aggregation
         result = run_analysis.delay(earthquake_layer_uri, place_layer_uri)
+        result_dict = result.get()
+        self.assertEqual(ANALYSIS_SUCCESS, result_dict['status'])
+        self.assertLess(0, len(result_dict['output']))
+        for key, layer_uri in result_dict['output'].items():
+            print key, layer_uri
+            self.assertTrue(os.path.exists(layer_uri))
+
+    def test_run_multi_exposure_analysis(self):
+        """Test run multi_exposure analysis synchronously."""
+        exposure_layer_uris = [
+            place_layer_uri,
+            buildings_layer_uri,
+            population_multi_fields_layer_uri
+        ]
+        # With aggregation
+        result = run_multi_exposure_analysis(
+            earthquake_layer_uri, exposure_layer_uris, aggregation_layer_uri)
+        self.assertEqual(ANALYSIS_SUCCESS, result['status'])
+        self.assertLess(0, len(result['output']))
+        for key, layer_uri in result['output'].items():
+            self.assertTrue(os.path.exists(layer_uri))
+
+        # No aggregation
+        result = run_multi_exposure_analysis(
+            earthquake_layer_uri, exposure_layer_uris)
+        self.assertEqual(ANALYSIS_SUCCESS, result['status'])
+        self.assertLess(0, len(result['output']))
+        for key, layer_uri in result['output'].items():
+            self.assertTrue(os.path.exists(layer_uri))
+
+    def test_run_multi_exposure_analysis_async(self):
+        """Test run multi_exposure analysis asynchronously."""
+        exposure_layer_uris = [
+            place_layer_uri,
+            buildings_layer_uri,
+            population_multi_fields_layer_uri
+        ]
+        # With aggregation
+        result = run_multi_exposure_analysis.delay(
+            earthquake_layer_uri, exposure_layer_uris, aggregation_layer_uri)
+        result_dict = result.get()
+        self.assertEqual(ANALYSIS_SUCCESS, result_dict['status'])
+        self.assertLess(0, len(result_dict['output']))
+        for key, layer_uri in result_dict['output'].items():
+            self.assertTrue(os.path.exists(layer_uri))
+
+        # No aggregation
+        result = run_multi_exposure_analysis.delay(
+            earthquake_layer_uri, exposure_layer_uris)
         result_dict = result.get()
         self.assertEqual(ANALYSIS_SUCCESS, result_dict['status'])
         self.assertLess(0, len(result_dict['output']))
