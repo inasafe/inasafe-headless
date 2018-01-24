@@ -14,3 +14,4 @@ venv
 /deployment/pycharm-helpers/
 /inasafe
 /src/.coverage
+/src/headless/celeryconfig.py
