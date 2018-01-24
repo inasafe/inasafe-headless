@@ -1,10 +1,14 @@
 # coding=utf-8
+"""Celery test set up."""
+
 import logging
 import os
-from distutils.util import strtobool
+import ast
 
-__author__ = 'Rizky Maulana Nugraha <lana.pcfre@gmail.com>'
-__date__ = '2/11/16'
+__copyright__ = "Copyright 2018, The InaSAFE Project"
+__license__ = "GPL version 3"
+__email__ = "info@inasafe.org"
+__revision__ = '$Format:%H$'
 
 
 LOGGER = logging.getLogger('InaSAFE')
@@ -20,7 +24,7 @@ def update_celery_configuration(app):
     :type app: celery.Celery
     :return:
     """
-    celery_always_eager = strtobool(os.environ.get(
+    celery_always_eager = ast.literal_eval(os.environ.get(
         'CELERY_ALWAYS_EAGER', 'False'))
     app.conf.update(
         CELERY_ALWAYS_EAGER=celery_always_eager

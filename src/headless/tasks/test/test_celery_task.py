@@ -13,6 +13,11 @@ from safe.definitions.hazard import hazard_earthquake
 from safe.definitions.extra_keywords import extra_keyword_time_zone
 from safe.definitions.constants import ANALYSIS_SUCCESS
 
+__copyright__ = "Copyright 2018, The InaSAFE Project"
+__license__ = "GPL version 3"
+__email__ = "info@inasafe.org"
+__revision__ = '$Format:%H$'
+
 
 dir_path = os.path.dirname(os.path.realpath(__file__))
 
