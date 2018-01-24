@@ -1,5 +1,5 @@
 # coding=utf-8
-"""InaSAFE Headless test package."""
+"""InaSAFE Headless settings."""
 
 __copyright__ = "Copyright 2018, The InaSAFE Project"
 __license__ = "GPL version 3"

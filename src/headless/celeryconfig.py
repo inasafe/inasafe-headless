@@ -5,16 +5,19 @@ This file is intended only for a sample.
 Please copy it as celeryconfig.py so it can be read
 """
 import os
-from distutils.util import strtobool
+import ast
 
-__author__ = 'Rizky Maulana Nugraha <lana.pcfre@gmail.com>'
-__date__ = '1/28/16'
+__copyright__ = "Copyright 2018, The InaSAFE Project"
+__license__ = "GPL version 3"
+__email__ = "info@inasafe.org"
+__revision__ = '$Format:%H$'
 
 
 # This is a default value
 broker_url = os.environ.get('INASAFE_HEADLESS_BROKER_HOST')
 
 result_backend = broker_url
+
 
 task_routes = {
     'headless.tasks.inasafe_wrapper.get_keywords': {
@@ -54,7 +57,5 @@ task_serializer = 'pickle'
 accept_content = {'pickle'}
 result_serializer = 'pickle'
 
-task_always_eager = strtobool(os.environ.get('TASK_ALWAYS_EAGER', 'False'))
-
-DEPLOY_OUTPUT_DIR = os.environ.get('INASAFE_HEADLESS_DEPLOY_OUTPUT_DIR')
-DEPLOY_OUTPUT_URL = os.environ.get('INASAFE_HEADLESS_DEPLOY_OUTPUT_URL')
+task_always_eager = ast.literal_eval(
+    os.environ.get('task_always_eager', 'False'))

@@ -1,4 +1,5 @@
 # coding=utf-8
+"""Task for InaSAFE Headless."""
 import logging
 import os
 
@@ -9,6 +10,11 @@ from safe.impact_function.impact_function import ImpactFunction
 from safe.gis.tools import load_layer
 from safe.gis.raster.contour import create_smooth_contour
 from safe.definitions.constants import PREPARE_SUCCESS, ANALYSIS_SUCCESS
+
+__copyright__ = "Copyright 2018, The InaSAFE Project"
+__license__ = "GPL version 3"
+__email__ = "info@inasafe.org"
+__revision__ = '$Format:%H$'
 
 LOGGER = logging.getLogger('InaSAFE')
 

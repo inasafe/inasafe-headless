@@ -1,9 +1,10 @@
 # coding=utf-8
 from celery import Celery
 
-__author__ = 'Rizky Maulana Nugraha <lana.pcfre@gmail.com>'
-__date__ = '1/28/16'
-
+__copyright__ = "Copyright 2018, The InaSAFE Project"
+__license__ = "GPL version 3"
+__email__ = "info@inasafe.org"
+__revision__ = '$Format:%H$'
 
 app = Celery('headless.tasks')
 app.config_from_object('headless.celeryconfig')
