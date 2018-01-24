@@ -3,7 +3,8 @@
 
 import os
 import unittest
-from headless.tasks.inasafe_wrapper import get_keywords, run_analysis
+from headless.tasks.inasafe_wrapper import (
+    get_keywords, run_analysis, generate_contour)
 
 from safe.definitions.layer_purposes import (
     layer_purpose_exposure, layer_purpose_hazard, layer_purpose_aggregation)
@@ -60,11 +61,15 @@ class TestHeadlessCeleryTask(unittest.TestCase):
         result = run_analysis(hazard_uri, exposure_uri, aggregation_uri)
         self.assertEqual(ANALYSIS_SUCCESS, result['status'])
         self.assertLess(0, len(result['output']))
+        for key, layer_uri in result['output'].items():
+            self.assertTrue(os.path.exists(layer_uri))
 
         # No aggregation
         result = run_analysis(hazard_uri, exposure_uri)
         self.assertEqual(ANALYSIS_SUCCESS, result['status'])
         self.assertLess(0, len(result['output']))
+        for key, layer_uri in result['output'].items():
+            self.assertTrue(os.path.exists(layer_uri))
 
     def test_run_analysis_async(self):
         """Test run analysis asynchronously."""
@@ -78,9 +83,31 @@ class TestHeadlessCeleryTask(unittest.TestCase):
         result_dict = result.get()
         self.assertEqual(ANALYSIS_SUCCESS, result_dict['status'])
         self.assertLess(0, len(result_dict['output']))
+        for key, layer_uri in result_dict['output'].items():
+            self.assertTrue(os.path.exists(layer_uri))
 
         # No aggregation
         result = run_analysis.delay(hazard_uri, exposure_uri)
         result_dict = result.get()
         self.assertEqual(ANALYSIS_SUCCESS, result_dict['status'])
         self.assertLess(0, len(result_dict['output']))
+        for key, layer_uri in result_dict['output'].items():
+            print key, layer_uri
+            self.assertTrue(os.path.exists(layer_uri))
+
+    def test_generate_contour(self):
+        """Test generate_contour task synchronously."""
+        # Layer
+        shakemap_uri = os.path.join(dir_path, 'data', 'grid-use_ascii.tif')
+        result = generate_contour(shakemap_uri)
+        self.assertIsNotNone(result)
+        self.assertTrue(os.path.exists(result))
+
+    def test_generate_contour_async(self):
+        """Test generate_contour task asynchronously."""
+        # Layer
+        shakemap_uri = os.path.join(dir_path, 'data', 'grid-use_ascii.tif')
+        result = generate_contour.delay(shakemap_uri)
+        contour_result = result.get()
+        self.assertIsNotNone(contour_result)
+        self.assertTrue(os.path.exists(contour_result))

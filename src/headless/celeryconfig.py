@@ -17,17 +17,18 @@ broker_url = os.environ.get('INASAFE_HEADLESS_BROKER_HOST')
 result_backend = broker_url
 
 task_routes = {
-    'headless.tasks.inasafe_wrapper.filter_impact_function': {
+    'headless.tasks.inasafe_wrapper.get_keywords': {
         'queue': 'inasafe-headless'
     },
-
     'headless.tasks.inasafe_wrapper.run_analysis': {
         'queue': 'inasafe-headless-analysis'
     },
-
-    'headless.tasks.inasafe_wrapper.get_keywords': {
-        'queue': 'inasafe-headless'
-    }
+    'headless.tasks.inasafe_wrapper.generate_report': {
+        'queue': 'inasafe-headless-reporting'
+    },
+    'headless.tasks.inasafe_wrapper.generate_contour': {
+        'queue': 'inasafe-headless-contour'
+    },
 }
 
 # RMN: This is really important.

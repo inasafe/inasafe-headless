@@ -1,11 +1,13 @@
 # coding=utf-8
 import logging
+import os
 
 from headless.celery_app import app
 from qgis.core import QgsCoordinateReferenceSystem
 from safe.utilities.metadata import read_iso19115_metadata
 from safe.impact_function.impact_function import ImpactFunction
 from safe.gis.tools import load_layer
+from safe.gis.raster.contour import create_smooth_contour
 from safe.definitions.constants import PREPARE_SUCCESS, ANALYSIS_SUCCESS
 
 LOGGER = logging.getLogger('InaSAFE')
@@ -91,3 +93,30 @@ def run_analysis(
             'message': prepare_message,
             'output': {}
         }
+
+
+@app.task(queue='inasafe-headless')
+def generate_report():
+    pass
+
+
+@app.task(queue='inasafe-headless')
+def generate_contour(layer_uri, output_uri=None):
+    """Create contour from raster layer_uri to output_uri
+
+    :param layer_uri: The shakemap raster layer uri.
+    :type layer_uri: basestring
+
+    :param output_uri: The contour output layer uri
+    :type output_uri: basestring
+
+    :returns: The output layer uri if success
+    :rtype: basestring
+    """
+    shakemap_raster = load_layer(layer_uri)[0]
+    contour_uri = create_smooth_contour(
+        shakemap_raster, output_file_path=output_uri)
+    if os.path.exists(contour_uri):
+        return contour_uri
+    else:
+        return None
