@@ -72,26 +72,7 @@ class TestHeadlessCeleryTask(unittest.TestCase):
             keywords['layer_purpose'], layer_purpose_aggregation['key'])
 
     def test_run_analysis(self):
-        """Test run analysis synchronously."""
-        # With aggregation
-        result = run_analysis(
-            earthquake_layer_uri, place_layer_uri, aggregation_layer_uri)
-        self.assertEqual(ANALYSIS_SUCCESS, result['status'])
-        self.assertLess(0, len(result['output']))
-        for key, layer_uri in result['output'].items():
-            self.assertTrue(os.path.exists(layer_uri))
-            self.assertTrue(layer_uri.startswith(OUTPUT_DIRECTORY))
-
-        # No aggregation
-        result = run_analysis(earthquake_layer_uri, place_layer_uri)
-        self.assertEqual(ANALYSIS_SUCCESS, result['status'])
-        self.assertLess(0, len(result['output']))
-        for key, layer_uri in result['output'].items():
-            self.assertTrue(os.path.exists(layer_uri))
-            self.assertTrue(layer_uri.startswith(OUTPUT_DIRECTORY))
-
-    def test_run_analysis_async(self):
-        """Test run analysis asynchronously."""
+        """Test run analysis."""
         # With aggregation
         result_delay = run_analysis.delay(
             earthquake_layer_uri, place_layer_uri, aggregation_layer_uri)
@@ -113,52 +94,7 @@ class TestHeadlessCeleryTask(unittest.TestCase):
             self.assertTrue(layer_uri.startswith(OUTPUT_DIRECTORY))
 
     def test_run_multi_exposure_analysis(self):
-        """Test run multi_exposure analysis synchronously."""
-        exposure_layer_uris = [
-            place_layer_uri,
-            buildings_layer_uri,
-            population_multi_fields_layer_uri
-        ]
-        # With aggregation
-        result = run_multi_exposure_analysis(
-            earthquake_layer_uri, exposure_layer_uris, aggregation_layer_uri)
-        self.assertEqual(ANALYSIS_SUCCESS, result['status'])
-        self.assertLess(0, len(result['output']))
-        num_exposure_output = 0
-        for key, layer_uri in result['output'].items():
-            if isinstance(layer_uri, basestring):
-                self.assertTrue(os.path.exists(layer_uri))
-                self.assertTrue(layer_uri.startswith(OUTPUT_DIRECTORY))
-            elif isinstance(layer_uri, dict):
-                num_exposure_output += 1
-                for the_key, the_layer_uri in layer_uri.items():
-                    self.assertTrue(os.path.exists(the_layer_uri))
-                    self.assertTrue(the_layer_uri.startswith(OUTPUT_DIRECTORY))
-        # Check the number of per exposure output is the same as the number
-        # of exposures
-        self.assertEqual(num_exposure_output, len(exposure_layer_uris))
-
-        # No aggregation
-        result = run_multi_exposure_analysis(
-            earthquake_layer_uri, exposure_layer_uris)
-        self.assertEqual(ANALYSIS_SUCCESS, result['status'])
-        self.assertLess(0, len(result['output']))
-        num_exposure_output = 0
-        for key, layer_uri in result['output'].items():
-            if isinstance(layer_uri, basestring):
-                self.assertTrue(os.path.exists(layer_uri))
-                self.assertTrue(layer_uri.startswith(OUTPUT_DIRECTORY))
-            elif isinstance(layer_uri, dict):
-                num_exposure_output += 1
-                for the_key, the_layer_uri in layer_uri.items():
-                    self.assertTrue(os.path.exists(the_layer_uri))
-                    self.assertTrue(the_layer_uri.startswith(OUTPUT_DIRECTORY))
-        # Check the number of per exposure output is the same as the number
-        # of exposures
-        self.assertEqual(num_exposure_output, len(exposure_layer_uris))
-
-    def test_run_multi_exposure_analysis_async(self):
-        """Test run multi_exposure analysis asynchronously."""
+        """Test run multi_exposure analysis."""
         exposure_layer_uris = [
             place_layer_uri,
             buildings_layer_uri,
@@ -203,16 +139,9 @@ class TestHeadlessCeleryTask(unittest.TestCase):
         # Check the number of per exposure output is the same as the number
         # of exposures
         self.assertEqual(num_exposure_output, len(exposure_layer_uris))
-
-    def test_generate_contour(self):
-        """Test generate_contour task synchronously."""
-        result = generate_contour(shakemap_layer_uri)
-        self.assertIsNotNone(result)
-        self.assertTrue(os.path.exists(result))
-        self.assertTrue(result.startswith(OUTPUT_DIRECTORY))
 
     def test_generate_contour_async(self):
-        """Test generate_contour task asynchronously."""
+        """Test generate_contour task."""
         # Layer
         result_delay = generate_contour.delay(shakemap_layer_uri)
         result = result_delay.get()
