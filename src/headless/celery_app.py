@@ -23,8 +23,11 @@ from safe.test.utilities import get_qgis_app  # noqa
 QGIS_APP, CANVAS, IFACE, PARENT = get_qgis_app()
 
 if OUTPUT_DIRECTORY:
-    if not os.path.exists(OUTPUT_DIRECTORY):
+    try:
         os.makedirs(OUTPUT_DIRECTORY)
+    except OSError:
+        if not os.path.isdir(OUTPUT_DIRECTORY):
+            raise
     set_setting('defaultUserDirectory', OUTPUT_DIRECTORY)
 
 app.autodiscover_tasks(packages)

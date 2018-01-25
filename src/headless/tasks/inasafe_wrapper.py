@@ -246,8 +246,11 @@ def generate_contour(layer_uri):
     output_directory_path = os.path.join(
         setting('defaultUserDirectory'), output_directory)
     # Make sure the output directory exists
-    if not os.path.exists(output_directory_path):
+    try:
         os.makedirs(output_directory_path)
+    except OSError:
+        if not os.path.isdir(output_directory_path):
+            raise
     output_uri = os.path.join(output_directory_path, output_file_name)
 
     shakemap_raster = load_layer(layer_uri)[0]
