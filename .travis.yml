@@ -7,6 +7,9 @@ python:
 
 env:
   - ON_TRAVIS=True
+    TASK_ALWAYS_EAGER=True
+  - ON_TRAVIS=True
+    TASK_ALWAYS_EAGER=False
 
 virtualenv:
   system_site_packages: true
