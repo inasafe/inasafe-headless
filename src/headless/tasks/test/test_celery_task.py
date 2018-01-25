@@ -9,6 +9,7 @@ from headless.tasks.inasafe_wrapper import (
     generate_contour,
     run_multi_exposure_analysis
 )
+from headless.settings import OUTPUT_DIRECTORY
 
 from safe.definitions.layer_purposes import (
     layer_purpose_exposure, layer_purpose_hazard, layer_purpose_aggregation)
@@ -79,6 +80,7 @@ class TestHeadlessCeleryTask(unittest.TestCase):
         self.assertLess(0, len(result['output']))
         for key, layer_uri in result['output'].items():
             self.assertTrue(os.path.exists(layer_uri))
+            self.assertTrue(layer_uri.startswith(OUTPUT_DIRECTORY))
 
         # No aggregation
         result = run_analysis(earthquake_layer_uri, place_layer_uri)
@@ -86,6 +88,7 @@ class TestHeadlessCeleryTask(unittest.TestCase):
         self.assertLess(0, len(result['output']))
         for key, layer_uri in result['output'].items():
             self.assertTrue(os.path.exists(layer_uri))
+            self.assertTrue(layer_uri.startswith(OUTPUT_DIRECTORY))
 
     def test_run_analysis_async(self):
         """Test run analysis asynchronously."""
@@ -97,15 +100,17 @@ class TestHeadlessCeleryTask(unittest.TestCase):
         self.assertLess(0, len(result['output']))
         for key, layer_uri in result['output'].items():
             self.assertTrue(os.path.exists(layer_uri))
+            self.assertTrue(layer_uri.startswith(OUTPUT_DIRECTORY))
 
         # No aggregation
-        result_delay = run_analysis.delay(earthquake_layer_uri, place_layer_uri)
+        result_delay = run_analysis.delay(
+            earthquake_layer_uri, place_layer_uri)
         result = result_delay.get()
         self.assertEqual(ANALYSIS_SUCCESS, result['status'])
         self.assertLess(0, len(result['output']))
         for key, layer_uri in result['output'].items():
-            print key, layer_uri
             self.assertTrue(os.path.exists(layer_uri))
+            self.assertTrue(layer_uri.startswith(OUTPUT_DIRECTORY))
 
     def test_run_multi_exposure_analysis(self):
         """Test run multi_exposure analysis synchronously."""
@@ -123,10 +128,12 @@ class TestHeadlessCeleryTask(unittest.TestCase):
         for key, layer_uri in result['output'].items():
             if isinstance(layer_uri, basestring):
                 self.assertTrue(os.path.exists(layer_uri))
+                self.assertTrue(layer_uri.startswith(OUTPUT_DIRECTORY))
             elif isinstance(layer_uri, dict):
                 num_exposure_output += 1
                 for the_key, the_layer_uri in layer_uri.items():
                     self.assertTrue(os.path.exists(the_layer_uri))
+                    self.assertTrue(the_layer_uri.startswith(OUTPUT_DIRECTORY))
         # Check the number of per exposure output is the same as the number
         # of exposures
         self.assertEqual(num_exposure_output, len(exposure_layer_uris))
@@ -140,10 +147,12 @@ class TestHeadlessCeleryTask(unittest.TestCase):
         for key, layer_uri in result['output'].items():
             if isinstance(layer_uri, basestring):
                 self.assertTrue(os.path.exists(layer_uri))
+                self.assertTrue(layer_uri.startswith(OUTPUT_DIRECTORY))
             elif isinstance(layer_uri, dict):
                 num_exposure_output += 1
                 for the_key, the_layer_uri in layer_uri.items():
                     self.assertTrue(os.path.exists(the_layer_uri))
+                    self.assertTrue(the_layer_uri.startswith(OUTPUT_DIRECTORY))
         # Check the number of per exposure output is the same as the number
         # of exposures
         self.assertEqual(num_exposure_output, len(exposure_layer_uris))
@@ -165,10 +174,12 @@ class TestHeadlessCeleryTask(unittest.TestCase):
         for key, layer_uri in result['output'].items():
             if isinstance(layer_uri, basestring):
                 self.assertTrue(os.path.exists(layer_uri))
+                self.assertTrue(layer_uri.startswith(OUTPUT_DIRECTORY))
             elif isinstance(layer_uri, dict):
                 num_exposure_output += 1
                 for the_key, the_layer_uri in layer_uri.items():
                     self.assertTrue(os.path.exists(the_layer_uri))
+                    self.assertTrue(the_layer_uri.startswith(OUTPUT_DIRECTORY))
         # Check the number of per exposure output is the same as the number
         # of exposures
         self.assertEqual(num_exposure_output, len(exposure_layer_uris))
@@ -183,10 +194,12 @@ class TestHeadlessCeleryTask(unittest.TestCase):
         for key, layer_uri in result['output'].items():
             if isinstance(layer_uri, basestring):
                 self.assertTrue(os.path.exists(layer_uri))
+                self.assertTrue(layer_uri.startswith(OUTPUT_DIRECTORY))
             elif isinstance(layer_uri, dict):
                 num_exposure_output += 1
                 for the_key, the_layer_uri in layer_uri.items():
                     self.assertTrue(os.path.exists(the_layer_uri))
+                    self.assertTrue(the_layer_uri.startswith(OUTPUT_DIRECTORY))
         # Check the number of per exposure output is the same as the number
         # of exposures
         self.assertEqual(num_exposure_output, len(exposure_layer_uris))
@@ -196,11 +209,13 @@ class TestHeadlessCeleryTask(unittest.TestCase):
         result = generate_contour(shakemap_layer_uri)
         self.assertIsNotNone(result)
         self.assertTrue(os.path.exists(result))
+        self.assertTrue(result.startswith(OUTPUT_DIRECTORY))
 
     def test_generate_contour_async(self):
         """Test generate_contour task asynchronously."""
         # Layer
-        result = generate_contour.delay(shakemap_layer_uri)
-        contour_result = result.get()
-        self.assertIsNotNone(contour_result)
-        self.assertTrue(os.path.exists(contour_result))
+        result_delay = generate_contour.delay(shakemap_layer_uri)
+        result = result_delay.get()
+        self.assertIsNotNone(result)
+        self.assertTrue(os.path.exists(result))
+        self.assertTrue(result.startswith(OUTPUT_DIRECTORY))
