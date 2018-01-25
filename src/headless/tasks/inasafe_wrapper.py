@@ -62,6 +62,16 @@ def run_analysis(
     :returns: A dictionary of output's layer key and Uri with status and
         message.
     :rtype: dict
+
+    The output format will be:
+    output = {
+        'status': 0,
+        'message': '',
+        'outputs': {
+            'output_layer_key_1': 'output_layer_path_1',
+            'output_layer_key_2': 'output_layer_path_2',
+        }
+    }
     """
     impact_function = ImpactFunction()
     impact_function.hazard = load_layer(hazard_layer_uri)[0]
@@ -128,6 +138,26 @@ def run_multi_exposure_analysis(
     :returns: A dictionary of output's layer key and Uri with status and
         message.
     :rtype: dict
+
+    The output format will be:
+    output = {
+        'status': 0,
+        'message': '',
+        'outputs': {
+            'exposure_1': {
+                'output_layer_key_11': 'output_layer_path_11',
+                'output_layer_key_12': 'output_layer_path_12',
+            },
+            'exposure_2': {
+                'output_layer_key_21': 'output_layer_path_21',
+                'output_layer_key_22': 'output_layer_path_22',
+            },
+            'multi_exposure_output_layer_key_1':
+                'multi_exposure_output_layer_path_1',
+            'multi_exposure_output_layer_key_2':
+                'multi_exposure_output_layer_path_2',
+        }
+    }
     """
     multi_exposure_if = MultiExposureImpactFunction()
     multi_exposure_if.hazard = load_layer(hazard_layer_uri)[0]
@@ -146,6 +176,18 @@ def run_multi_exposure_analysis(
         if status == ANALYSIS_SUCCESS:
             outputs = multi_exposure_if.outputs
             output_dict = {}
+            # All impact functions
+            impact_functions = multi_exposure_if.impact_functions
+            for impact_function in impact_functions:
+                per_exposure_output = {}
+                output = impact_function.outputs
+                for layer in output:
+                    per_exposure_output[
+                        layer.keywords['layer_purpose']] = layer.source()
+                output_dict[impact_function.exposure.keywords[
+                    'exposure']] = per_exposure_output
+
+            # Multi exposure outputs
             for layer in outputs:
                 output_dict[layer.keywords['layer_purpose']] = layer.source()
 

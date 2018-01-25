@@ -90,20 +90,20 @@ class TestHeadlessCeleryTask(unittest.TestCase):
     def test_run_analysis_async(self):
         """Test run analysis asynchronously."""
         # With aggregation
-        result = run_analysis.delay(
+        result_delay = run_analysis.delay(
             earthquake_layer_uri, place_layer_uri, aggregation_layer_uri)
-        result_dict = result.get()
-        self.assertEqual(ANALYSIS_SUCCESS, result_dict['status'])
-        self.assertLess(0, len(result_dict['output']))
-        for key, layer_uri in result_dict['output'].items():
+        result = result_delay.get()
+        self.assertEqual(ANALYSIS_SUCCESS, result['status'])
+        self.assertLess(0, len(result['output']))
+        for key, layer_uri in result['output'].items():
             self.assertTrue(os.path.exists(layer_uri))
 
         # No aggregation
-        result = run_analysis.delay(earthquake_layer_uri, place_layer_uri)
-        result_dict = result.get()
-        self.assertEqual(ANALYSIS_SUCCESS, result_dict['status'])
-        self.assertLess(0, len(result_dict['output']))
-        for key, layer_uri in result_dict['output'].items():
+        result_delay = run_analysis.delay(earthquake_layer_uri, place_layer_uri)
+        result = result_delay.get()
+        self.assertEqual(ANALYSIS_SUCCESS, result['status'])
+        self.assertLess(0, len(result['output']))
+        for key, layer_uri in result['output'].items():
             print key, layer_uri
             self.assertTrue(os.path.exists(layer_uri))
 
@@ -119,16 +119,34 @@ class TestHeadlessCeleryTask(unittest.TestCase):
             earthquake_layer_uri, exposure_layer_uris, aggregation_layer_uri)
         self.assertEqual(ANALYSIS_SUCCESS, result['status'])
         self.assertLess(0, len(result['output']))
+        num_exposure_output = 0
         for key, layer_uri in result['output'].items():
-            self.assertTrue(os.path.exists(layer_uri))
+            if isinstance(layer_uri, basestring):
+                self.assertTrue(os.path.exists(layer_uri))
+            elif isinstance(layer_uri, dict):
+                num_exposure_output += 1
+                for the_key, the_layer_uri in layer_uri.items():
+                    self.assertTrue(os.path.exists(the_layer_uri))
+        # Check the number of per exposure output is the same as the number
+        # of exposures
+        self.assertEqual(num_exposure_output, len(exposure_layer_uris))
 
         # No aggregation
         result = run_multi_exposure_analysis(
             earthquake_layer_uri, exposure_layer_uris)
         self.assertEqual(ANALYSIS_SUCCESS, result['status'])
         self.assertLess(0, len(result['output']))
+        num_exposure_output = 0
         for key, layer_uri in result['output'].items():
-            self.assertTrue(os.path.exists(layer_uri))
+            if isinstance(layer_uri, basestring):
+                self.assertTrue(os.path.exists(layer_uri))
+            elif isinstance(layer_uri, dict):
+                num_exposure_output += 1
+                for the_key, the_layer_uri in layer_uri.items():
+                    self.assertTrue(os.path.exists(the_layer_uri))
+        # Check the number of per exposure output is the same as the number
+        # of exposures
+        self.assertEqual(num_exposure_output, len(exposure_layer_uris))
 
     def test_run_multi_exposure_analysis_async(self):
         """Test run multi_exposure analysis asynchronously."""
@@ -138,23 +156,40 @@ class TestHeadlessCeleryTask(unittest.TestCase):
             population_multi_fields_layer_uri
         ]
         # With aggregation
-        result = run_multi_exposure_analysis.delay(
+        result_delay = run_multi_exposure_analysis.delay(
             earthquake_layer_uri, exposure_layer_uris, aggregation_layer_uri)
-        result_dict = result.get()
-        self.assertEqual(ANALYSIS_SUCCESS, result_dict['status'])
-        self.assertLess(0, len(result_dict['output']))
-        for key, layer_uri in result_dict['output'].items():
-            self.assertTrue(os.path.exists(layer_uri))
+        result = result_delay.get()
+        self.assertEqual(ANALYSIS_SUCCESS, result['status'])
+        self.assertLess(0, len(result['output']))
+        num_exposure_output = 0
+        for key, layer_uri in result['output'].items():
+            if isinstance(layer_uri, basestring):
+                self.assertTrue(os.path.exists(layer_uri))
+            elif isinstance(layer_uri, dict):
+                num_exposure_output += 1
+                for the_key, the_layer_uri in layer_uri.items():
+                    self.assertTrue(os.path.exists(the_layer_uri))
+        # Check the number of per exposure output is the same as the number
+        # of exposures
+        self.assertEqual(num_exposure_output, len(exposure_layer_uris))
 
         # No aggregation
-        result = run_multi_exposure_analysis.delay(
+        result_delay = run_multi_exposure_analysis.delay(
             earthquake_layer_uri, exposure_layer_uris)
-        result_dict = result.get()
-        self.assertEqual(ANALYSIS_SUCCESS, result_dict['status'])
-        self.assertLess(0, len(result_dict['output']))
-        for key, layer_uri in result_dict['output'].items():
-            print key, layer_uri
-            self.assertTrue(os.path.exists(layer_uri))
+        result = result_delay.get()
+        self.assertEqual(ANALYSIS_SUCCESS, result['status'])
+        self.assertLess(0, len(result['output']))
+        num_exposure_output = 0
+        for key, layer_uri in result['output'].items():
+            if isinstance(layer_uri, basestring):
+                self.assertTrue(os.path.exists(layer_uri))
+            elif isinstance(layer_uri, dict):
+                num_exposure_output += 1
+                for the_key, the_layer_uri in layer_uri.items():
+                    self.assertTrue(os.path.exists(the_layer_uri))
+        # Check the number of per exposure output is the same as the number
+        # of exposures
+        self.assertEqual(num_exposure_output, len(exposure_layer_uris))
 
     def test_generate_contour(self):
         """Test generate_contour task synchronously."""
