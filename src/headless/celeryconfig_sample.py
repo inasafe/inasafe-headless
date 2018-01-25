@@ -61,4 +61,4 @@ accept_content = {'pickle'}
 result_serializer = 'pickle'
 
 task_always_eager = ast.literal_eval(
-    os.environ.get('task_always_eager', 'False'))
+    os.environ.get('TASK_ALWAYS_EAGER', 'False'))
