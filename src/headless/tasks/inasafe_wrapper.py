@@ -2,16 +2,20 @@
 """Task for InaSAFE Headless."""
 import logging
 import os
+from datetime import datetime
 
 from headless.celery_app import app
+
 from qgis.core import QgsCoordinateReferenceSystem
-from safe.utilities.metadata import read_iso19115_metadata
+
+from safe.definitions.constants import PREPARE_SUCCESS, ANALYSIS_SUCCESS
 from safe.impact_function.impact_function import ImpactFunction
 from safe.impact_function.multi_exposure_wrapper import (
     MultiExposureImpactFunction)
-from safe.gis.tools import load_layer
 from safe.gis.raster.contour import create_smooth_contour
-from safe.definitions.constants import PREPARE_SUCCESS, ANALYSIS_SUCCESS
+from safe.gis.tools import load_layer
+from safe.utilities.settings import setting
+from safe.utilities.metadata import read_iso19115_metadata
 
 __copyright__ = "Copyright 2018, The InaSAFE Project"
 __license__ = "GPL version 3"
@@ -218,18 +222,34 @@ def generate_report():
 
 
 @app.task(queue='inasafe-headless')
-def generate_contour(layer_uri, output_uri=None):
+def generate_contour(layer_uri):
     """Create contour from raster layer_uri to output_uri
 
     :param layer_uri: The shakemap raster layer uri.
     :type layer_uri: basestring
 
-    :param output_uri: The contour output layer uri
-    :type output_uri: basestring
-
     :returns: The output layer uri if success
     :rtype: basestring
+
+    It will put the contour layer to
+    contour_[input_file_name]_[current_datetime]/[input_file_name].shp
+
+    current_datetime format: 25January2018_09h25-17.597909
     """
+    # Always create directory
+    input_file_name = os.path.basename(layer_uri)
+    input_base_name = os.path.splitext(input_file_name)[0]
+    # Make it same format as analysis directory
+    current_datetime = datetime.now().strftime('%d%B%Y_%Hh%M-%S.%f')
+    output_directory = 'contour_%s_%s' % (input_base_name, current_datetime)
+    output_file_name = input_base_name + '.shp'
+    output_directory_path = os.path.join(
+        setting('defaultUserDirectory'), output_directory)
+    # Make sure the output directory exists
+    if not os.path.exists(output_directory_path):
+        os.makedirs(output_directory_path)
+    output_uri = os.path.join(output_directory_path, output_file_name)
+
     shakemap_raster = load_layer(layer_uri)[0]
     contour_uri = create_smooth_contour(
         shakemap_raster, output_file_path=output_uri)
