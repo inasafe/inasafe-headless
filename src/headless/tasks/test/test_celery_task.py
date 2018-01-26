@@ -9,6 +9,9 @@ from headless.tasks.inasafe_wrapper import (
     generate_contour,
     run_multi_exposure_analysis,
     generate_report,
+    get_generated_report,
+    REPORT_METADATA_NOT_EXIST,
+    REPORT_METADATA_EXIST,
 )
 from headless.settings import OUTPUT_DIRECTORY
 
@@ -181,3 +184,38 @@ class TestHeadlessCeleryTask(unittest.TestCase):
                 message = 'Product %s is not found in %s' % (
                     product_key, product_uri)
                 self.assertTrue(os.path.exists(product_uri), message)
+
+    def test_get_generated_report(self):
+        """Test get generated report task."""
+        # Run analysis first
+        result_delay = run_analysis.delay(
+            earthquake_layer_uri, place_layer_uri, aggregation_layer_uri)
+        result = result_delay.get()
+        self.assertEqual(ANALYSIS_SUCCESS, result['status'])
+        self.assertLess(0, len(result['output']))
+        for key, layer_uri in result['output'].items():
+            self.assertTrue(os.path.exists(layer_uri))
+            self.assertTrue(layer_uri.startswith(OUTPUT_DIRECTORY))
+
+        # Retrieve impact analysis uri
+        impact_analysis_uri = result['output'][
+            layer_purpose_exposure_summary['key']]
+
+        # Get generated report (but it's not yet generated)
+        async_result = get_generated_report.delay(impact_analysis_uri)
+        result = async_result.get()
+        self.assertEqual(REPORT_METADATA_NOT_EXIST, result['status'])
+        self.assertEqual({}, result['output'])
+
+        # Generate reports
+        async_result = generate_report.delay(impact_analysis_uri)
+        result = async_result.get()
+        self.assertEqual(
+            ImpactReport.REPORT_GENERATION_SUCCESS, result['status'])
+        report_metadata = result['output']
+
+        # Get generated report (now it's already generated)
+        async_result = get_generated_report.delay(impact_analysis_uri)
+        result = async_result.get()
+        self.assertEqual(REPORT_METADATA_EXIST, result['status'])
+        self.assertDictEqual(report_metadata, result['output'])
