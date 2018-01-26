@@ -35,6 +35,9 @@ task_routes = {
     'headless.tasks.inasafe_wrapper.generate_contour': {
         'queue': 'inasafe-headless-contour'
     },
+    'headless.tasks.inasafe_wrapper.get_generated_report': {
+        'queue': 'inasafe-headless-contour'
+    },
 }
 
 # RMN: This is really important.

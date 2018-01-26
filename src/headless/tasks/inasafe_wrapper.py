@@ -1,5 +1,6 @@
 # coding=utf-8
 """Task for InaSAFE Headless."""
+import json
 import logging
 import os
 from datetime import datetime
@@ -24,6 +25,9 @@ __email__ = "info@inasafe.org"
 __revision__ = '$Format:%H$'
 
 LOGGER = logging.getLogger('InaSAFE')
+
+REPORT_METADATA_EXIST = 0
+REPORT_METADATA_NOT_EXIST = 1
 
 
 @app.task(queue='inasafe-headless')
@@ -261,6 +265,61 @@ def generate_report(impact_layer_uri):
         'status': error_code,
         'message': message.to_text(),
         'output': impact_function.report_urls()
+    }
+
+
+@app.task(queue='inasafe-headless')
+def get_generated_report(impact_layer_uri):
+    """Get generated report for impact layer uri
+
+    :param impact_layer_uri: The uri to impact layer (one of them)
+    :type impact_layer_uri: basestring
+
+    :returns: A dictionary of output's report key and Uri with status and
+        message.
+    :rtype: dict
+
+    The output format will be:
+    output = {
+        'status': 0,
+        'message': '',
+        'output': {
+            'html_product_tag': {
+                'action-checklist-report': u'path',
+                'analysis-provenance-details-report': u'path',
+                'impact-report': u'path',
+            },
+            'pdf_product_tag': {
+                'action-checklist-pdf': u'path',
+                'analysis-provenance-details-report-pdf': u'path',
+                'impact-report-pdf': u'path',
+                'inasafe-map-report-landscape': u'path',
+                'inasafe-map-report-portrait': u'path',
+            },
+            'qpt_product_tag': {
+                'inasafe-map-report-landscape': u'path',
+                'inasafe-map-report-portrait': u'path',
+            }
+        },
+    }
+
+    """
+    impact_layer_directory = os.path.split(impact_layer_uri)[0]
+    report_metadata_path = os.path.join(
+        impact_layer_directory, 'output', 'report_metadata.json')
+    try:
+        report_metadata = json.load(open(report_metadata_path))
+    except IOError:
+        return {
+            'status': REPORT_METADATA_NOT_EXIST,
+            'message': 'Report metadata is not found.',
+            'output': {}
+        }
+
+    return {
+        'status': REPORT_METADATA_EXIST,
+        'message': '',
+        'output': report_metadata
     }
 
 
