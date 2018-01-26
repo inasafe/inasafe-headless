@@ -9,6 +9,7 @@ from headless.celery_app import app
 from qgis.core import QgsCoordinateReferenceSystem
 
 from safe.definitions.constants import PREPARE_SUCCESS, ANALYSIS_SUCCESS
+from safe.definitions.reports.components import all_default_report_components
 from safe.impact_function.impact_function import ImpactFunction
 from safe.impact_function.multi_exposure_wrapper import (
     MultiExposureImpactFunction)
@@ -217,8 +218,50 @@ def run_multi_exposure_analysis(
 
 
 @app.task(queue='inasafe-headless')
-def generate_report():
-    pass
+def generate_report(impact_layer_uri):
+    """Generate report based on impact layer uri.
+
+    :param impact_layer_uri: The uri to impact layer (one of them)
+    :type impact_layer_uri: basestring
+
+    :returns: A dictionary of output's report key and Uri with status and
+        message.
+    :rtype: dict
+
+    The output format will be:
+    output = {
+        'status': 0,
+        'message': '',
+        'output': {
+            'html_product_tag': {
+                'action-checklist-report': u'path',
+                'analysis-provenance-details-report': u'path',
+                'impact-report': u'path',
+            },
+            'pdf_product_tag': {
+                'action-checklist-pdf': u'path',
+                'analysis-provenance-details-report-pdf': u'path',
+                'impact-report-pdf': u'path',
+                'inasafe-map-report-landscape': u'path',
+                'inasafe-map-report-portrait': u'path',
+            },
+            'qpt_product_tag': {
+                'inasafe-map-report-landscape': u'path',
+                'inasafe-map-report-portrait': u'path',
+            }
+        },
+    }
+
+    """
+    output_metadata = read_iso19115_metadata(impact_layer_uri)
+    impact_function = ImpactFunction.load_from_output_metadata(output_metadata)
+    error_code, message = (
+        impact_function.generate_report(all_default_report_components))
+    return {
+        'status': error_code,
+        'message': message.to_text(),
+        'output': impact_function.report_urls()
+    }
 
 
 @app.task(queue='inasafe-headless')
