@@ -18,13 +18,13 @@ Run InaSAFE headlessly as docker container.
    2. `cp all.sample.yml all.yml`
    3. Edit `all.yml` for this items:
       1. `remote_user` (your username)
-      2. `remote_group` (your user's group)
+      2. `remote_group` (your user's group) (usually your username on linux, "staff" on macos)
       3. `project_path` (the location of this project)
       4. `interpreters->inasafe-headless->ipaddress` (your IP address)
 3. Go to deployment directory `cd inasafe-headless/deployment`
 3. Run `make setup-ansible` to setup the environment, make sure to get no failed. Restart PyCharm if needed.
 4. Run `make build`
-5. Run `make run`
+5. Run `make up`
 6. Open PyCharm preferences / options, and go to project interpreter. Make sure you have `InaSAFE Headless Container` as the remote python interpreter. You should make sure all python package is loaded also.
 7. You should have `Celery workers` in Run Configurations. Check if it's running.
 8. Run unit test, to make sure all is good: `make coverage-tests`
