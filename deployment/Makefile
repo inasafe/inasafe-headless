@@ -48,6 +48,12 @@ check-flake8:
 down:
 	@docker-compose -p $(PROJECT_ID) down
 
+rm:
+	@docker-compose -p $(PROJECT_ID) rm
+
+kill:
+	@docker-compose -p $(PROJECT_ID) kill
+
 status:
 	@echo
 	@echo "--------------------------"
