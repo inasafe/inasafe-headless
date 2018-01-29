@@ -7,6 +7,7 @@ services:
     volumes:
       - ../inasafe:/usr/share/qgis/python/plugins/inasafe
       - ../src:/home/app
+      - ../src/headless/tasks/test/data/result:/home/headless/output
       - ./pycharm-helpers/inasafe-headless:/root/.pycharm_helpers
     ports:
       # expose ssh ports
