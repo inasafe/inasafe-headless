@@ -15,3 +15,4 @@ venv
 /inasafe
 /src/.coverage
 /src/headless/celeryconfig.py
+/src/headless/tasks/test/data/result/*
