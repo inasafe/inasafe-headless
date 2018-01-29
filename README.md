@@ -26,5 +26,6 @@ Run InaSAFE headlessly as docker container.
 4. Run `make build`
 5. Run `make up`
 6. Open PyCharm preferences / options, and go to project interpreter. Make sure you have `InaSAFE Headless Container` as the remote python interpreter. You should make sure all python package is loaded also.
-7. You should have `Celery workers` in Run Configurations. Check if it's running.
-8. Run unit test, to make sure all is good: `make coverage-tests`
+7. If you are not in production, you need to copy/paste the file `src/headless/tasks/celeryconfig_sample.py` to `src/headless/tasks/celeryconfig.py`
+8. You should have `Celery workers` in Run Configurations. Check if it's running.
+9. Run unit test, to make sure all is good: `make coverage-tests`
