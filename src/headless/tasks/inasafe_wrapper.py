@@ -4,13 +4,16 @@ import json
 import logging
 import os
 from datetime import datetime
+from copy import deepcopy
 
 from headless.celery_app import app
 
 from qgis.core import QgsCoordinateReferenceSystem
 
 from safe.definitions.constants import PREPARE_SUCCESS, ANALYSIS_SUCCESS
-from safe.definitions.reports.components import all_default_report_components
+from safe.definitions.reports.components import (
+    all_default_report_components, map_report)
+from safe.definitions.utilities import override_component_template
 from safe.impact_function.impact_function import ImpactFunction
 from safe.impact_function.multi_exposure_wrapper import (
     MultiExposureImpactFunction)
@@ -222,11 +225,14 @@ def run_multi_exposure_analysis(
 
 
 @app.task(queue='inasafe-headless')
-def generate_report(impact_layer_uri):
+def generate_report(impact_layer_uri, custom_report_template_uri=None):
     """Generate report based on impact layer uri.
 
-    :param impact_layer_uri: The uri to impact layer (one of them)
+    :param impact_layer_uri: The uri to impact layer (one of them).
     :type impact_layer_uri: basestring
+
+    :param custom_report_template_uri: The uri to report template.
+    :type custom_report_template_uri: basestring
 
     :returns: A dictionary of output's report key and Uri with status and
         message.
@@ -259,8 +265,17 @@ def generate_report(impact_layer_uri):
     """
     output_metadata = read_iso19115_metadata(impact_layer_uri)
     impact_function = ImpactFunction.load_from_output_metadata(output_metadata)
+
+    generated_components = deepcopy(all_default_report_components)
+
+    if custom_report_template_uri:
+        generated_components.remove(map_report)
+        generated_components.append(
+            override_component_template(
+                map_report, custom_report_template_uri))
+
     error_code, message = (
-        impact_function.generate_report(all_default_report_components))
+        impact_function.generate_report(generated_components))
     return {
         'status': error_code,
         'message': message.to_text(),
@@ -272,7 +287,7 @@ def generate_report(impact_layer_uri):
 def get_generated_report(impact_layer_uri):
     """Get generated report for impact layer uri
 
-    :param impact_layer_uri: The uri to impact layer (one of them)
+    :param impact_layer_uri: The uri to impact layer (one of them).
     :type impact_layer_uri: basestring
 
     :returns: A dictionary of output's report key and Uri with status and

@@ -49,6 +49,12 @@ population_multi_fields_layer_uri = os.path.join(
 buildings_layer_uri = os.path.join(
     dir_path, 'data', 'input_layers', 'buildings.geojson')
 
+# Map template
+custom_map_template_basename = 'custom-inasafe-map-report-portrait'
+custom_map_template = os.path.join(
+    dir_path, 'data', custom_map_template_basename + '.qpt'
+)
+
 
 class TestHeadlessCeleryTask(unittest.TestCase):
     """Unit test for Headless Celery tasks."""
@@ -184,6 +190,47 @@ class TestHeadlessCeleryTask(unittest.TestCase):
                 message = 'Product %s is not found in %s' % (
                     product_key, product_uri)
                 self.assertTrue(os.path.exists(product_uri), message)
+
+    def test_generate_custom_report(self):
+        """Test generate custom report for single analysis."""
+        # Run analysis first
+        result_delay = run_analysis.delay(
+            earthquake_layer_uri,
+            population_multi_fields_layer_uri,
+            aggregation_layer_uri
+        )
+        result = result_delay.get()
+        self.assertEqual(ANALYSIS_SUCCESS, result['status'])
+        self.assertLess(0, len(result['output']))
+        for key, layer_uri in result['output'].items():
+            self.assertTrue(os.path.exists(layer_uri))
+            self.assertTrue(layer_uri.startswith(OUTPUT_DIRECTORY))
+
+        # Retrieve impact analysis uri
+        impact_analysis_uri = result['output'][
+            layer_purpose_exposure_summary['key']]
+
+        # Generate reports
+        async_result = generate_report.delay(
+            impact_analysis_uri, custom_map_template)
+        result = async_result.get()
+        self.assertEqual(
+            ImpactReport.REPORT_GENERATION_SUCCESS, result['status'])
+        product_keys = []
+        for key, products in result['output'].items():
+            for product_key, product_uri in products.items():
+                product_keys.append(product_key)
+                message = 'Product %s is not found in %s' % (
+                    product_key, product_uri)
+                self.assertTrue(os.path.exists(product_uri), message)
+                if custom_map_template_basename == product_key:
+                    print product_uri
+
+        # Check if custom map template found.
+        self.assertIn(custom_map_template_basename, product_keys)
+        # Check if the default map reports are not found
+        self.assertNotIn('inasafe-map-report-portrait', product_keys)
+        self.assertNotIn('inasafe-map-report-landscape', product_keys)
 
     def test_get_generated_report(self):
         """Test get generated report task."""
