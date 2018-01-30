@@ -22,6 +22,9 @@ packages = (
 from safe.test.utilities import get_qgis_app  # noqa
 QGIS_APP, CANVAS, IFACE, PARENT = get_qgis_app()
 
+# Load QGIS Expression
+from safe.utilities.expressions import qgis_expressions  # noqa
+
 if OUTPUT_DIRECTORY:
     try:
         os.makedirs(OUTPUT_DIRECTORY)
