@@ -15,6 +15,7 @@ from safe.definitions.reports.components import (
     all_default_report_components, map_report)
 from safe.definitions.utilities import override_component_template
 from safe.impact_function.impact_function import ImpactFunction
+from safe.impact_function.impact_function_utilities import report_urls
 from safe.impact_function.multi_exposure_wrapper import (
     MultiExposureImpactFunction)
 from safe.gis.raster.contour import create_smooth_contour
@@ -279,7 +280,7 @@ def generate_report(impact_layer_uri, custom_report_template_uri=None):
     return {
         'status': error_code,
         'message': message.to_text(),
-        'output': impact_function.report_urls()
+        'output': report_urls(impact_function)
     }
 
 
