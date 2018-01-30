@@ -22,6 +22,7 @@ from safe.gis.raster.contour import create_smooth_contour
 from safe.gis.tools import load_layer
 from safe.utilities.settings import setting
 from safe.utilities.metadata import read_iso19115_metadata
+from safe.gui.widgets.dock import set_provenance_to_project_variables
 
 __copyright__ = "Copyright 2018, The InaSAFE Project"
 __license__ = "GPL version 3"
@@ -266,6 +267,10 @@ def generate_report(impact_layer_uri, custom_report_template_uri=None):
     """
     output_metadata = read_iso19115_metadata(impact_layer_uri)
     impact_function = ImpactFunction.load_from_output_metadata(output_metadata)
+
+    provenances = output_metadata.get('provenance_data', {})
+    if provenances:
+        set_provenance_to_project_variables(provenances)
 
     generated_components = deepcopy(all_default_report_components)
 
