@@ -60,3 +60,7 @@ status:
 	@echo "Show status of all containers"
 	@echo "--------------------------"
 	@docker-compose -p $(PROJECT_ID) ps
+
+clean-test-output:
+	@echo "Clean test output in src/headless/tasks/test/data/result/"
+	@rm -rf ../src/headless/tasks/test/data/result/*
