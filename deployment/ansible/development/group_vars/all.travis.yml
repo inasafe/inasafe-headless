@@ -21,6 +21,9 @@ inasafe:
 
 inasafe_headless_worker:
   command: /docker-entrypoint.sh dev
+  environment:
+    task_always_eager: "${TASK_ALWAYS_EAGER}"
+    on_travis: "${ON_TRAVIS}"
 
 docker_port_forward:
   inasafe_headless:
