@@ -7,5 +7,3 @@
     owner: '{{ remote_user }}'
     group: '{{ remote_group }}'
     mode: "u=rw,g=rw,o=r"
-  tags:
-    - development
