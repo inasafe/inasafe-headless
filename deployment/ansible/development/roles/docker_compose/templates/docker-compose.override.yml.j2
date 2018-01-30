@@ -9,6 +9,13 @@ services:
       - ../src:/home/app
       - ../src/headless/tasks/test/data/result:/home/headless/output
       - ./pycharm-helpers/inasafe-headless:/root/.pycharm_helpers
+
+    {% if 'environment' in inasafe_headless_worker %}
+    environment:
+        - TASK_ALWAYS_EAGER={{ inasafe_headless_worker.environment.task_always_eager }}
+        - ON_TRAVIS={{ inasafe_headless_worker.environment.on_travis }}
+    {% endif %}
+
     ports:
       # expose ssh ports
       - "{{ docker_port_forward.inasafe_headless.ssh }}:22"
