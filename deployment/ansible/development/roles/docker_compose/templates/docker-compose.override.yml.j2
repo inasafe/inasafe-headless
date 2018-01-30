@@ -11,9 +11,11 @@ services:
       - ./pycharm-helpers/inasafe-headless:/root/.pycharm_helpers
 
     {% if 'environment' in inasafe_headless_worker %}
+
     environment:
         - TASK_ALWAYS_EAGER={{ inasafe_headless_worker.environment.task_always_eager }}
         - ON_TRAVIS={{ inasafe_headless_worker.environment.on_travis }}
+
     {% endif %}
 
     ports:
