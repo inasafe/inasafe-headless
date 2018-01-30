@@ -50,7 +50,7 @@ buildings_layer_uri = os.path.join(
     dir_path, 'data', 'input_layers', 'buildings.geojson')
 
 # Map template
-custom_map_template_basename = 'custom-inasafe-map-report-portrait'
+custom_map_template_basename = 'custom-inasafe-map-report-landscape'
 custom_map_template = os.path.join(
     dir_path, 'data', custom_map_template_basename + '.qpt'
 )
