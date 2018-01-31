@@ -8,12 +8,17 @@ from copy import deepcopy
 
 from headless.celery_app import app
 
-from qgis.core import QgsCoordinateReferenceSystem
+from qgis.core import QgsCoordinateReferenceSystem, QgsMapLayerRegistry
 
 from safe.definitions.constants import PREPARE_SUCCESS, ANALYSIS_SUCCESS
+from safe.definitions.provenance import (
+    provenance_hazard_layer,
+    provenance_exposure_layer,
+    provenance_aggregation_layer)
 from safe.definitions.reports.components import (
     all_default_report_components, map_report)
-from safe.definitions.utilities import override_component_template
+from safe.definitions.utilities import (
+    override_component_template, get_provenance)
 from safe.impact_function.impact_function import ImpactFunction
 from safe.impact_function.impact_function_utilities import report_urls
 from safe.impact_function.multi_exposure_wrapper import (
@@ -266,9 +271,21 @@ def generate_report(impact_layer_uri, custom_report_template_uri=None):
 
     """
     output_metadata = read_iso19115_metadata(impact_layer_uri)
+    provenances = output_metadata.get('provenance_data', {})
+
+    hazard_layer = load_layer(
+        get_provenance(provenances, provenance_hazard_layer))[0]
+    exposure_layer = load_layer(
+        get_provenance(provenances, provenance_exposure_layer))[0]
+    aggregation_layer = load_layer(
+        get_provenance(provenances, provenance_aggregation_layer))[0]
+
+    # we need to put the layers into the map canvas
+    QgsMapLayerRegistry.instance().addMapLayers(
+        [hazard_layer, exposure_layer, aggregation_layer])
+
     impact_function = ImpactFunction.load_from_output_metadata(output_metadata)
 
-    provenances = output_metadata.get('provenance_data', {})
     if provenances:
         set_provenance_to_project_variables(provenances)
 
