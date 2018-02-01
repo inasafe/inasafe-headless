@@ -277,7 +277,7 @@
       <module name="inasafe-headless" />
       <EXTENSION ID="PythonCoverageRunConfigurationExtension" enabled="false" sample_coverage="true" runner="coverage.py" />
       <option name="SCRIPT_NAME" value="/usr/local/bin/celery" />
-      <option name="PARAMETERS" value="-A headless.celery_app worker -l info -Q inasafe-headless" />
+      <option name="PARAMETERS" value="-A headless.celery_app worker -l info -Q inasafe-headless -n inasafe-headless.%h" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <method />
     </configuration>
