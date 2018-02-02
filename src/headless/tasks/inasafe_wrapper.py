@@ -403,3 +403,15 @@ def generate_contour(layer_uri):
         return contour_uri
     else:
         return None
+
+
+@app.task(
+    name='inasafe.headless.check_broker_connection',
+    queue='inasafe-headless')
+def check_broker_connection():
+    """Only returns true if broker is connected
+
+    :return: True
+    """
+    LOGGER.info('proxy tasks')
+    return True
