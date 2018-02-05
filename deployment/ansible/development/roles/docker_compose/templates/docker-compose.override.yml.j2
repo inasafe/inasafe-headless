@@ -9,12 +9,16 @@ services:
       - ../src:/home/app
       - ../src/headless/tasks/test/data/result:/home/headless/output
       - ./pycharm-helpers/inasafe-headless:/root/.pycharm_helpers
+      - {{ integration_test.test_data_path }}:{{ integration_test.mapped_test_data_path }}
+
+    environment:
+      - INASAFE_OUTPUT_DIR={{ integration_test.mapped_output_data_path }}
+      - COMMON_TEST_DATA={{ integration_test.mapped_test_data_path }}
 
     {% if 'environment' in inasafe_headless_worker %}
 
-    environment:
-        - TASK_ALWAYS_EAGER={{ inasafe_headless_worker.environment.task_always_eager }}
-        - ON_TRAVIS={{ inasafe_headless_worker.environment.on_travis }}
+      - TASK_ALWAYS_EAGER={{ inasafe_headless_worker.environment.task_always_eager }}
+      - ON_TRAVIS={{ inasafe_headless_worker.environment.on_travis }}
 
     {% endif %}
 
