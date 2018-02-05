@@ -5,6 +5,9 @@ services:
     image: library/rabbitmq
     restart: on-failure
     network_mode: bridge
+    ports:
+      # expose rabbitmq ports
+      - "8101:5672"
 
   inasafe-headless-worker:
     build: docker-headless

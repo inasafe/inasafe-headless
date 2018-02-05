@@ -34,7 +34,7 @@ __license__ = "GPL version 3"
 __email__ = "info@inasafe.org"
 __revision__ = '$Format:%H$'
 
-LOGGER = logging.getLogger('InaSAFE')
+LOGGER = logging.getLogger('InaSAFE Headless')
 
 REPORT_METADATA_EXIST = 0
 REPORT_METADATA_NOT_EXIST = 1
