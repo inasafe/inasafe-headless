@@ -40,7 +40,7 @@ REPORT_METADATA_EXIST = 0
 REPORT_METADATA_NOT_EXIST = 1
 
 
-@app.task(name='inasafe.headless.get_keywords', queue='inasafe-headless')
+@app.task(name='inasafe.headless.tasks.get_keywords', queue='inasafe-headless')
 def get_keywords(layer_uri, keyword=None):
     """Get keywords from a layer.
 
@@ -57,7 +57,7 @@ def get_keywords(layer_uri, keyword=None):
     return read_iso19115_metadata(layer_uri, keyword)
 
 
-@app.task(name='inasafe.headless.run_analysis', queue='inasafe-headless')
+@app.task(name='inasafe.headless.tasks.run_analysis', queue='inasafe-headless')
 def run_analysis(
         hazard_layer_uri,
         exposure_layer_uri,
@@ -134,7 +134,7 @@ def run_analysis(
 
 
 @app.task(
-    name='inasafe.headless.run_multi_exposure_analysis',
+    name='inasafe.headless.tasks.run_multi_exposure_analysis',
     queue='inasafe-headless')
 def run_multi_exposure_analysis(
         hazard_layer_uri,
@@ -233,7 +233,8 @@ def run_multi_exposure_analysis(
         }
 
 
-@app.task(name='inasafe.headless.generate_report', queue='inasafe-headless')
+@app.task(
+    name='inasafe.headless.tasks.generate_report', queue='inasafe-headless')
 def generate_report(impact_layer_uri, custom_report_template_uri=None):
     """Generate report based on impact layer uri.
 
@@ -309,7 +310,8 @@ def generate_report(impact_layer_uri, custom_report_template_uri=None):
 
 
 @app.task(
-    name='inasafe.headless.get_generated_report', queue='inasafe-headless')
+    name='inasafe.headless.tasks.get_generated_report',
+    queue='inasafe-headless')
 def get_generated_report(impact_layer_uri):
     """Get generated report for impact layer uri
 
@@ -364,7 +366,8 @@ def get_generated_report(impact_layer_uri):
     }
 
 
-@app.task(name='inasafe.headless.generate_contour', queue='inasafe-headless')
+@app.task(
+    name='inasafe.headless.tasks.generate_contour', queue='inasafe-headless')
 def generate_contour(layer_uri):
     """Create contour from raster layer_uri to output_uri
 
@@ -406,7 +409,7 @@ def generate_contour(layer_uri):
 
 
 @app.task(
-    name='inasafe.headless.check_broker_connection',
+    name='inasafe.headless.tasks.check_broker_connection',
     queue='inasafe-headless')
 def check_broker_connection():
     """Only returns true if broker is connected

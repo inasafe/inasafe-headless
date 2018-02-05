@@ -20,23 +20,26 @@ result_backend = broker_url
 
 
 task_routes = {
-    'inasafe.headless.get_keywords': {
+    'inasafe.headless.tasks.get_keywords': {
         'queue': 'inasafe-headless'
     },
-    'inasafe.headless.run_analysis': {
+    'inasafe.headless.tasks.run_analysis': {
         'queue': 'inasafe-headless-analysis'
     },
-    'inasafe.headless.run_multi_exposure_analysis': {
+    'inasafe.headless.tasks.run_multi_exposure_analysis': {
         'queue': 'inasafe-headless-analysis'
     },
-    'inasafe.headless.generate_report': {
+    'inasafe.headless.tasks.generate_report': {
         'queue': 'inasafe-headless-reporting'
     },
-    'inasafe.headless.get_generated_report': {
+    'inasafe.headless.tasks.get_generated_report': {
         'queue': 'inasafe-headless'
     },
-    'inasafe.headless.generate_contour': {
+    'inasafe.headless.tasks.generate_contour': {
         'queue': 'inasafe-headless-contour'
+    },
+    'inasafe.headless.tasks.check_broker_connection': {
+        'queue': 'inasafe-headless'
     },
 }
 
