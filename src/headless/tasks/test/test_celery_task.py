@@ -12,6 +12,7 @@ from headless.tasks.inasafe_wrapper import (
     get_generated_report,
     REPORT_METADATA_NOT_EXIST,
     REPORT_METADATA_EXIST,
+    check_broker_connection,
 )
 from headless.settings import OUTPUT_DIRECTORY
 
@@ -266,3 +267,9 @@ class TestHeadlessCeleryTask(unittest.TestCase):
         result = async_result.get()
         self.assertEqual(REPORT_METADATA_EXIST, result['status'])
         self.assertDictEqual(report_metadata, result['output'])
+
+    def test_check_broker_connection(self):
+        """Test check_broker_connection task."""
+        async_result = check_broker_connection.delay()
+        result = async_result.get()
+        self.assertTrue(result)
