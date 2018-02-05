@@ -25,3 +25,11 @@ inasafe_headless_worker:
 docker_port_forward:
   inasafe_headless:
     ssh: *inasafe_headless_ssh_port
+
+integration_test:
+  # Path to inasafe-headless's test data directory
+  test_data_path: "/Users/ismailsunni/dev/python/inasafe-headless/src/headless/tasks/test/data/"
+  # Path to inasafe-headless's test data directory in the docker container
+  mapped_test_data_path: "/home/headless_test/data/"
+  # Path to inasafe-headless's output test data directory in the docker container
+  mapped_output_data_path: "/home/headless_test/data/result/"

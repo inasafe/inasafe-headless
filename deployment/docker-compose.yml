@@ -23,7 +23,6 @@ services:
       - INASAFE_LOCALE=id
       - INASAFE_HEADLESS_BROKER_HOST=amqp://guest:guest@rabbitmq:5672/
       - INASAFE_WORK_DIR=/home/headless
-      - INASAFE_OUTPUT_DIR=/home/headless/output
       - TASK_ALWAYS_EAGER=False
       - ON_TRAVIS=False
     links:
