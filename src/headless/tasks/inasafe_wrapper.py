@@ -8,7 +8,9 @@ from copy import deepcopy
 
 from headless.celery_app import app
 
+from PyQt4.QtCore import QUrl
 from qgis.core import QgsCoordinateReferenceSystem, QgsMapLayerRegistry
+
 
 from safe.definitions.constants import PREPARE_SUCCESS, ANALYSIS_SUCCESS
 from safe.definitions.provenance import (
@@ -40,6 +42,19 @@ REPORT_METADATA_EXIST = 0
 REPORT_METADATA_NOT_EXIST = 1
 
 
+def clean_metadata(metadata):
+    """Clean metadata's content from QUrl.
+
+    :param metadata: Metadata as dictionary.
+    :type metadata: dict
+    """
+    for key, value in metadata.items():
+        if isinstance(value, dict):
+            clean_metadata(value)
+        if isinstance(value, QUrl):
+            metadata[key] = value.toString()
+
+
 @app.task(name='inasafe.headless.tasks.get_keywords', queue='inasafe-headless')
 def get_keywords(layer_uri, keyword=None):
     """Get keywords from a layer.
@@ -54,7 +69,9 @@ def get_keywords(layer_uri, keyword=None):
     :returns: Dictionary of keywords or value of key as string.
     :rtype: dict, basestring
     """
-    return read_iso19115_metadata(layer_uri, keyword)
+    metadata = read_iso19115_metadata(layer_uri, keyword)
+    clean_metadata(metadata)
+    return metadata
 
 
 @app.task(name='inasafe.headless.tasks.run_analysis', queue='inasafe-headless')

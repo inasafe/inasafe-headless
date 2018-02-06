@@ -2,7 +2,9 @@
 """Unit test for celery task."""
 
 import os
+import pickle
 import unittest
+
 from headless.tasks.inasafe_wrapper import (
     get_keywords,
     run_analysis,
@@ -13,6 +15,8 @@ from headless.tasks.inasafe_wrapper import (
     REPORT_METADATA_NOT_EXIST,
     REPORT_METADATA_EXIST,
     check_broker_connection,
+    clean_metadata,
+    QUrl,
 )
 from headless.settings import OUTPUT_DIRECTORY
 
@@ -70,6 +74,10 @@ class TestHeadlessCeleryTask(unittest.TestCase):
             keywords['layer_purpose'], layer_purpose_exposure['key'])
         self.assertEqual(keywords['exposure'], exposure_place['key'])
 
+        pickled_keywords = pickle.dumps(keywords)
+        new_keywords = pickle.loads(pickled_keywords)
+        self.assertDictEqual(keywords, new_keywords)
+
         self.assertTrue(os.path.exists(earthquake_layer_uri))
         result = get_keywords.delay(earthquake_layer_uri)
         keywords = result.get()
@@ -80,12 +88,20 @@ class TestHeadlessCeleryTask(unittest.TestCase):
         time_zone = keywords['extra_keywords'][extra_keyword_time_zone['key']]
         self.assertEqual(time_zone, 'Asia/Jakarta')
 
+        pickled_keywords = pickle.dumps(keywords)
+        new_keywords = pickle.loads(pickled_keywords)
+        self.assertDictEqual(keywords, new_keywords)
+
         self.assertTrue(os.path.exists(aggregation_layer_uri))
         result = get_keywords.delay(aggregation_layer_uri)
         keywords = result.get()
         self.assertIsNotNone(keywords)
         self.assertEqual(
             keywords['layer_purpose'], layer_purpose_aggregation['key'])
+
+        pickled_keywords = pickle.dumps(keywords)
+        new_keywords = pickle.loads(pickled_keywords)
+        self.assertDictEqual(keywords, new_keywords)
 
     def test_run_analysis(self):
         """Test run analysis."""
@@ -273,3 +289,20 @@ class TestHeadlessCeleryTask(unittest.TestCase):
         async_result = check_broker_connection.delay()
         result = async_result.get()
         self.assertTrue(result)
+
+    def test_clean_metadata(self):
+        """Test clean_metadata method."""
+        metadata = {
+            'layer_purpose': 'hazard',
+            'extra_keywords': {
+                'url': QUrl('google.com')
+            },
+            'url': QUrl('kartoza.com')
+        }
+        self.assertTrue(isinstance(metadata['url'], QUrl))
+        self.assertTrue(
+            isinstance(metadata['extra_keywords']['url'], QUrl))
+        clean_metadata(metadata)
+        self.assertTrue(isinstance(metadata['url'], basestring))
+        self.assertTrue(
+            isinstance(metadata['extra_keywords']['url'], basestring))
