@@ -37,7 +37,7 @@ RUN chmod +x /docker-entrypoint.sh
 RUN mkdir -p /usr/share/qgis/python/plugins
 WORKDIR /usr/share/qgis/python/plugins
 ARG INASAFE_CORE_TAG=develop
-RUN git clone --branch ${INASAFE_CORE_TAG} --depth 1 https://github.com/inasafe/inasafe.git inasafe
+RUN git clone --branch ${INASAFE_CORE_TAG} --depth 1 --recursive https://github.com/inasafe/inasafe.git inasafe
 
 # Install InaSAFE Headless
 RUN mkdir -p /home/app
