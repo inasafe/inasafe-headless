@@ -9,24 +9,29 @@ from copy import deepcopy
 from headless.celery_app import app
 
 from PyQt4.QtCore import QUrl
-from qgis.core import QgsCoordinateReferenceSystem, QgsMapLayerRegistry
+from qgis.core import (
+    QgsCoordinateReferenceSystem, QgsMapLayerRegistry, QgsProject)
 
-
-from safe.definitions.constants import PREPARE_SUCCESS, ANALYSIS_SUCCESS
+from safe.definitions.constants import (
+    PREPARE_SUCCESS, ANALYSIS_SUCCESS, MULTI_EXPOSURE_ANALYSIS_FLAG)
+from safe.definitions.extra_keywords import extra_keyword_analysis_type
 from safe.definitions.provenance import (
     provenance_hazard_layer,
     provenance_exposure_layer,
-    provenance_aggregation_layer)
+    provenance_aggregation_layer,
+    provenance_multi_exposure_layers)
 from safe.definitions.reports.components import (
     all_default_report_components, map_report)
 from safe.definitions.utilities import (
     override_component_template, get_provenance)
+from safe.gui.analysis_utilities import add_impact_layers_to_canvas
 from safe.impact_function.impact_function import ImpactFunction
 from safe.impact_function.impact_function_utilities import report_urls
 from safe.impact_function.multi_exposure_wrapper import (
     MultiExposureImpactFunction)
 from safe.gis.raster.contour import create_smooth_contour
 from safe.gis.tools import load_layer
+from safe.utilities.gis import qgis_version
 from safe.utilities.settings import setting
 from safe.utilities.metadata import read_iso19115_metadata
 from safe.gui.widgets.dock import set_provenance_to_project_variables
@@ -229,6 +234,38 @@ def run_multi_exposure_analysis(
             for layer in outputs:
                 output_dict[layer.keywords['layer_purpose']] = layer.source()
 
+            # We need to create the multi exposure group because we need
+            # the map reports to be generated.
+            root = QgsProject.instance().layerTreeRoot()
+
+            group_analysis = root.insertGroup(
+                0, multi_exposure_if.name)
+            group_analysis.setVisible(True)
+            group_analysis.setCustomProperty(
+                MULTI_EXPOSURE_ANALYSIS_FLAG, True)
+
+            for layer in multi_exposure_if.outputs:
+                QgsMapLayerRegistry.instance().addMapLayer(layer,
+                                                           False)
+                layer_node = group_analysis.addLayer(layer)
+                layer_node.setVisible(False)
+
+                # set layer title if any
+                try:
+                    title = layer.keywords['title']
+                    if qgis_version() >= 21800:
+                        layer.setName(title)
+                    else:
+                        layer.setLayerName(title)
+                except KeyError:
+                    pass
+
+            for analysis in multi_exposure_if.impact_functions:
+                detailed_group = group_analysis.insertGroup(
+                    0, analysis.name)
+                detailed_group.setVisible(True)
+                add_impact_layers_to_canvas(analysis, group=detailed_group)
+
             return {
                 'status': ANALYSIS_SUCCESS,
                 'message': '',
@@ -252,7 +289,10 @@ def run_multi_exposure_analysis(
 
 @app.task(
     name='inasafe.headless.tasks.generate_report', queue='inasafe-headless')
-def generate_report(impact_layer_uri, custom_report_template_uri=None):
+def generate_report(
+        impact_layer_uri,
+        custom_report_template_uri=None,
+        custom_layer_order=None):
     """Generate report based on impact layer uri.
 
     :param impact_layer_uri: The uri to impact layer (one of them).
@@ -260,6 +300,9 @@ def generate_report(impact_layer_uri, custom_report_template_uri=None):
 
     :param custom_report_template_uri: The uri to report template.
     :type custom_report_template_uri: basestring
+
+    :param custom_layer_order: List of layers uri for map report layers order.
+    :type custom_layer_order: list
 
     :returns: A dictionary of output's report key and Uri with status and
         message.
@@ -292,19 +335,40 @@ def generate_report(impact_layer_uri, custom_report_template_uri=None):
     """
     output_metadata = read_iso19115_metadata(impact_layer_uri)
     provenances = output_metadata.get('provenance_data', {})
+    extra_keywords = output_metadata.get('extra_keywords', {})
+    is_multi_exposure = (
+        extra_keywords.get(extra_keyword_analysis_type['key']) == (
+            MULTI_EXPOSURE_ANALYSIS_FLAG))
 
     hazard_layer = load_layer(
         get_provenance(provenances, provenance_hazard_layer))[0]
-    exposure_layer = load_layer(
-        get_provenance(provenances, provenance_exposure_layer))[0]
     aggregation_layer = load_layer(
         get_provenance(provenances, provenance_aggregation_layer))[0]
 
-    # we need to put the layers into the map canvas
-    QgsMapLayerRegistry.instance().addMapLayers(
-        [hazard_layer, exposure_layer, aggregation_layer])
+    exposure_layers = []
+    if is_multi_exposure:
+        layer_paths = get_provenance(
+            provenances, provenance_multi_exposure_layers)
+        for layer_path in layer_paths:
+            exposure_layer = load_layer(layer_path)[0]
+            exposure_layers.append(exposure_layer)
+    else:
+        exposure_layer = load_layer(
+            get_provenance(provenances, provenance_exposure_layer))[0]
+        exposure_layers.append(exposure_layer)
 
-    impact_function = ImpactFunction.load_from_output_metadata(output_metadata)
+    layers = exposure_layers + [hazard_layer, aggregation_layer]
+
+    # we need to put the layers into the map canvas
+    QgsMapLayerRegistry.instance().addMapLayers(layers)
+
+    if provenances and is_multi_exposure:
+        impact_function = (
+            MultiExposureImpactFunction.load_from_output_metadata(
+                output_metadata))
+    else:
+        impact_function = (
+            ImpactFunction.load_from_output_metadata(output_metadata))
 
     if provenances:
         set_provenance_to_project_variables(provenances)
@@ -318,7 +382,8 @@ def generate_report(impact_layer_uri, custom_report_template_uri=None):
                 map_report, custom_report_template_uri))
 
     error_code, message = (
-        impact_function.generate_report(generated_components))
+        impact_function.generate_report(
+            generated_components, ordered_layers=custom_layer_order))
     return {
         'status': error_code,
         'message': message.to_text(),

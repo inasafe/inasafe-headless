@@ -25,7 +25,7 @@ from safe.definitions.layer_purposes import (
     layer_purpose_hazard,
     layer_purpose_aggregation,
     layer_purpose_exposure_summary,
-)
+    layer_purpose_analysis_impacted)
 from safe.definitions.exposure import exposure_place
 from safe.definitions.hazard import hazard_earthquake
 from safe.definitions.extra_keywords import extra_keyword_time_zone
@@ -196,6 +196,45 @@ class TestHeadlessCeleryTask(unittest.TestCase):
         # Retrieve impact analysis uri
         impact_analysis_uri = result['output'][
             layer_purpose_exposure_summary['key']]
+
+        # Generate reports
+        async_result = generate_report.delay(impact_analysis_uri)
+        result = async_result.get()
+        self.assertEqual(
+            ImpactReport.REPORT_GENERATION_SUCCESS, result['status'])
+        for key, products in result['output'].items():
+            for product_key, product_uri in products.items():
+                message = 'Product %s is not found in %s' % (
+                    product_key, product_uri)
+                self.assertTrue(os.path.exists(product_uri), message)
+
+    def test_generate_multi_exposure_report(self):
+        """Test generate multi exposure analysis report."""
+        exposure_layer_uris = [
+            place_layer_uri,
+            buildings_layer_uri,
+            population_multi_fields_layer_uri
+        ]
+        # With aggregation
+        result_delay = run_multi_exposure_analysis.delay(
+            earthquake_layer_uri, exposure_layer_uris, aggregation_layer_uri)
+        result = result_delay.get()
+        self.assertEqual(ANALYSIS_SUCCESS, result['status'])
+        self.assertLess(0, len(result['output']))
+        num_exposure_output = 0
+        for key, layer_uri in result['output'].items():
+            if isinstance(layer_uri, basestring):
+                self.assertTrue(os.path.exists(layer_uri))
+                self.assertTrue(layer_uri.startswith(OUTPUT_DIRECTORY))
+            elif isinstance(layer_uri, dict):
+                num_exposure_output += 1
+                for the_key, the_layer_uri in layer_uri.items():
+                    self.assertTrue(os.path.exists(the_layer_uri))
+                    self.assertTrue(the_layer_uri.startswith(OUTPUT_DIRECTORY))
+
+        # Retrieve impact analysis uri
+        impact_analysis_uri = result['output'][
+            layer_purpose_analysis_impacted['key']]
 
         # Generate reports
         async_result = generate_report.delay(impact_analysis_uri)
