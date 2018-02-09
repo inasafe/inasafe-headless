@@ -143,14 +143,14 @@ def run_analysis(
             LOGGER.debug('Analysis failed %s' % message)
             return {
                 'status': status,
-                'message': message,
+                'message': message.to_text(),
                 'output': {}
             }
     else:
         LOGGER.debug('Impact function is not ready: %s' % prepare_message)
         return {
             'status': prepare_status,
-            'message': prepare_message,
+            'message': prepare_message.to_text(),
             'output': {}
         }
 
@@ -275,14 +275,14 @@ def run_multi_exposure_analysis(
             LOGGER.debug('Analysis failed %s' % message)
             return {
                 'status': status,
-                'message': message,
+                'message': message.to_text(),
                 'output': {}
             }
     else:
         LOGGER.debug('Impact function is not ready: %s' % prepare_message)
         return {
             'status': prepare_status,
-            'message': prepare_message,
+            'message': prepare_message.to_text(),
             'output': {}
         }
 
