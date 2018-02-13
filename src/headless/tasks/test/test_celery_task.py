@@ -197,8 +197,14 @@ class TestHeadlessCeleryTask(unittest.TestCase):
         impact_analysis_uri = result['output'][
             layer_purpose_exposure_summary['key']]
 
+        # Add custom layers order for map report
+        custom_layer_order = [
+            impact_analysis_uri, aggregation_layer_uri, earthquake_layer_uri
+        ]
+
         # Generate reports
-        async_result = generate_report.delay(impact_analysis_uri)
+        async_result = generate_report.delay(
+            impact_analysis_uri, custom_layer_order=custom_layer_order)
         result = async_result.get()
         self.assertEqual(
             ImpactReport.REPORT_GENERATION_SUCCESS, result['status'])
@@ -236,8 +242,14 @@ class TestHeadlessCeleryTask(unittest.TestCase):
         impact_analysis_uri = result['output'][
             layer_purpose_analysis_impacted['key']]
 
+        # Add custom layers order for map report
+        custom_layer_order = [
+            impact_analysis_uri, aggregation_layer_uri, earthquake_layer_uri
+        ]
+
         # Generate reports
-        async_result = generate_report.delay(impact_analysis_uri)
+        async_result = generate_report.delay(
+            impact_analysis_uri, custom_layer_order=custom_layer_order)
         result = async_result.get()
         self.assertEqual(
             ImpactReport.REPORT_GENERATION_SUCCESS, result['status'])
