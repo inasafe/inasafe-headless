@@ -15,15 +15,9 @@ from qgis.core import (
 from safe.definitions.constants import (
     PREPARE_SUCCESS, ANALYSIS_SUCCESS, MULTI_EXPOSURE_ANALYSIS_FLAG)
 from safe.definitions.extra_keywords import extra_keyword_analysis_type
-from safe.definitions.provenance import (
-    provenance_hazard_layer,
-    provenance_exposure_layer,
-    provenance_aggregation_layer,
-    provenance_multi_exposure_layers)
 from safe.definitions.reports.components import (
     all_default_report_components, map_report)
-from safe.definitions.utilities import (
-    override_component_template, get_provenance)
+from safe.definitions.utilities import override_component_template
 from safe.gui.analysis_utilities import add_impact_layers_to_canvas
 from safe.impact_function.impact_function import ImpactFunction
 from safe.impact_function.impact_function_utilities import report_urls
