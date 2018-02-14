@@ -181,8 +181,9 @@ class TestHeadlessCeleryTask(unittest.TestCase):
         self.assertTrue(os.path.exists(result))
         self.assertTrue(result.startswith(OUTPUT_DIRECTORY))
 
-    def test_generate_report(self):
-        """Test generate report for single analysis."""
+    def test_generate_report_with_aggregation(self):
+        """Test generate report for single analysis using aggregation layer."""
+
         # Run analysis first
         result_delay = run_analysis.delay(
             earthquake_layer_uri, place_layer_uri, aggregation_layer_uri)
@@ -197,8 +198,49 @@ class TestHeadlessCeleryTask(unittest.TestCase):
         impact_analysis_uri = result['output'][
             layer_purpose_exposure_summary['key']]
 
+        # Add custom layers order for map report
+        custom_layer_order = [
+            impact_analysis_uri, aggregation_layer_uri, earthquake_layer_uri
+        ]
+
         # Generate reports
-        async_result = generate_report.delay(impact_analysis_uri)
+        async_result = generate_report.delay(
+            impact_analysis_uri, custom_layer_order=custom_layer_order)
+        result = async_result.get()
+        self.assertEqual(
+            ImpactReport.REPORT_GENERATION_SUCCESS, result['status'])
+        for key, products in result['output'].items():
+            for product_key, product_uri in products.items():
+                message = 'Product %s is not found in %s' % (
+                    product_key, product_uri)
+                self.assertTrue(os.path.exists(product_uri), message)
+
+    def test_generate_report_without_aggregation(self):
+        """Test generate report for single analysis without aggregation layer.
+        """
+
+        # Run analysis first
+        result_delay = run_analysis.delay(
+            earthquake_layer_uri, place_layer_uri)
+        result = result_delay.get()
+        self.assertEqual(ANALYSIS_SUCCESS, result['status'])
+        self.assertLess(0, len(result['output']))
+        for key, layer_uri in result['output'].items():
+            self.assertTrue(os.path.exists(layer_uri))
+            self.assertTrue(layer_uri.startswith(OUTPUT_DIRECTORY))
+
+        # Retrieve impact analysis uri
+        impact_analysis_uri = result['output'][
+            layer_purpose_exposure_summary['key']]
+
+        # Add custom layers order for map report
+        custom_layer_order = [
+            impact_analysis_uri, earthquake_layer_uri
+        ]
+
+        # Generate reports
+        async_result = generate_report.delay(
+            impact_analysis_uri, custom_layer_order=custom_layer_order)
         result = async_result.get()
         self.assertEqual(
             ImpactReport.REPORT_GENERATION_SUCCESS, result['status'])
@@ -236,8 +278,14 @@ class TestHeadlessCeleryTask(unittest.TestCase):
         impact_analysis_uri = result['output'][
             layer_purpose_analysis_impacted['key']]
 
+        # Add custom layers order for map report
+        custom_layer_order = [
+            impact_analysis_uri, earthquake_layer_uri
+        ]
+
         # Generate reports
-        async_result = generate_report.delay(impact_analysis_uri)
+        async_result = generate_report.delay(
+            impact_analysis_uri, custom_layer_order=custom_layer_order)
         result = async_result.get()
         self.assertEqual(
             ImpactReport.REPORT_GENERATION_SUCCESS, result['status'])

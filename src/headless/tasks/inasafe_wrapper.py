@@ -15,15 +15,9 @@ from qgis.core import (
 from safe.definitions.constants import (
     PREPARE_SUCCESS, ANALYSIS_SUCCESS, MULTI_EXPOSURE_ANALYSIS_FLAG)
 from safe.definitions.extra_keywords import extra_keyword_analysis_type
-from safe.definitions.provenance import (
-    provenance_hazard_layer,
-    provenance_exposure_layer,
-    provenance_aggregation_layer,
-    provenance_multi_exposure_layers)
 from safe.definitions.reports.components import (
     all_default_report_components, map_report)
-from safe.definitions.utilities import (
-    override_component_template, get_provenance)
+from safe.definitions.utilities import override_component_template
 from safe.gui.analysis_utilities import add_impact_layers_to_canvas
 from safe.impact_function.impact_function import ImpactFunction
 from safe.impact_function.impact_function_utilities import report_urls
@@ -339,28 +333,6 @@ def generate_report(
     is_multi_exposure = (
         extra_keywords.get(extra_keyword_analysis_type['key']) == (
             MULTI_EXPOSURE_ANALYSIS_FLAG))
-
-    hazard_layer = load_layer(
-        get_provenance(provenances, provenance_hazard_layer))[0]
-    aggregation_layer = load_layer(
-        get_provenance(provenances, provenance_aggregation_layer))[0]
-
-    exposure_layers = []
-    if is_multi_exposure:
-        layer_paths = get_provenance(
-            provenances, provenance_multi_exposure_layers)
-        for layer_path in layer_paths:
-            exposure_layer = load_layer(layer_path)[0]
-            exposure_layers.append(exposure_layer)
-    else:
-        exposure_layer = load_layer(
-            get_provenance(provenances, provenance_exposure_layer))[0]
-        exposure_layers.append(exposure_layer)
-
-    layers = exposure_layers + [hazard_layer, aggregation_layer]
-
-    # we need to put the layers into the map canvas
-    QgsMapLayerRegistry.instance().addMapLayers(layers)
 
     if provenances and is_multi_exposure:
         impact_function = (
