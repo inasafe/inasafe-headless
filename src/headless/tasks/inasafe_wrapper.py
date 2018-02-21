@@ -209,7 +209,7 @@ def run_multi_exposure_analysis(
     prepare_status, prepare_message = multi_exposure_if.prepare()
     if prepare_status == PREPARE_SUCCESS:
         LOGGER.debug('Multi exposure function is ready')
-        status, message = multi_exposure_if.run()
+        status, message, exposure = multi_exposure_if.run()
         if status == ANALYSIS_SUCCESS:
             outputs = multi_exposure_if.outputs
             output_dict = {}
