@@ -30,6 +30,10 @@ from safe.utilities.settings import setting
 from safe.utilities.metadata import read_iso19115_metadata
 from safe.gui.widgets.dock import set_provenance_to_project_variables
 
+# Initialize qgis_app
+from safe.test.utilities import get_qgis_app  # noqa
+QGIS_APP, CANVAS, IFACE, PARENT = get_qgis_app()
+
 __copyright__ = "Copyright 2018, The InaSAFE Project"
 __license__ = "GPL version 3"
 __email__ = "info@inasafe.org"
@@ -342,6 +346,9 @@ def generate_report(
         impact_function = (
             ImpactFunction.load_from_output_metadata(output_metadata))
 
+    IFACE.setActiveLayer(impact_function.analysis_impacted)
+    IFACE.zoomToActiveLayer()
+
     if provenances:
         set_provenance_to_project_variables(provenances)
 
@@ -355,7 +362,9 @@ def generate_report(
 
     error_code, message = (
         impact_function.generate_report(
-            generated_components, ordered_layers=custom_layer_order))
+            generated_components,
+            iface=IFACE,
+            ordered_layers=custom_layer_order))
     return {
         'status': error_code,
         'message': message.to_text(),
