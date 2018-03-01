@@ -1,7 +1,10 @@
 #!/usr/bin/env bash
 
-# Run xvfb
-start-stop-daemon --start -b -x /usr/bin/Xvfb ${DISPLAY}
+# Wait run xvfb
+while [ -z  "$(pidof /usr/bin/Xvfb)" ]; do
+  start-stop-daemon --start -b -x /usr/bin/Xvfb ${DISPLAY}
+  sleep 5
+done
 
 cp -n /home/app/headless/celeryconfig_sample.py /home/app/headless/celeryconfig.py
 
