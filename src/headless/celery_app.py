@@ -1,10 +1,11 @@
 # coding=utf-8
 import os
+
 from celery import Celery
 
+from headless.settings import OUTPUT_DIRECTORY
 # Setting
 from safe.utilities.settings import set_setting
-from headless.settings import OUTPUT_DIRECTORY
 
 __copyright__ = "Copyright 2018, The InaSAFE Project"
 __license__ = "GPL version 3"
@@ -19,11 +20,13 @@ packages = (
 )
 
 # Initialize qgis_app
-from safe.test.utilities import get_qgis_app  # noqa
-QGIS_APP, CANVAS, IFACE, PARENT = get_qgis_app()
+from safe.test.qgis_app import qgis_app  # noqa
+# initialize qgis_app
+APP, IFACE = qgis_app()
 
 # Load QGIS Expression
 from safe.utilities.expressions import qgis_expressions  # noqa
+qgis_expressions()
 
 if OUTPUT_DIRECTORY:
     try:

@@ -111,6 +111,11 @@ def run_analysis(
         }
     }
     """
+    # Clean up layer registry before using
+    # In case previous task exited prematurely before cleanup
+    layer_registry = QgsMapLayerRegistry.instance()
+    layer_registry.removeAllMapLayers()
+
     impact_function = ImpactFunction()
     impact_function.hazard = load_layer(hazard_layer_uri)[0]
     impact_function.exposure = load_layer(exposure_layer_uri)[0]
@@ -122,6 +127,7 @@ def run_analysis(
     else:
         impact_function.crs = QgsCoordinateReferenceSystem(4326)
     prepare_status, prepare_message = impact_function.prepare()
+    retval = {}
     if prepare_status == PREPARE_SUCCESS:
         LOGGER.debug('Impact function is ready')
         status, message = impact_function.run()
@@ -131,27 +137,29 @@ def run_analysis(
             for layer in outputs:
                 output_dict[layer.keywords['layer_purpose']] = layer.source()
 
-            add_impact_layers_to_canvas(impact_function)
-
-            return {
+            retval = {
                 'status': ANALYSIS_SUCCESS,
                 'message': '',
                 'output': output_dict
             }
         else:
             LOGGER.debug('Analysis failed %s' % message)
-            return {
+            retval = {
                 'status': status,
                 'message': message.to_text(),
                 'output': {}
             }
     else:
         LOGGER.debug('Impact function is not ready: %s' % prepare_message)
-        return {
+        retval = {
             'status': prepare_status,
             'message': prepare_message.to_text(),
             'output': {}
         }
+
+    # Clean up layer registry after using
+    layer_registry.removeAllMapLayers()
+    return retval
 
 
 @app.task(
@@ -201,6 +209,11 @@ def run_multi_exposure_analysis(
         }
     }
     """
+    # Clean up layer registry before using
+    # In case previous task exited prematurely before cleanup
+    layer_registry = QgsMapLayerRegistry.instance()
+    layer_registry.removeAllMapLayers()
+
     multi_exposure_if = MultiExposureImpactFunction()
     multi_exposure_if.hazard = load_layer(hazard_layer_uri)[0]
     exposures = [load_layer(layer_uri)[0] for layer_uri in exposure_layer_uris]
@@ -212,6 +225,8 @@ def run_multi_exposure_analysis(
     else:
         multi_exposure_if.crs = QgsCoordinateReferenceSystem(4326)
     prepare_status, prepare_message = multi_exposure_if.prepare()
+
+    retval = {}
     if prepare_status == PREPARE_SUCCESS:
         LOGGER.debug('Multi exposure function is ready')
         status, message, exposure = multi_exposure_if.run()
@@ -259,25 +274,29 @@ def run_multi_exposure_analysis(
                 detailed_group.setVisible(True)
                 add_impact_layers_to_canvas(analysis, group=detailed_group)
 
-            return {
+            retval = {
                 'status': ANALYSIS_SUCCESS,
                 'message': '',
                 'output': output_dict
             }
         else:
             LOGGER.debug('Analysis failed %s' % message)
-            return {
+            retval = {
                 'status': status,
                 'message': message.to_text(),
                 'output': {}
             }
     else:
         LOGGER.debug('Impact function is not ready: %s' % prepare_message)
-        return {
+        retval = {
             'status': prepare_status,
             'message': prepare_message.to_text(),
             'output': {}
         }
+
+    # Clean up layer registry after using
+    layer_registry.removeAllMapLayers()
+    return retval
 
 
 @app.task(
@@ -327,6 +346,11 @@ def generate_report(
     }
 
     """
+    # Clean up layer registry before using
+    # In case previous task exited prematurely before cleanup
+    layer_registry = QgsMapLayerRegistry.instance()
+    layer_registry.removeAllMapLayers()
+
     output_metadata = read_iso19115_metadata(impact_layer_uri)
     provenances = output_metadata.get('provenance_data', {})
     extra_keywords = output_metadata.get('extra_keywords', {})
@@ -362,6 +386,9 @@ def generate_report(
             iface=IFACE,
             ordered_layers_uri=custom_layer_order,
             legend_layers_uri=custom_legend_layer))
+
+    # Clean up layer registry after using
+    layer_registry.removeAllMapLayers()
     return {
         'status': error_code,
         'message': message.to_text(),
@@ -476,5 +503,4 @@ def check_broker_connection():
 
     :return: True
     """
-    LOGGER.info('proxy tasks')
     return True
