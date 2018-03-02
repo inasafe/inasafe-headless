@@ -2,6 +2,13 @@
 
 Run InaSAFE headlessly as docker container.
 
+Statuses:
+
+[![Build Status](https://travis-ci.org/inasafe/inasafe-headless.svg?branch=develop)](https://travis-ci.org/inasafe/inasafe-headless)
+
+[![codecov](https://codecov.io/gh/inasafe/inasafe-headless/branch/develop/graph/badge.svg)](https://codecov.io/gh/inasafe/inasafe-headless)
+
+
 ## Setup Development Environment
 
 ### Prerequisites:
