@@ -1,0 +1,15 @@
+# .coveragerc to control coverage.py
+[run]
+branch = True
+source = .
+omit =
+	# Of course we omit test files coverage, some of it skipped in travis for local test
+	*/test_*
+
+	# No need to check celeryconfig_sample.y
+	*/celeryconfig_sample.py
+	*/celeryconfig.py
+
+[report]
+precision = 2
+show_missing = True
