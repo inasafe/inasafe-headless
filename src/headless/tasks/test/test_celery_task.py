@@ -109,7 +109,7 @@ class TestHeadlessCeleryTask(unittest.TestCase):
         result_delay = run_analysis.delay(
             earthquake_layer_uri, place_layer_uri, aggregation_layer_uri)
         result = result_delay.get()
-        self.assertEqual(ANALYSIS_SUCCESS, result['status'])
+        self.assertEqual(ANALYSIS_SUCCESS, result['status'], result['message'])
         self.assertLess(0, len(result['output']))
         for key, layer_uri in result['output'].items():
             self.assertTrue(os.path.exists(layer_uri))
@@ -119,7 +119,7 @@ class TestHeadlessCeleryTask(unittest.TestCase):
         result_delay = run_analysis.delay(
             earthquake_layer_uri, place_layer_uri)
         result = result_delay.get()
-        self.assertEqual(ANALYSIS_SUCCESS, result['status'])
+        self.assertEqual(ANALYSIS_SUCCESS, result['status'], result['message'])
         self.assertLess(0, len(result['output']))
         for key, layer_uri in result['output'].items():
             self.assertTrue(os.path.exists(layer_uri))
@@ -136,7 +136,7 @@ class TestHeadlessCeleryTask(unittest.TestCase):
         result_delay = run_multi_exposure_analysis.delay(
             earthquake_layer_uri, exposure_layer_uris, aggregation_layer_uri)
         result = result_delay.get()
-        self.assertEqual(ANALYSIS_SUCCESS, result['status'])
+        self.assertEqual(ANALYSIS_SUCCESS, result['status'], result['message'])
         self.assertLess(0, len(result['output']))
         num_exposure_output = 0
         for key, layer_uri in result['output'].items():
@@ -156,7 +156,7 @@ class TestHeadlessCeleryTask(unittest.TestCase):
         result_delay = run_multi_exposure_analysis.delay(
             earthquake_layer_uri, exposure_layer_uris)
         result = result_delay.get()
-        self.assertEqual(ANALYSIS_SUCCESS, result['status'])
+        self.assertEqual(ANALYSIS_SUCCESS, result['status'], result['message'])
         self.assertLess(0, len(result['output']))
         num_exposure_output = 0
         for key, layer_uri in result['output'].items():
@@ -188,7 +188,7 @@ class TestHeadlessCeleryTask(unittest.TestCase):
         result_delay = run_analysis.delay(
             earthquake_layer_uri, place_layer_uri, aggregation_layer_uri)
         result = result_delay.get()
-        self.assertEqual(ANALYSIS_SUCCESS, result['status'])
+        self.assertEqual(ANALYSIS_SUCCESS, result['status'], result['message'])
         self.assertLess(0, len(result['output']))
         for key, layer_uri in result['output'].items():
             self.assertTrue(os.path.exists(layer_uri))
@@ -223,7 +223,7 @@ class TestHeadlessCeleryTask(unittest.TestCase):
         result_delay = run_analysis.delay(
             earthquake_layer_uri, place_layer_uri)
         result = result_delay.get()
-        self.assertEqual(ANALYSIS_SUCCESS, result['status'])
+        self.assertEqual(ANALYSIS_SUCCESS, result['status'], result['message'])
         self.assertLess(0, len(result['output']))
         for key, layer_uri in result['output'].items():
             self.assertTrue(os.path.exists(layer_uri))
@@ -261,7 +261,7 @@ class TestHeadlessCeleryTask(unittest.TestCase):
         result_delay = run_multi_exposure_analysis.delay(
             earthquake_layer_uri, exposure_layer_uris, aggregation_layer_uri)
         result = result_delay.get()
-        self.assertEqual(ANALYSIS_SUCCESS, result['status'])
+        self.assertEqual(ANALYSIS_SUCCESS, result['status'], result['message'])
         self.assertLess(0, len(result['output']))
         num_exposure_output = 0
         for key, layer_uri in result['output'].items():
@@ -304,7 +304,7 @@ class TestHeadlessCeleryTask(unittest.TestCase):
             aggregation_layer_uri
         )
         result = result_delay.get()
-        self.assertEqual(ANALYSIS_SUCCESS, result['status'])
+        self.assertEqual(ANALYSIS_SUCCESS, result['status'], result['message'])
         self.assertLess(0, len(result['output']))
         for key, layer_uri in result['output'].items():
             self.assertTrue(os.path.exists(layer_uri))
@@ -342,7 +342,7 @@ class TestHeadlessCeleryTask(unittest.TestCase):
         result_delay = run_analysis.delay(
             earthquake_layer_uri, place_layer_uri, aggregation_layer_uri)
         result = result_delay.get()
-        self.assertEqual(ANALYSIS_SUCCESS, result['status'])
+        self.assertEqual(ANALYSIS_SUCCESS, result['status'], result['message'])
         self.assertLess(0, len(result['output']))
         for key, layer_uri in result['output'].items():
             self.assertTrue(os.path.exists(layer_uri))
