@@ -25,7 +25,6 @@ from safe.impact_function.multi_exposure_wrapper import (
     MultiExposureImpactFunction)
 from safe.gis.raster.contour import create_smooth_contour
 from safe.gis.tools import load_layer
-from safe.utilities.gis import qgis_version
 from safe.utilities.settings import setting
 from safe.utilities.metadata import read_iso19115_metadata
 from safe.gui.widgets.dock import set_provenance_to_project_variables
@@ -238,31 +237,25 @@ def run_multi_exposure_analysis(
             # the map reports to be generated.
             root = QgsProject.instance().layerTreeRoot()
 
-            group_analysis = root.insertGroup(
-                0, multi_exposure_if.name)
+            group_analysis = root.insertGroup(0, multi_exposure_if.name)
             group_analysis.setVisible(True)
             group_analysis.setCustomProperty(
                 MULTI_EXPOSURE_ANALYSIS_FLAG, True)
 
             for layer in multi_exposure_if.outputs:
-                QgsMapLayerRegistry.instance().addMapLayer(layer,
-                                                           False)
+                QgsMapLayerRegistry.instance().addMapLayer(layer, False)
                 layer_node = group_analysis.addLayer(layer)
                 layer_node.setVisible(False)
 
                 # set layer title if any
                 try:
                     title = layer.keywords['title']
-                    if qgis_version() >= 21800:
-                        layer.setName(title)
-                    else:
-                        layer.setLayerName(title)
+                    layer.setName(title)
                 except KeyError:
                     pass
 
             for analysis in multi_exposure_if.impact_functions:
-                detailed_group = group_analysis.insertGroup(
-                    0, analysis.name)
+                detailed_group = group_analysis.insertGroup(0, analysis.name)
                 detailed_group.setVisible(True)
                 add_impact_layers_to_canvas(analysis, group=detailed_group)
 
