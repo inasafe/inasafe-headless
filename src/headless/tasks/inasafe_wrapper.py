@@ -132,6 +132,8 @@ def run_analysis(
             for layer in outputs:
                 output_dict[layer.keywords['layer_purpose']] = layer.source()
 
+            add_impact_layers_to_canvas(impact_function)
+
             return {
                 'status': ANALYSIS_SUCCESS,
                 'message': '',
@@ -290,7 +292,8 @@ def run_multi_exposure_analysis(
 def generate_report(
         impact_layer_uri,
         custom_report_template_uri=None,
-        custom_layer_order=None):
+        custom_layer_order=None,
+        custom_legend_layer=None):
     """Generate report based on impact layer uri.
 
     :param impact_layer_uri: The uri to impact layer (one of them).
@@ -364,7 +367,8 @@ def generate_report(
         impact_function.generate_report(
             generated_components,
             iface=IFACE,
-            ordered_layers=custom_layer_order))
+            ordered_layers_uri=custom_layer_order,
+            legend_layers_uri=custom_legend_layer))
     return {
         'status': error_code,
         'message': message.to_text(),
