@@ -19,14 +19,14 @@ packages = (
     'headless',
 )
 
-# Initialize qgis_app
-from safe.test.qgis_app import qgis_app  # noqa
-# initialize qgis_app
-APP, IFACE = qgis_app()
+# # Initialize qgis_app
+# from safe.test.qgis_app import qgis_app  # noqa
+# APP, IFACE = qgis_app()
+from safe.test.utilities import get_qgis_app
+QGIS_APP, CANVAS, IFACE, PARENT = get_qgis_app()
 
 # Load QGIS Expression
 from safe.utilities.expressions import qgis_expressions  # noqa
-qgis_expressions()
 
 if OUTPUT_DIRECTORY:
     try:

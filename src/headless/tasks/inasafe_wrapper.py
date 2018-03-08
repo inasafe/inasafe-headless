@@ -30,8 +30,11 @@ from safe.utilities.metadata import read_iso19115_metadata
 from safe.gui.widgets.dock import set_provenance_to_project_variables
 
 # Initialize qgis_app
-from safe.test.utilities import get_qgis_app  # noqa
+# from safe.test.qgis_app import qgis_app  # noqa
+# APP, IFACE = qgis_app()
+from safe.test.utilities import get_qgis_app
 QGIS_APP, CANVAS, IFACE, PARENT = get_qgis_app()
+
 
 __copyright__ = "Copyright 2018, The InaSAFE Project"
 __license__ = "GPL version 3"
@@ -248,32 +251,6 @@ def run_multi_exposure_analysis(
             for layer in outputs:
                 output_dict[layer.keywords['layer_purpose']] = layer.source()
 
-            # We need to create the multi exposure group because we need
-            # the map reports to be generated.
-            root = QgsProject.instance().layerTreeRoot()
-
-            group_analysis = root.insertGroup(0, multi_exposure_if.name)
-            group_analysis.setVisible(True)
-            group_analysis.setCustomProperty(
-                MULTI_EXPOSURE_ANALYSIS_FLAG, True)
-
-            for layer in multi_exposure_if.outputs:
-                QgsMapLayerRegistry.instance().addMapLayer(layer, False)
-                layer_node = group_analysis.addLayer(layer)
-                layer_node.setVisible(False)
-
-                # set layer title if any
-                try:
-                    title = layer.keywords['title']
-                    layer.setName(title)
-                except KeyError:
-                    pass
-
-            for analysis in multi_exposure_if.impact_functions:
-                detailed_group = group_analysis.insertGroup(0, analysis.name)
-                detailed_group.setVisible(True)
-                add_impact_layers_to_canvas(analysis, group=detailed_group)
-
             retval = {
                 'status': ANALYSIS_SUCCESS,
                 'message': '',
@@ -362,9 +339,37 @@ def generate_report(
         impact_function = (
             MultiExposureImpactFunction.load_from_output_metadata(
                 output_metadata))
+
+        # We need to create the multi exposure group because we need
+        # the map reports to be generated.
+        root = QgsProject.instance().layerTreeRoot()
+
+        group_analysis = root.insertGroup(0, impact_function.name)
+        group_analysis.setVisible(True)
+        group_analysis.setCustomProperty(
+            MULTI_EXPOSURE_ANALYSIS_FLAG, True)
+
+        for layer in impact_function.outputs:
+            QgsMapLayerRegistry.instance().addMapLayer(layer, False)
+            layer_node = group_analysis.addLayer(layer)
+            layer_node.setVisible(False)
+
+            # set layer title if any
+            try:
+                title = layer.keywords['title']
+                layer.setName(title)
+            except KeyError:
+                pass
+
+        for analysis in impact_function.impact_functions:
+            detailed_group = group_analysis.insertGroup(0, analysis.name)
+            detailed_group.setVisible(True)
+            add_impact_layers_to_canvas(analysis, group=detailed_group)
     else:
         impact_function = (
             ImpactFunction.load_from_output_metadata(output_metadata))
+        # Add single impact layers to canvas.
+        add_impact_layers_to_canvas(impact_function)
 
     IFACE.setActiveLayer(impact_function.analysis_impacted)
     IFACE.zoomToActiveLayer()
