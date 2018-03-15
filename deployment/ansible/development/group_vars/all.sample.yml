@@ -21,6 +21,17 @@ inasafe:
 
 inasafe_headless_worker:
   command: /docker-entrypoint.sh dev
+  # Settings to specify broker url manually
+  broker_url:
+  # Optional settings to specify path mount
+  # Example of volume mount settings:
+#  volume_mount:
+#    headless_data:
+#      host_path: ../../inasafe-django/deployment/headless-data
+#      container_path: /home/headless
+#    realtime_data:
+#      host_path: ../../inasafe-django/deployment/realtime-hazard
+#      container_path: /home/realtime
 
 docker_port_forward:
   inasafe_headless:

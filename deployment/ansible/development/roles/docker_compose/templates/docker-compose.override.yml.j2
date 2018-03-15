@@ -11,9 +11,23 @@ services:
       - ./pycharm-helpers/inasafe-headless:/root/.pycharm_helpers
       - {{ integration_test.test_data_path }}:{{ integration_test.mapped_test_data_path }}
 
+      {% if 'volume_mount' in inasafe_headless_worker %}
+        {% for key, value in inasafe_headless_worker.volume_mount.iteritems() %}
+
+      - {{ value.host_path }}:{{ value.container_path }}
+
+        {% endfor %}
+      {% endif %}
+
     environment:
       - INASAFE_OUTPUT_DIR={{ integration_test.mapped_output_data_path }}
       - COMMON_TEST_DATA={{ integration_test.mapped_test_data_path }}
+
+    {% if 'broker_url' in inasafe_headless_worker %}
+
+      - INASAFE_HEADLESS_BROKER_HOST={{ inasafe_headless_worker.broker_url }}
+
+    {% endif %}
 
     {% if 'environment' in inasafe_headless_worker %}
 

@@ -22,7 +22,7 @@ packages = (
 # # Initialize qgis_app
 # from safe.test.qgis_app import qgis_app  # noqa
 # APP, IFACE = qgis_app()
-from safe.test.utilities import get_qgis_app
+from safe.test.utilities import get_qgis_app  # noqa
 QGIS_APP, CANVAS, IFACE, PARENT = get_qgis_app()
 
 # Load QGIS Expression

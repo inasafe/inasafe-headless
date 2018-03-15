@@ -4,7 +4,17 @@
         <env name="DISPLAY" value=":99" />
         <env name="INASAFE_LOCALE" value="id" />
         <env name="C_FORCE_ROOT" value="True" />
+
+        {% if 'broker_url' in inasafe_headless_worker %}
+
+        <env name="INASAFE_HEADLESS_BROKER_HOST" value="{{ inasafe_headless_worker.broker_url }}" />
+
+        {% else %}
+
         <env name="INASAFE_HEADLESS_BROKER_HOST" value="amqp://guest:guest@rabbitmq:5672/" />
+
+        {% endif %}
+
         <env name="INASAFE_WORK_DIR" value="/home/headless/" />
         <env name="COMMON_TEST_DATA" value="{{ integration_test.mapped_test_data_path }}" />
         <env name="INASAFE_OUTPUT_DIR" value="{{ integration_test.mapped_output_data_path }}" />
