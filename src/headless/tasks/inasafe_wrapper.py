@@ -282,7 +282,8 @@ def generate_report(
         impact_layer_uri,
         custom_report_template_uri=None,
         custom_layer_order=None,
-        custom_legend_layer=None):
+        custom_legend_layer=None,
+        use_template_extent=False):
     """Generate report based on impact layer uri.
 
     :param impact_layer_uri: The uri to impact layer (one of them).
@@ -390,7 +391,8 @@ def generate_report(
             generated_components,
             iface=IFACE,
             ordered_layers_uri=custom_layer_order,
-            legend_layers_uri=custom_legend_layer))
+            legend_layers_uri=custom_legend_layer,
+            use_template_extent=use_template_extent))
 
     # Clean up layer registry after using
     layer_registry.removeAllMapLayers()
