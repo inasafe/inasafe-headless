@@ -44,3 +44,9 @@ integration_test:
   mapped_test_data_path: "/home/headless_test/data/"
   # Path to inasafe-headless's output test data directory in the docker container
   mapped_output_data_path: "/home/headless_test/data/result/"
+
+geonode_push:
+  enable: False
+  user: test_geonode_user
+  password: test_geonode_password
+  url: url_to_geonode_instance
