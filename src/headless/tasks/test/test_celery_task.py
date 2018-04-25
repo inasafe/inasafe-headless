@@ -437,7 +437,9 @@ class TestHeadlessCeleryTask(unittest.TestCase):
 
         # Generate reports
         async_result = run_generate_report.delay(
-            impact_analysis_uri_id, custom_layer_order=custom_layer_order, locale='id')
+            impact_analysis_uri_id,
+            custom_layer_order=custom_layer_order,
+            locale='id')
         result = async_result.get()
         self.assertEqual(
             ImpactReport.REPORT_GENERATION_SUCCESS, result['status'])
@@ -446,7 +448,6 @@ class TestHeadlessCeleryTask(unittest.TestCase):
                 message = 'Product %s is not found in %s' % (
                     product_key, product_uri)
                 self.assertTrue(os.path.exists(product_uri), message)
-
 
     def test_check_broker_connection(self):
         """Test check_broker_connection task."""

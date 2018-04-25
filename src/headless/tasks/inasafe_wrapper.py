@@ -2,7 +2,7 @@
 """Task for InaSAFE Headless."""
 import logging
 
-from headless.celery_app import app
+from headless.celery_app import app, start_inasafe
 from headless.tasks.inasafe_analysis import (
     get_keywords,
     get_generated_report,
@@ -31,9 +31,8 @@ def run_get_keywords(layer_uri, keyword=None):
     :returns: Dictionary of keywords or value of key as string.
     :rtype: dict, basestring
     """
-    # Initialize qgis_app
-    from safe.test.utilities import get_qgis_app
-    QGIS_APP, CANVAS, IFACE, PARENT = get_qgis_app()
+    # Initialize QGIS and InaSAFE
+    start_inasafe()
 
     metadata = get_keywords(layer_uri, keyword)
     return metadata
@@ -75,9 +74,8 @@ def run_analysis(
         }
     }
     """
-    # Initialize qgis_app
-    from safe.test.utilities import get_qgis_app
-    QGIS_APP, CANVAS, IFACE, PARENT = get_qgis_app(locale)
+    # Initialize QGIS and InaSAFE
+    start_inasafe(locale)
 
     from headless.tasks import inasafe_analysis
     reload(inasafe_analysis)
@@ -135,9 +133,8 @@ def run_multi_exposure_analysis(
         }
     }
     """
-    # Initialize qgis_app
-    from safe.test.utilities import get_qgis_app
-    QGIS_APP, CANVAS, IFACE, PARENT = get_qgis_app(locale)
+    # Initialize QGIS and InaSAFE
+    start_inasafe(locale)
 
     from headless.tasks import inasafe_analysis
     reload(inasafe_analysis)
@@ -197,9 +194,8 @@ def run_generate_report(
     }
 
     """
-    # Initialize qgis_app
-    from safe.test.utilities import get_qgis_app
-    QGIS_APP, CANVAS, IFACE, PARENT = get_qgis_app(locale)
+    # Initialize QGIS and InaSAFE
+    _, IFACE = start_inasafe(locale)
 
     from headless.tasks import inasafe_analysis
     reload(inasafe_analysis)
@@ -251,9 +247,8 @@ def run_get_generated_report(impact_layer_uri):
         },
     }
     """
-    # Initialize qgis_app
-    from safe.test.utilities import get_qgis_app
-    QGIS_APP, CANVAS, IFACE, PARENT = get_qgis_app()
+    # Initialize QGIS and InaSAFE
+    start_inasafe()
 
     result = get_generated_report(impact_layer_uri)
     return result
@@ -276,9 +271,8 @@ def run_generate_contour(layer_uri):
 
     current_datetime format: 25January2018_09h25-17.597909
     """
-    # Initialize qgis_app
-    from safe.test.utilities import get_qgis_app
-    QGIS_APP, CANVAS, IFACE, PARENT = get_qgis_app()
+    # Initialize QGIS and InaSAFE
+    start_inasafe()
 
     result = generate_contour(layer_uri)
     return result
