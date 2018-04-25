@@ -1,3 +1,0 @@
----
-
-pycharm_settings_path: '/home/{{ remote_user }}/.PyCharm2017.3/config'
