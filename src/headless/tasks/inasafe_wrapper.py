@@ -3,10 +3,6 @@
 import logging
 
 from headless.celery_app import app, start_inasafe
-from headless.tasks.inasafe_analysis import (
-    get_keywords,
-    get_generated_report,
-    generate_contour)
 
 __copyright__ = "Copyright 2018, The InaSAFE Project"
 __license__ = "GPL version 3"
@@ -34,6 +30,7 @@ def run_get_keywords(layer_uri, keyword=None):
     # Initialize QGIS and InaSAFE
     start_inasafe()
 
+    from headless.tasks.inasafe_analysis import get_keywords
     metadata = get_keywords(layer_uri, keyword)
     return metadata
 
@@ -250,6 +247,7 @@ def run_get_generated_report(impact_layer_uri):
     # Initialize QGIS and InaSAFE
     start_inasafe()
 
+    from headless.tasks.inasafe_analysis import get_generated_report
     result = get_generated_report(impact_layer_uri)
     return result
 
@@ -274,6 +272,7 @@ def run_generate_contour(layer_uri):
     # Initialize QGIS and InaSAFE
     start_inasafe()
 
+    from headless.tasks.inasafe_analysis import generate_contour
     result = generate_contour(layer_uri)
     return result
 
