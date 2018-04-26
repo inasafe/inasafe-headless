@@ -37,7 +37,10 @@ package-tests:
 	@docker-compose -p $(PROJECT_ID) exec inasafe-headless-worker python -m unittest discover -s headless -v
 
 coverage-tests:
-	@docker-compose -p $(PROJECT_ID) exec inasafe-headless-worker coverage run --branch --source=headless -m unittest discover -s headless -v
+	@-docker-compose -p $(PROJECT_ID) exec inasafe-headless-worker coverage run --branch --source=headless -m unittest discover -s headless -v
+
+travis-coverage-tests:
+	@-docker-compose -p $(PROJECT_ID) exec `bash <(curl -s https://codecov.io/env)` inasafe-headless-worker coverage run --branch --source=headless -m unittest discover -s headless -v && codecov
 
 check-flake8:
 	@flake8 ../src/

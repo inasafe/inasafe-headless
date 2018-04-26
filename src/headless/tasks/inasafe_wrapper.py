@@ -12,9 +12,8 @@ __revision__ = '$Format:%H$'
 LOGGER = logging.getLogger('InaSAFE Headless')
 
 
-@app.task(
-    name='inasafe.headless.tasks.run_get_keywords', queue='inasafe-headless')
-def run_get_keywords(layer_uri, keyword=None):
+@app.task(name='inasafe.headless.tasks.get_keywords', queue='inasafe-headless')
+def get_keywords(layer_uri, keyword=None):
     """Get keywords from a layer.
 
     :param layer_uri: Uri to layer.
@@ -30,8 +29,9 @@ def run_get_keywords(layer_uri, keyword=None):
     # Initialize QGIS and InaSAFE
     start_inasafe()
 
-    from headless.tasks.inasafe_analysis import get_keywords
-    metadata = get_keywords(layer_uri, keyword)
+    from headless.tasks import inasafe_analysis
+    reload(inasafe_analysis)
+    metadata = inasafe_analysis.get_keywords(layer_uri, keyword)
     return metadata
 
 
@@ -142,9 +142,8 @@ def run_multi_exposure_analysis(
 
 
 @app.task(
-    name='inasafe.headless.tasks.run_generate_report',
-    queue='inasafe-headless')
-def run_generate_report(
+    name='inasafe.headless.tasks.generate_report', queue='inasafe-headless')
+def generate_report(
         impact_layer_uri,
         custom_report_template_uri=None,
         custom_layer_order=None,
@@ -208,9 +207,9 @@ def run_generate_report(
 
 
 @app.task(
-    name='inasafe.headless.tasks.run_get_generated_report',
+    name='inasafe.headless.tasks.get_generated_report',
     queue='inasafe-headless')
-def run_get_generated_report(impact_layer_uri):
+def get_generated_report(impact_layer_uri):
     """Get generated report for impact layer uri
 
     :param impact_layer_uri: The uri to impact layer (one of them).
@@ -247,15 +246,15 @@ def run_get_generated_report(impact_layer_uri):
     # Initialize QGIS and InaSAFE
     start_inasafe()
 
-    from headless.tasks.inasafe_analysis import get_generated_report
-    result = get_generated_report(impact_layer_uri)
+    from headless.tasks import inasafe_analysis
+    reload(inasafe_analysis)
+    result = inasafe_analysis.get_generated_report(impact_layer_uri)
     return result
 
 
 @app.task(
-    name='inasafe.headless.tasks.run_generate_contour',
-    queue='inasafe-headless')
-def run_generate_contour(layer_uri):
+    name='inasafe.headless.tasks.generate_contour', queue='inasafe-headless')
+def generate_contour(layer_uri):
     """Create contour from raster layer_uri to output_uri
 
     :param layer_uri: The shakemap raster layer uri.
@@ -272,8 +271,9 @@ def run_generate_contour(layer_uri):
     # Initialize QGIS and InaSAFE
     start_inasafe()
 
-    from headless.tasks.inasafe_analysis import generate_contour
-    result = generate_contour(layer_uri)
+    from headless.tasks import inasafe_analysis
+    reload(inasafe_analysis)
+    result = inasafe_analysis.generate_contour(layer_uri)
     return result
 
 
