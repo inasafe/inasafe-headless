@@ -12,7 +12,7 @@ __revision__ = '$Format:%H$'
 
 
 def start_inasafe(locale='en_US'):
-    """Initializa QGIS application and prepare InaSAFE settings.
+    """Initialize QGIS application and prepare InaSAFE settings.
 
     :param locale: Locale to be used for the analysis.
     :type locale: str

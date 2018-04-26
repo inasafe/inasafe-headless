@@ -414,7 +414,7 @@ class TestHeadlessCeleryTask(unittest.TestCase):
                     product_key, product_uri)
                 self.assertTrue(os.path.exists(product_uri), message)
 
-        # bahasa analysis
+        # Bahasa Indonesia analysis
         result_delay = run_analysis.delay(
             earthquake_layer_uri, place_layer_uri, locale='id')
         result = result_delay.get()
@@ -428,7 +428,7 @@ class TestHeadlessCeleryTask(unittest.TestCase):
         impact_analysis_uri_id = result['output'][
             layer_purpose_exposure_summary['key']]
 
-        # bahasa report
+        # Bahasa Indonesia report
 
         # Add custom layers order for map report
         custom_layer_order = [
