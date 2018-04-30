@@ -3,6 +3,7 @@
 import logging
 
 from headless.celery_app import app, start_inasafe
+from headless.tasks import inasafe_analysis
 
 __copyright__ = "Copyright 2018, The InaSAFE Project"
 __license__ = "GPL version 3"
@@ -29,7 +30,6 @@ def get_keywords(layer_uri, keyword=None):
     # Initialize QGIS and InaSAFE
     start_inasafe()
 
-    from headless.tasks import inasafe_analysis
     reload(inasafe_analysis)
     metadata = inasafe_analysis.get_keywords(layer_uri, keyword)
     return metadata
@@ -74,7 +74,6 @@ def run_analysis(
     # Initialize QGIS and InaSAFE
     start_inasafe(locale)
 
-    from headless.tasks import inasafe_analysis
     reload(inasafe_analysis)
     retval = inasafe_analysis.inasafe_analysis(
         hazard_layer_uri, exposure_layer_uri, aggregation_layer_uri, crs)
@@ -133,7 +132,6 @@ def run_multi_exposure_analysis(
     # Initialize QGIS and InaSAFE
     start_inasafe(locale)
 
-    from headless.tasks import inasafe_analysis
     reload(inasafe_analysis)
     retval = inasafe_analysis.inasafe_multi_exposure_analysis(
         hazard_layer_uri, exposure_layer_uris, aggregation_layer_uri, crs)
@@ -193,7 +191,6 @@ def generate_report(
     # Initialize QGIS and InaSAFE
     _, IFACE = start_inasafe(locale)
 
-    from headless.tasks import inasafe_analysis
     reload(inasafe_analysis)
     retval = inasafe_analysis.generate_report(
         impact_layer_uri,
@@ -246,7 +243,6 @@ def get_generated_report(impact_layer_uri):
     # Initialize QGIS and InaSAFE
     start_inasafe()
 
-    from headless.tasks import inasafe_analysis
     reload(inasafe_analysis)
     result = inasafe_analysis.get_generated_report(impact_layer_uri)
     return result
@@ -271,7 +267,6 @@ def generate_contour(layer_uri):
     # Initialize QGIS and InaSAFE
     start_inasafe()
 
-    from headless.tasks import inasafe_analysis
     reload(inasafe_analysis)
     result = inasafe_analysis.generate_contour(layer_uri)
     return result
