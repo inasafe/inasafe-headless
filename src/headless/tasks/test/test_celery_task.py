@@ -8,6 +8,8 @@ from qgis.core import QgsMapLayerRegistry
 
 from headless.celeryconfig import task_always_eager
 from headless.settings import OUTPUT_DIRECTORY
+from headless.tasks.inasafe_analysis import clean_metadata, QUrl, \
+    REPORT_METADATA_NOT_EXIST, REPORT_METADATA_EXIST
 from headless.tasks.inasafe_wrapper import (
     get_keywords,
     run_analysis,
@@ -15,11 +17,7 @@ from headless.tasks.inasafe_wrapper import (
     run_multi_exposure_analysis,
     generate_report,
     get_generated_report,
-    REPORT_METADATA_NOT_EXIST,
-    REPORT_METADATA_EXIST,
-    check_broker_connection,
-    clean_metadata,
-    QUrl,
+    check_broker_connection
 )
 from safe.definitions.constants import ANALYSIS_SUCCESS
 from safe.definitions.exposure import exposure_place
@@ -32,9 +30,9 @@ from safe.definitions.layer_purposes import (
     layer_purpose_exposure_summary,
     layer_purpose_analysis_impacted)
 from safe.report.impact_report import ImpactReport
-from safe.test.qgis_app import qgis_app
+from safe.test.utilities import get_qgis_app
 
-APP, IFACE = qgis_app()
+QGIS_APP, CANVAS, IFACE, PARENT = get_qgis_app()
 
 __copyright__ = "Copyright 2018, The InaSAFE Project"
 __license__ = "GPL version 3"
@@ -232,7 +230,7 @@ class TestHeadlessCeleryTask(unittest.TestCase):
         result_delay = run_analysis.delay(
             earthquake_layer_uri, place_layer_uri)
         result = result_delay.get()
-        self.assertEqual(ANALYSIS_SUCCESS, result['status'], result['message'])
+        self.assertEqual(0, result['status'], result['message'])
         self.assertLess(0, len(result['output']))
         for key, layer_uri in result['output'].items():
             self.assertTrue(os.path.exists(layer_uri))
@@ -240,7 +238,7 @@ class TestHeadlessCeleryTask(unittest.TestCase):
 
         # Retrieve impact analysis uri
         impact_analysis_uri = result['output'][
-            layer_purpose_exposure_summary['key']]
+            'impact_analysis']
 
         # Add custom layers order for map report
         custom_layer_order = [
@@ -379,6 +377,77 @@ class TestHeadlessCeleryTask(unittest.TestCase):
         result = async_result.get()
         self.assertEqual(REPORT_METADATA_EXIST, result['status'])
         self.assertDictEqual(report_metadata, result['output'])
+
+    def test_run_multilingual_analysis(self):
+        """Test run analysis."""
+
+        # english analysis
+        result_delay = run_analysis.delay(
+            earthquake_layer_uri, place_layer_uri)
+        result = result_delay.get()
+        self.assertEqual(ANALYSIS_SUCCESS, result['status'], result['message'])
+        self.assertLess(0, len(result['output']))
+        for key, layer_uri in result['output'].items():
+            self.assertTrue(os.path.exists(layer_uri))
+            self.assertTrue(layer_uri.startswith(OUTPUT_DIRECTORY))
+
+        # Retrieve impact analysis uri
+        impact_analysis_uri_en = result['output'][
+            layer_purpose_exposure_summary['key']]
+
+        # english report
+
+        # Add custom layers order for map report
+        custom_layer_order = [
+            impact_analysis_uri_en, earthquake_layer_uri
+        ]
+
+        # Generate reports
+        async_result = generate_report.delay(
+            impact_analysis_uri_en, custom_layer_order=custom_layer_order)
+        result = async_result.get()
+        self.assertEqual(
+            ImpactReport.REPORT_GENERATION_SUCCESS, result['status'])
+        for key, products in result['output'].items():
+            for product_key, product_uri in products.items():
+                message = 'Product %s is not found in %s' % (
+                    product_key, product_uri)
+                self.assertTrue(os.path.exists(product_uri), message)
+
+        # Bahasa Indonesia analysis
+        result_delay = run_analysis.delay(
+            earthquake_layer_uri, place_layer_uri, locale='id')
+        result = result_delay.get()
+        self.assertEqual(ANALYSIS_SUCCESS, result['status'], result['message'])
+        self.assertLess(0, len(result['output']))
+        for key, layer_uri in result['output'].items():
+            self.assertTrue(os.path.exists(layer_uri))
+            self.assertTrue(layer_uri.startswith(OUTPUT_DIRECTORY))
+
+        # Retrieve impact analysis uri
+        impact_analysis_uri_id = result['output'][
+            layer_purpose_exposure_summary['key']]
+
+        # Bahasa Indonesia report
+
+        # Add custom layers order for map report
+        custom_layer_order = [
+            impact_analysis_uri_id, earthquake_layer_uri
+        ]
+
+        # Generate reports
+        async_result = generate_report.delay(
+            impact_analysis_uri_id,
+            custom_layer_order=custom_layer_order,
+            locale='id')
+        result = async_result.get()
+        self.assertEqual(
+            ImpactReport.REPORT_GENERATION_SUCCESS, result['status'])
+        for key, products in result['output'].items():
+            for product_key, product_uri in products.items():
+                message = 'Product %s is not found in %s' % (
+                    product_key, product_uri)
+                self.assertTrue(os.path.exists(product_uri), message)
 
     def test_check_broker_connection(self):
         """Test check_broker_connection task."""
