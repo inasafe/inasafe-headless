@@ -3,6 +3,7 @@
 import json
 import logging
 import os
+import requests
 
 from copy import deepcopy
 from datetime import datetime
@@ -27,6 +28,7 @@ from safe.impact_function.multi_exposure_wrapper import (
     MultiExposureImpactFunction)
 from safe.utilities.metadata import read_iso19115_metadata
 from safe.utilities.settings import setting
+from safe.utilities.geonode.upload_layer_requests import login_user, upload
 
 
 __copyright__ = "Copyright 2018, The InaSAFE Project"
@@ -38,6 +40,9 @@ LOGGER = logging.getLogger('InaSAFE Headless')
 
 REPORT_METADATA_EXIST = 0
 REPORT_METADATA_NOT_EXIST = 1
+
+GEONODE_UPLOAD_SUCCESS = 0
+GEONODE_UPLOAD_FAILED = 1
 
 
 def clean_metadata(metadata):
@@ -484,3 +489,51 @@ def generate_contour(layer_uri):
         return contour_uri
     else:
         return None
+
+
+def push_to_geonode(
+        layer_uri, geonode_url=None, geonode_user=None, geonode_password=None):
+    """Only returns true if broker is connected
+
+    :return: True
+    """
+    requirements = {
+        'url': geonode_url,
+        'username': geonode_user,
+        'password': geonode_password
+    }
+    for key, value in requirements.items():
+        if not value:
+            message = 'Can not upload to geonode because the %s is empty' % key
+            LOGGER.warning(message)
+            return {
+                'status': GEONODE_UPLOAD_FAILED,
+                'message': message,
+                'output': None
+            }
+    try:
+        geonode_session = login_user(
+            geonode_url, geonode_user, geonode_password)
+    except requests.RequestException as e:
+        message = 'Authentication problem.\n'
+        message += e.message
+        return {
+            'status': GEONODE_UPLOAD_FAILED,
+            'message': message,
+            'output': None
+        }
+    try:
+        result = upload(geonode_url, geonode_session, layer_uri)
+        return {
+            'status': GEONODE_UPLOAD_SUCCESS,
+            'message': 'Success',
+            'output': result
+        }
+    except requests.RequestException as e:
+        message = 'Layer upload problem.\n'
+        message += e.message
+        return {
+            'status': GEONODE_UPLOAD_FAILED,
+            'message': message,
+            'output': None
+        }

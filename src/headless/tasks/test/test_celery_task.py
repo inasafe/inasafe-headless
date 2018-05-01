@@ -7,9 +7,14 @@ import unittest
 from qgis.core import QgsMapLayerRegistry
 
 from headless.celeryconfig import task_always_eager
-from headless.settings import OUTPUT_DIRECTORY
-from headless.tasks.inasafe_analysis import clean_metadata, QUrl, \
-    REPORT_METADATA_NOT_EXIST, REPORT_METADATA_EXIST
+from headless.settings import OUTPUT_DIRECTORY, PUSH_TO_REALTIME_GEONODE
+from headless.tasks.inasafe_analysis import (
+    clean_metadata,
+    QUrl,
+    REPORT_METADATA_NOT_EXIST,
+    REPORT_METADATA_EXIST,
+    GEONODE_UPLOAD_SUCCESS
+)
 from headless.tasks.inasafe_wrapper import (
     get_keywords,
     run_analysis,
@@ -17,7 +22,8 @@ from headless.tasks.inasafe_wrapper import (
     run_multi_exposure_analysis,
     generate_report,
     get_generated_report,
-    check_broker_connection
+    check_broker_connection,
+    push_to_geonode,
 )
 from safe.definitions.constants import ANALYSIS_SUCCESS
 from safe.definitions.exposure import exposure_place
@@ -622,3 +628,14 @@ class TestHeadlessCeleryTask(unittest.TestCase):
 
         # It should be empty, if not, above test didn't cleanup
         self.check_layer_registry_empty()
+
+    @unittest.skipUnless(
+        PUSH_TO_REALTIME_GEONODE,
+        'Only run this test if we set the PUSH_TO_REALTIME_GEONODE variable '
+        'to True.'
+    )
+    def test_push_to_geonode(self):
+        """Test push to geonode functionality."""
+        async_result = push_to_geonode.delay(shakemap_layer_uri)
+        result = async_result.get()
+        self.assertEqual(result['status'], GEONODE_UPLOAD_SUCCESS)
