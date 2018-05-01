@@ -41,6 +41,9 @@ task_routes = {
     'inasafe.headless.tasks.check_broker_connection': {
         'queue': 'inasafe-headless'
     },
+    'inasafe.headless.tasks.push_to_geonode': {
+        'queue': 'inasafe-headless-geonode'
+    }
 }
 
 # RMN: This is really important.

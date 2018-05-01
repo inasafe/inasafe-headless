@@ -4,6 +4,11 @@ import logging
 
 from headless.celery_app import app, start_inasafe
 from headless.tasks import inasafe_analysis
+from headless.settings import (
+    REALTIME_GEONODE_PASSWORD,
+    REALTIME_GEONODE_URL,
+    REALTIME_GEONODE_USER
+)
 
 __copyright__ = "Copyright 2018, The InaSAFE Project"
 __license__ = "GPL version 3"
@@ -286,3 +291,34 @@ def check_broker_connection():
     :return: True
     """
     return True
+
+
+@app.task(
+    name='inasafe.headless.tasks.push_to_geonode',
+    queue='inasafe-headless-geonode')
+def push_to_geonode(layer_uri):
+    """Upload layer to geonode instance.
+
+    :returns: A dictionary of the url of the successfully uploaded layer.
+    :rtype: dict
+
+    The output format will be:
+    output = {
+        'status': 0,
+        'message': '',
+        'output': {
+            'location': '/layer/layer_name'
+        },
+    }
+    """
+    # Initialize QGIS and InaSAFE
+    start_inasafe()
+
+    reload(inasafe_analysis)
+    result = inasafe_analysis.push_to_geonode(
+        layer_uri,
+        REALTIME_GEONODE_URL,
+        REALTIME_GEONODE_USER,
+        REALTIME_GEONODE_PASSWORD
+    )
+    return result
