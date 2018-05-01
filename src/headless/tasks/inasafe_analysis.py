@@ -515,8 +515,9 @@ def push_to_geonode(
         geonode_session = login_user(
             geonode_url, geonode_user, geonode_password)
     except requests.RequestException as e:
-        message = 'Authentication problem.\n'
-        message += e.message
+        message = (
+            'Authentication problem. HTTP Status Code: %s. Reason: %s' % (
+                e.message.status_code, e.message.reason))
         return {
             'status': GEONODE_UPLOAD_FAILED,
             'message': message,
@@ -530,8 +531,8 @@ def push_to_geonode(
             'output': result
         }
     except requests.RequestException as e:
-        message = 'Layer upload problem.\n'
-        message += e.message
+        message = 'Layer upload problem. Status code: %s. Reason: %s' % (
+            e.message.status_code, e.message.reason)
         return {
             'status': GEONODE_UPLOAD_FAILED,
             'message': message,

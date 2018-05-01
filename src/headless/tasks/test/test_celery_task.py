@@ -638,4 +638,5 @@ class TestHeadlessCeleryTask(unittest.TestCase):
         """Test push to geonode functionality."""
         async_result = push_to_geonode.delay(shakemap_layer_uri)
         result = async_result.get()
-        self.assertEqual(result['status'], GEONODE_UPLOAD_SUCCESS)
+        self.assertEqual(
+            result['status'], GEONODE_UPLOAD_SUCCESS, result['message'])
