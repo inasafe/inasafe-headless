@@ -13,7 +13,8 @@ from headless.tasks.inasafe_analysis import (
     QUrl,
     REPORT_METADATA_NOT_EXIST,
     REPORT_METADATA_EXIST,
-    GEONODE_UPLOAD_SUCCESS
+    GEONODE_UPLOAD_SUCCESS,
+    GEONODE_UPLOAD_FAILED,
 )
 from headless.tasks.inasafe_wrapper import (
     get_keywords,
@@ -634,9 +635,24 @@ class TestHeadlessCeleryTask(unittest.TestCase):
         'Only run this test if we set the PUSH_TO_REALTIME_GEONODE variable '
         'to True.'
     )
-    def test_push_to_geonode(self):
+    def test_push_to_geonode_success(self):
         """Test push to geonode functionality."""
         async_result = push_to_geonode.delay(shakemap_layer_uri)
         result = async_result.get()
         self.assertEqual(
             result['status'], GEONODE_UPLOAD_SUCCESS, result['message'])
+
+    @unittest.skipUnless(
+        PUSH_TO_REALTIME_GEONODE,
+        'Only run this test if we set the PUSH_TO_REALTIME_GEONODE variable '
+        'to True.'
+    )
+    def test_push_to_geonode_failed(self):
+        """Test push to geonode functionality."""
+        async_result = push_to_geonode.delay(
+            shakemap_layer_uri,
+            geonode_user='NotUser',
+            geonode_password='NotPassword')
+        result = async_result.get()
+        self.assertEqual(result['status'], GEONODE_UPLOAD_FAILED)
+        self.assertTrue('Failed to login' in result['message'])

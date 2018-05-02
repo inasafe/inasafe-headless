@@ -3,7 +3,6 @@
 import json
 import logging
 import os
-import requests
 
 from copy import deepcopy
 from datetime import datetime
@@ -514,13 +513,10 @@ def push_to_geonode(
     try:
         geonode_session = login_user(
             geonode_url, geonode_user, geonode_password)
-    except requests.RequestException as e:
-        message = (
-            'Authentication problem. HTTP Status Code: %s. Reason: %s' % (
-                e.message.status_code, e.message.reason))
+    except Exception as e:
         return {
             'status': GEONODE_UPLOAD_FAILED,
-            'message': message,
+            'message': e.message,
             'output': None
         }
     try:
@@ -530,11 +526,9 @@ def push_to_geonode(
             'message': 'Success',
             'output': result
         }
-    except requests.RequestException as e:
-        message = 'Layer upload problem. Status code: %s. Reason: %s' % (
-            e.message.status_code, e.message.reason)
+    except Exception as e:
         return {
             'status': GEONODE_UPLOAD_FAILED,
-            'message': message,
+            'message': e.message,
             'output': None
         }
