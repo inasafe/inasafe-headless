@@ -37,7 +37,7 @@ from safe.definitions.layer_purposes import (
     layer_purpose_exposure_summary,
     layer_purpose_analysis_impacted)
 from safe.report.impact_report import ImpactReport
-from safe.test.utilities import get_qgis_app
+from safe.test.utilities import get_qgis_app, standard_data_path
 
 QGIS_APP, CANVAS, IFACE, PARENT = get_qgis_app()
 
@@ -63,11 +63,21 @@ population_multi_fields_layer_uri = os.path.join(
 buildings_layer_uri = os.path.join(
     dir_path, 'data', 'input_layers', 'buildings.geojson')
 
+shapefile_layer_uri = standard_data_path('exposure', 'airports.shp')
+ascii_layer_uri = standard_data_path('gisv4', 'hazard', 'earthquake.asc')
+tif_layer_uri = standard_data_path('hazard', 'earthquake.tif')
+
 # Map template
 custom_map_template_basename = 'custom-inasafe-map-report-landscape'
 custom_map_template = os.path.join(
     dir_path, 'data', custom_map_template_basename + '.qpt'
 )
+
+
+# Common message
+geonode_disabled_message = (
+    'Only run this test if we set the PUSH_TO_REALTIME_GEONODE variable to '
+    'True.')
 
 
 class TestHeadlessCeleryTask(unittest.TestCase):
@@ -630,23 +640,31 @@ class TestHeadlessCeleryTask(unittest.TestCase):
         # It should be empty, if not, above test didn't cleanup
         self.check_layer_registry_empty()
 
-    @unittest.skipUnless(
-        PUSH_TO_REALTIME_GEONODE,
-        'Only run this test if we set the PUSH_TO_REALTIME_GEONODE variable '
-        'to True.'
-    )
-    def test_push_to_geonode_success(self):
-        """Test push to geonode functionality."""
-        async_result = push_to_geonode.delay(shakemap_layer_uri)
+    @unittest.skipUnless(PUSH_TO_REALTIME_GEONODE, geonode_disabled_message)
+    def test_push_shapefile_to_geonode(self):
+        """Test push shapefile layer to geonode functionality."""
+        async_result = push_to_geonode.delay(shapefile_layer_uri)
         result = async_result.get()
         self.assertEqual(
             result['status'], GEONODE_UPLOAD_SUCCESS, result['message'])
 
-    @unittest.skipUnless(
-        PUSH_TO_REALTIME_GEONODE,
-        'Only run this test if we set the PUSH_TO_REALTIME_GEONODE variable '
-        'to True.'
-    )
+    @unittest.skipUnless(PUSH_TO_REALTIME_GEONODE, geonode_disabled_message)
+    def test_push_tif_to_geonode(self):
+        """Test push tif layer to geonode functionality."""
+        async_result = push_to_geonode.delay(tif_layer_uri)
+        result = async_result.get()
+        self.assertEqual(
+            result['status'], GEONODE_UPLOAD_SUCCESS, result['message'])
+
+    @unittest.skipUnless(PUSH_TO_REALTIME_GEONODE, geonode_disabled_message)
+    def test_push_ascii_to_geonode(self):
+        """Test push ascii layer to geonode functionality."""
+        async_result = push_to_geonode.delay(ascii_layer_uri)
+        result = async_result.get()
+        self.assertEqual(
+            result['status'], GEONODE_UPLOAD_SUCCESS, result['message'])
+
+    @unittest.skipUnless(PUSH_TO_REALTIME_GEONODE, geonode_disabled_message)
     def test_push_to_geonode_failed(self):
         """Test push to geonode functionality."""
         async_result = push_to_geonode.delay(
