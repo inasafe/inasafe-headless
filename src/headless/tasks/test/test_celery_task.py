@@ -66,6 +66,8 @@ buildings_layer_uri = os.path.join(
 shapefile_layer_uri = standard_data_path('exposure', 'airports.shp')
 ascii_layer_uri = standard_data_path('gisv4', 'hazard', 'earthquake.asc')
 tif_layer_uri = standard_data_path('hazard', 'earthquake.tif')
+geojson_layer_uri = standard_data_path(
+    'gisv4', 'hazard', 'classified_vector.geojson')
 
 # Map template
 custom_map_template_basename = 'custom-inasafe-map-report-landscape'
@@ -660,6 +662,14 @@ class TestHeadlessCeleryTask(unittest.TestCase):
     def test_push_ascii_to_geonode(self):
         """Test push ascii layer to geonode functionality."""
         async_result = push_to_geonode.delay(ascii_layer_uri)
+        result = async_result.get()
+        self.assertEqual(
+            result['status'], GEONODE_UPLOAD_SUCCESS, result['message'])
+
+    @unittest.skipUnless(PUSH_TO_REALTIME_GEONODE, geonode_disabled_message)
+    def test_push_geojson_to_geonode(self):
+        """Test push geojson layer to geonode functionality."""
+        async_result = push_to_geonode.delay(geojson_layer_uri)
         result = async_result.get()
         self.assertEqual(
             result['status'], GEONODE_UPLOAD_SUCCESS, result['message'])
