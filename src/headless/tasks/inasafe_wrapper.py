@@ -296,8 +296,24 @@ def check_broker_connection():
 @app.task(
     name='inasafe.headless.tasks.push_to_geonode',
     queue='inasafe-headless-geonode')
-def push_to_geonode(layer_uri):
+def push_to_geonode(
+        layer_uri,
+        geonode_url=REALTIME_GEONODE_URL,
+        geonode_user=REALTIME_GEONODE_USER,
+        geonode_password=REALTIME_GEONODE_PASSWORD):
     """Upload layer to geonode instance.
+
+    :param layer_uri: The uri to the layer.
+    :type layer_uri: basestring
+
+    :param geonode_url: The URL to the GeoNode instance (including protocol).
+    :type geonode_url: basestring
+
+    :param geonode_user: The username to upload the layer.
+    :type geonode_user: basestring
+
+    :param geonode_password: The password to upload the layer.
+    :type geonode_password: basestring
 
     :returns: A dictionary of the url of the successfully uploaded layer.
     :rtype: dict
@@ -316,9 +332,5 @@ def push_to_geonode(layer_uri):
 
     reload(inasafe_analysis)
     result = inasafe_analysis.push_to_geonode(
-        layer_uri,
-        REALTIME_GEONODE_URL,
-        REALTIME_GEONODE_USER,
-        REALTIME_GEONODE_PASSWORD
-    )
+        layer_uri, geonode_url, geonode_user, geonode_password)
     return result
