@@ -29,6 +29,12 @@ from safe.utilities.metadata import read_iso19115_metadata
 from safe.utilities.settings import setting
 from safe.utilities.geonode.upload_layer_requests import login_user, upload
 
+from headless.settings import (
+    REALTIME_GEONODE_PASSWORD,
+    REALTIME_GEONODE_URL,
+    REALTIME_GEONODE_USER
+)
+
 
 __copyright__ = "Copyright 2018, The InaSAFE Project"
 __license__ = "GPL version 3"
@@ -490,16 +496,15 @@ def generate_contour(layer_uri):
         return None
 
 
-def push_to_geonode(
-        layer_uri, geonode_url=None, geonode_user=None, geonode_password=None):
+def push_to_geonode(layer_uri):
     """Only returns true if broker is connected
 
     :return: True
     """
     requirements = {
-        'url': geonode_url,
-        'username': geonode_user,
-        'password': geonode_password
+        'url': REALTIME_GEONODE_URL,
+        'username': REALTIME_GEONODE_USER,
+        'password': REALTIME_GEONODE_PASSWORD
     }
     for key, value in requirements.items():
         if not value:
@@ -512,7 +517,9 @@ def push_to_geonode(
             }
     try:
         geonode_session = login_user(
-            geonode_url, geonode_user, geonode_password)
+            REALTIME_GEONODE_URL,
+            REALTIME_GEONODE_USER,
+            REALTIME_GEONODE_PASSWORD)
     except Exception as e:
         return {
             'status': GEONODE_UPLOAD_FAILED,
@@ -520,7 +527,7 @@ def push_to_geonode(
             'output': None
         }
     try:
-        result = upload(geonode_url, geonode_session, layer_uri)
+        result = upload(REALTIME_GEONODE_URL, geonode_session, layer_uri)
         return {
             'status': GEONODE_UPLOAD_SUCCESS,
             'message': 'Success',
