@@ -2,7 +2,7 @@ version: '2'
 services:
 
   rabbitmq:
-    image: library/rabbitmq
+    image: library/rabbitmq:3.6
     restart: on-failure
     network_mode: bridge
     ports:
