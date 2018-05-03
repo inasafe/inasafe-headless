@@ -49,4 +49,4 @@ geonode_push:
   enable: False
   user: test_geonode_user
   password: test_geonode_password
-  url: url_to_geonode_instance
+  url: http://url_to_geonode_instance
