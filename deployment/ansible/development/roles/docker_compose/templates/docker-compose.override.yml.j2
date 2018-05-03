@@ -25,7 +25,7 @@ services:
       - PUSH_TO_REALTIME_GEONODE={{ geonode_push.enable }}
       - REALTIME_GEONODE_USER={{ geonode_push.user }}
       - REALTIME_GEONODE_PASSWORD={{ geonode_push.password }}
-      - REALTIME_GEONODE_URL=http://{{ geonode_push.url }}
+      - REALTIME_GEONODE_URL={{ geonode_push.url }}
 
     {% if 'broker_url' in inasafe_headless_worker %}
 
