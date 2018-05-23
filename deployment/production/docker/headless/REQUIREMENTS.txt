@@ -2,5 +2,5 @@ requests>=2.6.2
 tzlocal==1.2
 nose2==0.6.5
 coverage==4.4.2
-celery==4.1.0
+celery==4.1.1
 mock==2.0.0
