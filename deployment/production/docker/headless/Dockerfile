@@ -1,18 +1,5 @@
 #--------- Generic stuff all our Dockerfiles should start with so we get caching ------------
-FROM debian:jessie
-
-RUN apt-get -y update; apt-get -y --force-yes install apt-transport-https
-RUN apt-key adv --keyserver keyserver.ubuntu.com --recv-key 3FF5FFCAD71472C4
-
-RUN echo "deb     http://qgis.org/debian jessie main" >> /etc/apt/sources.list
-RUN echo "deb-src http://qgis.org/debian jessie main" >> /etc/apt/sources.list
-
-RUN apt-get -y update; apt-get -y --force-yes install qgis python-qgis
-RUN apt-get -y update; apt-get -y --force-yes install build-essential autoconf libtool pkg-config
-
-RUN export DEBIAN_FRONTEND=noninteractive
-ENV DEBIAN_FRONTEND noninteractive
-RUN dpkg-divert --local --rename --add /sbin/initctl
+FROM kartoza/qgis-desktop:LTR
 
 RUN apt-get -y update; apt-get -y --force-yes install pwgen git inotify-tools
 

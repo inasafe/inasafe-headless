@@ -25,6 +25,7 @@ services:
       - INASAFE_WORK_DIR=/home/headless
       - TASK_ALWAYS_EAGER=False
       - ON_TRAVIS=False
+      - QGIS_DEBUG=0
     links:
       - rabbitmq
     network_mode: bridge
