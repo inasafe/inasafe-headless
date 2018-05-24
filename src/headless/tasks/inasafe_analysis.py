@@ -66,8 +66,10 @@ def get_keywords(layer_uri, keyword=None):
     :returns: Dictionary of keywords or value of key as string.
     :rtype: dict, basestring
     """
-    metadata = read_iso19115_metadata(layer_uri, keyword)
+    metadata = read_iso19115_metadata(layer_uri)
     clean_metadata(metadata)
+    if keyword:
+        return metadata[keyword]
     return metadata
 
 

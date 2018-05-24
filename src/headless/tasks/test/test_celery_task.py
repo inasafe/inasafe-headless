@@ -81,6 +81,13 @@ class TestHeadlessCeleryTask(unittest.TestCase):
             keywords['layer_purpose'], layer_purpose_exposure['key'])
         self.assertEqual(keywords['exposure'], exposure_place['key'])
 
+        # Test retrieve specific keyword
+        result = get_keywords.delay(
+            place_layer_uri, keyword='layer_purpose')
+        keyword = result.get()
+        self.assertIsNotNone(keyword)
+        self.assertEqual(keyword, layer_purpose_exposure['key'])
+
         pickled_keywords = pickle.dumps(keywords)
         new_keywords = pickle.loads(pickled_keywords)
         self.assertDictEqual(keywords, new_keywords)
