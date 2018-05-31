@@ -35,7 +35,9 @@ def get_keywords(layer_uri, keyword=None):
     return metadata
 
 
-@app.task(name='inasafe.headless.tasks.run_analysis', queue='inasafe-headless')
+@app.task(
+    name='inasafe.headless.tasks.run_analysis', queue='inasafe-headless',
+    autoretry_for=(Exception,))
 def run_analysis(
         hazard_layer_uri,
         exposure_layer_uri,
@@ -83,7 +85,8 @@ def run_analysis(
 
 @app.task(
     name='inasafe.headless.tasks.run_multi_exposure_analysis',
-    queue='inasafe-headless')
+    queue='inasafe-headless',
+    autoretry_for=(Exception,))
 def run_multi_exposure_analysis(
         hazard_layer_uri,
         exposure_layer_uris,
@@ -140,7 +143,8 @@ def run_multi_exposure_analysis(
 
 
 @app.task(
-    name='inasafe.headless.tasks.generate_report', queue='inasafe-headless')
+    name='inasafe.headless.tasks.generate_report', queue='inasafe-headless',
+    autoretry_for=(Exception,))
 def generate_report(
         impact_layer_uri,
         custom_report_template_uri=None,
@@ -205,7 +209,8 @@ def generate_report(
 
 @app.task(
     name='inasafe.headless.tasks.get_generated_report',
-    queue='inasafe-headless')
+    queue='inasafe-headless',
+    autoretry_for=(Exception,))
 def get_generated_report(impact_layer_uri):
     """Get generated report for impact layer uri
 
