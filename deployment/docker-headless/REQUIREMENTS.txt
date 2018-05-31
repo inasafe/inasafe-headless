@@ -5,3 +5,4 @@ nose2==0.6.5
 coverage==4.4.2
 pyinotify==0.9.6
 celery==4.1.1
+raven==5.29.0

@@ -4,6 +4,8 @@ import qgis  # noqa
 
 from celery import Celery
 from headless.settings import OUTPUT_DIRECTORY
+from raven import Client
+from raven.contrib.celery import register_signal, register_logger_signal
 
 __copyright__ = "Copyright 2018, The InaSAFE Project"
 __license__ = "GPL version 3"
@@ -40,7 +42,21 @@ def start_inasafe(locale='en_US'):
     return QGIS_APP, IFACE
 
 
-app = Celery('headless.tasks')
+class SentryCelery(Celery):
+
+    def on_configure(self):
+        client = Client(
+            'http://25f76b1f231344238fa740ef19a24f41:'
+            '4965f3b1f30b4ad89ed56c1276f3250a@sentry.kartoza.com/12')
+
+        # register a custom filter to filter out duplicate logs
+        register_logger_signal(client)
+
+        # hook into the Celery error handler
+        register_signal(client)
+
+
+app = SentryCelery('headless.tasks')
 app.config_from_object('headless.celeryconfig')
 
 packages = (

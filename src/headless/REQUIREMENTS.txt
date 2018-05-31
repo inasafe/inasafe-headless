@@ -4,3 +4,4 @@ celery==4.1.0
 nosexcover
 nose2==0.6.5
 coverage==4.4.2
+raven==5.29.0
