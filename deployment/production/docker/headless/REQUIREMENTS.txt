@@ -4,3 +4,4 @@ nose2==0.6.5
 coverage==4.4.2
 celery==4.1.1
 mock==2.0.0
+raven==5.29.0
