@@ -19,7 +19,7 @@ fi
 # Build Args Environment
 
 if [ -z "$INASAFE_CORE_TAG" ]; then
-	INASAFE_CORE_TAG=develop
+	INASAFE_CORE_TAG=version-4_4_0
 fi
 
 if [ -z "$INASAFE_HEADLESS_TAG" ]; then
