@@ -23,7 +23,7 @@ RUN chmod +x /docker-entrypoint.sh
 # Install InaSAFE Core
 RUN mkdir -p /usr/share/qgis/python/plugins
 WORKDIR /usr/share/qgis/python/plugins
-ARG INASAFE_CORE_TAG=develop
+ARG INASAFE_CORE_TAG=version-4_4_0
 RUN git clone --branch ${INASAFE_CORE_TAG} --depth 1 --recursive https://github.com/inasafe/inasafe.git inasafe
 
 # Install InaSAFE Headless
