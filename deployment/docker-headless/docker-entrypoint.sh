@@ -13,3 +13,5 @@ if [ $# -eq 2 ] && [ $1 = "prod" ] && [ $2 = "inasafe-headless-worker" ]; then
 elif [ $# -eq 1 ] && [ $1 = "dev" ]; then
 	/usr/sbin/sshd -D
 fi
+
+exec "$@"

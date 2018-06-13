@@ -20,7 +20,7 @@ inasafe:
   depth: 1
 
 inasafe_headless_worker:
-  command: /docker-entrypoint.sh dev
+  command: dev
   # Settings to specify broker url manually
   broker_url:
   # Optional settings to specify path mount
