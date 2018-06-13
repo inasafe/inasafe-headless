@@ -1,5 +1,5 @@
 #--------- Generic stuff all our Dockerfiles should start with so we get caching ------------
-FROM kartoza/qgis-desktop:LTR
+FROM kartoza/qgis-desktop:2.18
 
 RUN apt-get -y update; apt-get -y --force-yes install pwgen git inotify-tools
 
@@ -33,4 +33,5 @@ ARG INASAFE_HEADLESS_TAG=develop
 RUN git clone --branch ${INASAFE_HEADLESS_TAG} --depth 1 https://github.com/inasafe/inasafe-headless.git source
 RUN ln -s source/src/headless headless
 
-CMD ["/docker-entrypoint.sh"]
+ENTRYPOINT ["/docker-entrypoint.sh"]
+CMD ["prod", "inasafe-headless-worker"]

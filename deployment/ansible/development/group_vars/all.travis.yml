@@ -20,7 +20,7 @@ inasafe:
   depth: 1
 
 inasafe_headless_worker:
-  command: /docker-entrypoint.sh prod inasafe-headless-worker
+  command: prod inasafe-headless-worker
   environment:
     task_always_eager: "${TASK_ALWAYS_EAGER}"
     on_travis: "${ON_TRAVIS}"
