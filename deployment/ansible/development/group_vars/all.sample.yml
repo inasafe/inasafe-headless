@@ -14,6 +14,8 @@ interpreters:
     ipaddress: &inasafe_headless_host_ip 192.168.100.4
 
 inasafe:
+  # Settings if you have different location of inasafe repo in your working dir
+#  custom_path: ../../inasafe
   repo: https://github.com/inasafe/inasafe.git
   remote: upstream
   version: version-4_4_0
