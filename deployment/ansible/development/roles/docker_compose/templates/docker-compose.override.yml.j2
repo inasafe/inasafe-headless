@@ -1,3 +1,5 @@
+#jinja2: trim_blocks: "true", lstrip_blocks: "true"
+
 version: "2"
 services:
 
@@ -5,7 +7,17 @@ services:
     build: docker-headless
     command: {{ inasafe_headless_worker.command }}
     volumes:
+
+      {% if 'custom_path' in inasafe %}
+
+      - {{ inasafe.custom_path }}:/usr/share/qgis/python/plugins/inasafe
+
+      {% else %}
+
       - ../inasafe:/usr/share/qgis/python/plugins/inasafe
+
+      {% endif %}
+
       - ../src:/home/app
       - ../src/headless/tasks/test/data/result:/home/headless/output
       - ./pycharm-helpers/inasafe-headless:/root/.pycharm_helpers

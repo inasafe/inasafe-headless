@@ -1,5 +1,6 @@
 ---
 - name: checkout InaSAFE source code
+  when: inasafe.custom_path is not defined or inasafe.custom_path == ''
   git:
     repo: '{{ inasafe.repo }}'
     remote: '{{ inasafe.remote }}'
