@@ -18,7 +18,6 @@ from safe.definitions.reports.components import (
     all_default_report_components, map_report)
 from safe.definitions.utilities import override_component_template
 from safe.gis.raster.contour import create_smooth_contour
-from safe.gis.tools import load_layer
 from safe.gui.analysis_utilities import add_impact_layers_to_canvas
 from safe.gui.widgets.dock import set_provenance_to_project_variables
 from safe.impact_function.impact_function import ImpactFunction
@@ -29,6 +28,7 @@ from safe.utilities.metadata import read_iso19115_metadata
 from safe.utilities.settings import setting
 from safe.utilities.geonode.upload_layer_requests import login_user, upload
 
+from headless.utils import load_layer
 from headless.settings import (
     REALTIME_GEONODE_PASSWORD,
     REALTIME_GEONODE_URL,

@@ -26,6 +26,7 @@ from headless.tasks.inasafe_wrapper import (
     check_broker_connection,
     push_to_geonode,
 )
+from safe.definitions import exposure_structure
 from safe.definitions.constants import ANALYSIS_SUCCESS
 from safe.definitions.exposure import exposure_place
 from safe.definitions.extra_keywords import extra_keyword_time_zone
@@ -62,6 +63,8 @@ population_multi_fields_layer_uri = os.path.join(
     dir_path, 'data', 'input_layers', 'population_multi_fields.geojson')
 buildings_layer_uri = os.path.join(
     dir_path, 'data', 'input_layers', 'buildings.geojson')
+buildings_layer_qlr_uri = os.path.join(
+    dir_path, 'data', 'input_layers', 'buildings.qlr')
 
 shapefile_layer_uri = standard_data_path('exposure', 'airports.shp')
 ascii_layer_uri = standard_data_path('gisv4', 'hazard', 'earthquake.asc')
@@ -136,6 +139,16 @@ class TestHeadlessCeleryTask(unittest.TestCase):
         new_keywords = pickle.loads(pickled_keywords)
         self.assertDictEqual(keywords, new_keywords)
 
+        # Test loading QLR layer will also load keywords from xml file if
+        # possible
+        self.assertTrue(os.path.exists(buildings_layer_qlr_uri))
+        result = get_keywords.delay(buildings_layer_qlr_uri)
+        keywords = result.get()
+        self.assertIsNotNone(keywords)
+        self.assertEqual(
+            keywords['layer_purpose'], layer_purpose_exposure['key'])
+        self.assertEqual(keywords['exposure'], exposure_structure['key'])
+
     def test_run_analysis(self):
         """Test run analysis."""
         # With aggregation
@@ -204,6 +217,31 @@ class TestHeadlessCeleryTask(unittest.TestCase):
         # Check the number of per exposure output is the same as the number
         # of exposures
         self.assertEqual(num_exposure_output, len(exposure_layer_uris))
+
+    def test_run_analysis_qlr(self):
+        """Test running analysis with QLR files."""
+        # With aggregation
+        result_delay = run_analysis.delay(
+            earthquake_layer_uri, buildings_layer_qlr_uri,
+            aggregation_layer_uri)
+        result = result_delay.get()
+        self.assertEqual(ANALYSIS_SUCCESS, result['status'],
+                         result['message'])
+        self.assertLess(0, len(result['output']))
+        for key, layer_uri in result['output'].items():
+            self.assertTrue(os.path.exists(layer_uri))
+            self.assertTrue(layer_uri.startswith(OUTPUT_DIRECTORY))
+
+        # No aggregation
+        result_delay = run_analysis.delay(
+            earthquake_layer_uri, buildings_layer_qlr_uri)
+        result = result_delay.get()
+        self.assertEqual(ANALYSIS_SUCCESS, result['status'],
+                         result['message'])
+        self.assertLess(0, len(result['output']))
+        for key, layer_uri in result['output'].items():
+            self.assertTrue(os.path.exists(layer_uri))
+            self.assertTrue(layer_uri.startswith(OUTPUT_DIRECTORY))
 
     def test_generate_contour(self):
         """Test generate_contour task."""
