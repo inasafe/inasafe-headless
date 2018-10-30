@@ -20,7 +20,7 @@ inasafe:
   depth: 1
 
 inasafe_headless_worker:
-  command: prod inasafe-headless-worker
+  command: dev
   environment:
     TASK_ALWAYS_EAGER: "${TASK_ALWAYS_EAGER}"
     ON_TRAVIS: "${ON_TRAVIS}"

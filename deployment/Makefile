@@ -38,6 +38,14 @@ worker-logs:
 package-tests:
 	@docker-compose exec inasafe-headless-worker python -m unittest discover -s headless -v
 
+coverage-worker-kill:
+	@docker kill --signal=SIGINT headless_inasafe-headless-worker_run_1
+	@sleep 5
+	@docker rm headless_inasafe-headless-worker_run_1
+
+coverage-worker:
+	@docker-compose run --rm -d inasafe-headless-worker coverage run --rcfile=/home/app/.coveragerc /usr/local/bin/celery -A headless.celery_app worker -l info -Q inasafe-headless -n inasafe-headless.%h
+
 coverage-tests:
 	@-docker-compose exec inasafe-headless-worker coverage run -m unittest discover -s headless -v
 
