@@ -1,7 +1,9 @@
 # .coveragerc to control coverage.py
 [run]
+data_file = .coverage
 branch = True
-source = .
+source = headless
+parallel = True
 omit =
 	# Of course we omit test files coverage, some of it skipped in travis for local test
 	*/test_*
@@ -9,6 +11,10 @@ omit =
 	# No need to check celeryconfig_sample.y
 	*/celeryconfig_sample.py
 	*/celeryconfig.py
+
+concurrency =
+	thread
+	multiprocessing
 
 [report]
 precision = 2

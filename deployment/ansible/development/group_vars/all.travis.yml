@@ -22,8 +22,9 @@ inasafe:
 inasafe_headless_worker:
   command: prod inasafe-headless-worker
   environment:
-    task_always_eager: "${TASK_ALWAYS_EAGER}"
-    on_travis: "${ON_TRAVIS}"
+    TASK_ALWAYS_EAGER: "${TASK_ALWAYS_EAGER}"
+    ON_TRAVIS: "${ON_TRAVIS}"
+    COVERAGE_PROCESS_START: /home/app/.coveragerc
 
 docker_port_forward:
   inasafe_headless:

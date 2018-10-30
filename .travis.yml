@@ -34,6 +34,8 @@ install:
   - make build
   - make up
   - make status
+  - cat docker-compose.override.yml
+  - cp -f ../src/headless/celeryconfig_sample.py ../src/headless/celeryconfig.py
   - popd
 
 script:
@@ -50,6 +52,7 @@ after_script:
 
 after_success:
   - pushd src
+  - coverage combine
   # Fix path (codecov.yml doesn't work)
   # Replace parent directory to travis directory, because we are running
   # coverage using docker mount
