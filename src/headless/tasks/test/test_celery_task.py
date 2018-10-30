@@ -243,6 +243,43 @@ class TestHeadlessCeleryTask(unittest.TestCase):
             self.assertTrue(os.path.exists(layer_uri))
             self.assertTrue(layer_uri.startswith(OUTPUT_DIRECTORY))
 
+    def test_generate_report_qlr(self):
+        """Test generating report with QLR files."""
+        # With aggregation
+
+        # Run analysis first
+        result_delay = run_analysis.delay(
+            earthquake_layer_uri, buildings_layer_qlr_uri,
+            aggregation_layer_uri)
+        result = result_delay.get()
+        self.assertEqual(ANALYSIS_SUCCESS, result['status'],
+                         result['message'])
+        self.assertLess(0, len(result['output']))
+        for key, layer_uri in result['output'].items():
+            self.assertTrue(os.path.exists(layer_uri))
+            self.assertTrue(layer_uri.startswith(OUTPUT_DIRECTORY))
+
+        # Retrieve impact analysis uri
+        impact_analysis_uri = result['output'][
+            layer_purpose_exposure_summary['key']]
+
+        # Add custom layers order for map report
+        custom_layer_order = [
+            impact_analysis_uri, aggregation_layer_uri, earthquake_layer_uri
+        ]
+
+        # Generate reports
+        async_result = generate_report.delay(
+            impact_analysis_uri, custom_layer_order=custom_layer_order)
+        result = async_result.get()
+        self.assertEqual(
+            ImpactReport.REPORT_GENERATION_SUCCESS, result['status'])
+        for key, products in result['output'].items():
+            for product_key, product_uri in products.items():
+                message = 'Product %s is not found in %s' % (
+                    product_key, product_uri)
+                self.assertTrue(os.path.exists(product_uri), message)
+
     def test_generate_contour(self):
         """Test generate_contour task."""
         # Layer

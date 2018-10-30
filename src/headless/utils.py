@@ -35,8 +35,10 @@ def load_layer(full_layer_uri_string, name=None, provider=None):
 
     if ext.lower() == '.qlr':
         layer = QgsMapLayer.fromLayerDefinitionFile(full_layer_uri_string)
-        if layer:
-            layer = layer[0]
+        if not layer:
+            return None, None
+
+        layer = layer[0]
         if layer.isValid():
             keyword_io = KeywordIO()
 
