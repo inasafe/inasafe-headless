@@ -31,6 +31,12 @@ def start_inasafe(locale='en_US'):
     # Setting
     from safe.utilities.settings import set_setting
 
+    # Reload default settings first
+    from safe.definitions import default_settings
+    from safe.utilities import settings
+    reload(default_settings)
+    reload(settings)
+
     if OUTPUT_DIRECTORY:
         try:
             os.makedirs(OUTPUT_DIRECTORY)
