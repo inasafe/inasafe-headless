@@ -41,7 +41,9 @@ install:
 script:
   - pushd deployment
   - make check-flake8
+  - if [ "$TASK_ALWAYS_EAGER" = "False" ]; then make coverage-worker; fi
   - make coverage-tests
+  - if [ "$TASK_ALWAYS_EAGER" = "False" ]; then make coverage-worker-kill; fi
   - popd
 
 after_script:
@@ -52,7 +54,9 @@ after_script:
 
 after_success:
   - pushd src
+  - ls .coverage*
   - coverage combine
+  - cat .coverage
   # Fix path (codecov.yml doesn't work)
   # Replace parent directory to travis directory, because we are running
   # coverage using docker mount
