@@ -39,18 +39,19 @@ services:
       - REALTIME_GEONODE_PASSWORD={{ geonode_push.password }}
       - REALTIME_GEONODE_URL={{ geonode_push.url }}
 
-    {% if 'broker_url' in inasafe_headless_worker %}
+      {% if 'broker_url' in inasafe_headless_worker %}
 
       - INASAFE_HEADLESS_BROKER_HOST={{ inasafe_headless_worker.broker_url }}
 
-    {% endif %}
+      {% endif %}
 
-    {% if 'environment' in inasafe_headless_worker %}
+      {% if 'environment' in inasafe_headless_worker %}
+        {% for key, value in inasafe_headless_worker.environment.iteritems() %}
 
-      - TASK_ALWAYS_EAGER={{ inasafe_headless_worker.environment.task_always_eager }}
-      - ON_TRAVIS={{ inasafe_headless_worker.environment.on_travis }}
+      - {{ key }}={{ value }}
 
-    {% endif %}
+        {% endfor %}
+      {% endif %}
 
     ports:
       # expose ssh ports
