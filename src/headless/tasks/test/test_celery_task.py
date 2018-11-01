@@ -39,7 +39,7 @@ __revision__ = '$Format:%H$'
 class TestHeadlessCeleryTask(unittest.TestCase):
     """Unit test for Headless Celery tasks."""
 
-    @retry_on_worker_lost_error
+    @retry_on_worker_lost_error()
     def test_get_keywords(self):
         """Test get_keywords task."""
         self.assertTrue(os.path.exists(place_layer_uri))
@@ -96,7 +96,7 @@ class TestHeadlessCeleryTask(unittest.TestCase):
             keywords['layer_purpose'], layer_purpose_exposure['key'])
         self.assertEqual(keywords['exposure'], exposure_structure['key'])
 
-    @retry_on_worker_lost_error
+    @retry_on_worker_lost_error()
     def test_generate_contour(self):
         """Test generate_contour task."""
         # Layer
@@ -106,7 +106,7 @@ class TestHeadlessCeleryTask(unittest.TestCase):
         self.assertTrue(os.path.exists(result))
         self.assertTrue(result.startswith(OUTPUT_DIRECTORY))
 
-    @retry_on_worker_lost_error
+    @retry_on_worker_lost_error()
     def test_check_broker_connection(self):
         """Test check_broker_connection task."""
         async_result = check_broker_connection.delay()

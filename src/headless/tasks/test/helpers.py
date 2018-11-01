@@ -63,8 +63,7 @@ def retry_on_worker_lost_error(times=5):
         def wrapper(*args, **kwargs):
             for i in range(times):
                 try:
-                    func(*args, **kwargs)
-                    break
+                    return func(*args, **kwargs)
                 except WorkerLostError as e:
                     LOGGER.info(
                         'function {} failed '

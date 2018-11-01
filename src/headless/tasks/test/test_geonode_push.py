@@ -25,7 +25,7 @@ __revision__ = '$Format:%H$'
 class TestGeoNodePush(unittest.TestCase):
 
     @unittest.skipUnless(PUSH_TO_REALTIME_GEONODE, geonode_disabled_message)
-    @retry_on_worker_lost_error
+    @retry_on_worker_lost_error()
     def test_push_shapefile_to_geonode(self):
         """Test push shapefile layer to geonode functionality."""
         async_result = push_to_geonode.delay(shapefile_layer_uri)
@@ -34,7 +34,7 @@ class TestGeoNodePush(unittest.TestCase):
             result['status'], GEONODE_UPLOAD_SUCCESS, result['message'])
 
     @unittest.skipUnless(PUSH_TO_REALTIME_GEONODE, geonode_disabled_message)
-    @retry_on_worker_lost_error
+    @retry_on_worker_lost_error()
     def test_push_tif_to_geonode(self):
         """Test push tif layer to geonode functionality."""
         async_result = push_to_geonode.delay(tif_layer_uri)
@@ -43,7 +43,7 @@ class TestGeoNodePush(unittest.TestCase):
             result['status'], GEONODE_UPLOAD_SUCCESS, result['message'])
 
     @unittest.skipUnless(PUSH_TO_REALTIME_GEONODE, geonode_disabled_message)
-    @retry_on_worker_lost_error
+    @retry_on_worker_lost_error()
     def test_push_ascii_to_geonode(self):
         """Test push ascii layer to geonode functionality."""
         async_result = push_to_geonode.delay(ascii_layer_uri)
@@ -52,7 +52,7 @@ class TestGeoNodePush(unittest.TestCase):
             result['status'], GEONODE_UPLOAD_SUCCESS, result['message'])
 
     @unittest.skipUnless(PUSH_TO_REALTIME_GEONODE, geonode_disabled_message)
-    @retry_on_worker_lost_error
+    @retry_on_worker_lost_error()
     def test_push_geojson_to_geonode(self):
         """Test push geojson layer to geonode functionality."""
         async_result = push_to_geonode.delay(geojson_layer_uri)
@@ -61,7 +61,7 @@ class TestGeoNodePush(unittest.TestCase):
             result['status'], GEONODE_UPLOAD_SUCCESS, result['message'])
 
     @unittest.skipUnless(PUSH_TO_REALTIME_GEONODE, geonode_disabled_message)
-    @retry_on_worker_lost_error
+    @retry_on_worker_lost_error()
     def test_push_to_geonode_failed(self):
         """Test push to geonode functionality."""
         async_result = push_to_geonode.delay(

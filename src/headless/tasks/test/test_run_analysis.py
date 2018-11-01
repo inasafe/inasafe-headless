@@ -31,7 +31,7 @@ __revision__ = '$Format:%H$'
 
 class TestRunAnalysis(unittest.TestCase):
 
-    @retry_on_worker_lost_error
+    @retry_on_worker_lost_error()
     def test_run_analysis(self):
         """Test run analysis."""
         # With aggregation
@@ -54,7 +54,7 @@ class TestRunAnalysis(unittest.TestCase):
             self.assertTrue(os.path.exists(layer_uri))
             self.assertTrue(layer_uri.startswith(OUTPUT_DIRECTORY))
 
-    @retry_on_worker_lost_error
+    @retry_on_worker_lost_error()
     def test_run_multi_exposure_analysis(self):
         """Test run multi_exposure analysis."""
         exposure_layer_uris = [
@@ -107,7 +107,7 @@ class TestRunAnalysis(unittest.TestCase):
         and strtobool(os.environ.get('ON_TRAVIS', 'False')),
         'Skipped because of weird error, module not found when using '
         'unittest.')
-    @retry_on_worker_lost_error
+    @retry_on_worker_lost_error()
     def test_run_analysis_qlr(self):
         """Test running analysis with QLR files."""
         # With aggregation
@@ -133,7 +133,7 @@ class TestRunAnalysis(unittest.TestCase):
             self.assertTrue(os.path.exists(layer_uri))
             self.assertTrue(layer_uri.startswith(OUTPUT_DIRECTORY))
 
-    @retry_on_worker_lost_error
+    @retry_on_worker_lost_error()
     def test_run_multilingual_analysis(self):
         """Test run analysis."""
 

@@ -42,7 +42,7 @@ class TestGenerateReport(unittest.TestCase):
         and strtobool(os.environ.get('ON_TRAVIS', 'False')),
         'Skipped because of weird error, module not found when using '
         'unittest.')
-    @retry_on_worker_lost_error
+    @retry_on_worker_lost_error()
     def test_generate_report_qlr(self):
         """Test generating report with QLR files."""
         # With aggregation
@@ -80,7 +80,7 @@ class TestGenerateReport(unittest.TestCase):
                     product_key, product_uri)
                 self.assertTrue(os.path.exists(product_uri), message)
 
-    @retry_on_worker_lost_error
+    @retry_on_worker_lost_error()
     def test_generate_report_with_aggregation(self):
         """Test generate report for single analysis using aggregation layer.
         """
@@ -116,7 +116,7 @@ class TestGenerateReport(unittest.TestCase):
                     product_key, product_uri)
                 self.assertTrue(os.path.exists(product_uri), message)
 
-    @retry_on_worker_lost_error
+    @retry_on_worker_lost_error()
     def test_generate_report_without_aggregation(self):
         """Test generate report for single analysis without aggregation layer.
         """
@@ -152,7 +152,7 @@ class TestGenerateReport(unittest.TestCase):
                     product_key, product_uri)
                 self.assertTrue(os.path.exists(product_uri), message)
 
-    @retry_on_worker_lost_error
+    @retry_on_worker_lost_error()
     def test_generate_multi_exposure_report(self):
         """Test generate multi exposure analysis report."""
         exposure_layer_uris = [
@@ -198,7 +198,7 @@ class TestGenerateReport(unittest.TestCase):
                     product_key, product_uri)
                 self.assertTrue(os.path.exists(product_uri), message)
 
-    @retry_on_worker_lost_error
+    @retry_on_worker_lost_error()
     def test_generate_custom_report(self):
         """Test generate custom report for single analysis."""
         # Run analysis first
@@ -240,7 +240,7 @@ class TestGenerateReport(unittest.TestCase):
         self.assertNotIn('inasafe-map-report-portrait', product_keys)
         self.assertNotIn('inasafe-map-report-landscape', product_keys)
 
-    @retry_on_worker_lost_error
+    @retry_on_worker_lost_error()
     def test_get_generated_report(self):
         """Test get generated report task."""
         # Run analysis first
