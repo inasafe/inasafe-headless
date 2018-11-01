@@ -25,6 +25,7 @@ inasafe_headless_worker:
     TASK_ALWAYS_EAGER: "${TASK_ALWAYS_EAGER}"
     ON_TRAVIS: "${ON_TRAVIS}"
     COVERAGE_PROCESS_START: /home/app/.coveragerc
+    SUBSEQUENT_RUN_TESTING: "${SUBSEQUENT_RUN_TESTING}"
 
 docker_port_forward:
   inasafe_headless:
@@ -32,7 +33,7 @@ docker_port_forward:
 
 integration_test:
   # Path to inasafe-headless's test data directory
-  test_data_path: "/Users/ismailsunni/dev/python/inasafe-headless/src/headless/tasks/test/data/"
+  test_data_path: "/home/travis/build/inasafe/inasafe-headless/src/headless/tasks/test/data/"
   # Path to inasafe-headless's test data directory in the docker container
   mapped_test_data_path: "/home/headless_test/data/"
   # Path to inasafe-headless's output test data directory in the docker container

@@ -1,7 +1,6 @@
 # coding=utf-8
 """InaSAFE analysis utilities."""
 import json
-import logging
 import os
 
 from copy import deepcopy
@@ -28,7 +27,7 @@ from safe.utilities.metadata import read_iso19115_metadata
 from safe.utilities.settings import setting
 from safe.utilities.geonode.upload_layer_requests import login_user, upload
 
-from headless.utils import load_layer
+from headless.utils import load_layer, get_headless_logger
 from headless.settings import (
     REALTIME_GEONODE_PASSWORD,
     REALTIME_GEONODE_URL,
@@ -41,7 +40,7 @@ __license__ = "GPL version 3"
 __email__ = "info@inasafe.org"
 __revision__ = '$Format:%H$'
 
-LOGGER = logging.getLogger('InaSAFE Headless')
+LOGGER = get_headless_logger()
 
 REPORT_METADATA_EXIST = 0
 REPORT_METADATA_NOT_EXIST = 1

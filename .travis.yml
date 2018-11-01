@@ -6,10 +6,18 @@ python:
   - "2.7"
 
 env:
-  - ON_TRAVIS=True
-    TASK_ALWAYS_EAGER=True
-  - ON_TRAVIS=True
-    TASK_ALWAYS_EAGER=False
+  global:
+    - COMPOSE_PROJECT_NAME: headless
+  matrix:
+    - ON_TRAVIS: 'True'
+      TASK_ALWAYS_EAGER: 'True'
+    - ON_TRAVIS: 'True'
+      TASK_ALWAYS_EAGER: 'False'
+      WORKER_SCALE: 4
+    # Special environment for subsequent run stress testing
+    - ON_TRAVIS: 'True'
+      TASK_ALWAYS_EAGER: 'True'
+      SUBSEQUENT_RUN_TESTING: 'True'
 
 virtualenv:
   system_site_packages: true
@@ -41,9 +49,9 @@ install:
 script:
   - pushd deployment
   - make check-flake8
-  - if [ "$TASK_ALWAYS_EAGER" = "False" ]; then make coverage-worker; fi
-  - make coverage-tests
-  - if [ "$TASK_ALWAYS_EAGER" = "False" ]; then make coverage-worker-kill; fi
+  - ../src/scripts/start_coverage_unittest_worker.sh
+  - ../src/scripts/run_coverage_tests.sh
+  - ../src/scripts/stop_coverage_unittest_worker.sh
   - popd
 
 after_script:

@@ -1,16 +1,16 @@
 # coding=utf-8
 """Task for InaSAFE Headless."""
-import logging
 
 from headless.celery_app import app, start_inasafe
 from headless.tasks import inasafe_analysis
+from headless.utils import get_headless_logger
 
 __copyright__ = "Copyright 2018, The InaSAFE Project"
 __license__ = "GPL version 3"
 __email__ = "info@inasafe.org"
 __revision__ = '$Format:%H$'
 
-LOGGER = logging.getLogger('InaSAFE Headless')
+LOGGER = get_headless_logger()
 
 
 @app.task(name='inasafe.headless.tasks.get_keywords', queue='inasafe-headless')
