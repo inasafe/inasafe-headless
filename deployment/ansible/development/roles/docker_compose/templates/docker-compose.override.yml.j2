@@ -5,7 +5,7 @@ services:
 
   inasafe-headless-worker:
     build: docker-headless
-    command: {{ inasafe_headless_worker.command }}
+    command: "{{ inasafe_headless_worker.command }}"
     volumes:
 
       {% if 'custom_path' in inasafe %}
@@ -53,6 +53,10 @@ services:
         {% endfor %}
       {% endif %}
 
+    {% if 'ssh' in docker_port_forward.inasafe_headless %}
+
     ports:
       # expose ssh ports
       - "{{ docker_port_forward.inasafe_headless.ssh }}:22"
+
+    {% endif %}
