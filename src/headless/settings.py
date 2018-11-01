@@ -9,6 +9,17 @@ __revision__ = '$Format:%H$'
 import os
 import ast
 
+# Search settings path
+INASAFE_SETTINGS_PATH = os.environ.get('INASAFE_SETTINGS_PATH', '')
+if not os.path.exists(INASAFE_SETTINGS_PATH):
+    INASAFE_SETTINGS_PATH = None
+
+# Search minimum needs locale mapping
+MINIMUM_NEEDS_LOCALE_MAPPING_PATH = os.environ.get(
+    'MINIMUM_NEEDS_LOCALE_MAPPING_PATH', '')
+if not os.path.exists(MINIMUM_NEEDS_LOCALE_MAPPING_PATH):
+    MINIMUM_NEEDS_LOCALE_MAPPING_PATH = None
+
 # Setting for output directory where to store the output layers.
 OUTPUT_DIRECTORY = os.environ.get('INASAFE_OUTPUT_DIR')
 
