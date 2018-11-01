@@ -51,7 +51,7 @@ script:
   - make check-flake8
   - ../src/scripts/start_coverage_unittest_worker.sh
   - ../src/scripts/run_coverage_tests.sh
-  - ../src/scripts/stop_coverage_unittest_worker.sh
+  - ../src/scripts/stop_coverage_unittest_worker.sh || true
   - popd
 
 after_script:
