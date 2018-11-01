@@ -5,9 +5,11 @@ import pickle
 import unittest
 from distutils.util import strtobool
 
-from qgis.core import QgsMapLayerRegistry
+import mock
 
-from headless.celery_app import app
+from qgis.core import QgsMapLayerRegistry, QgsApplication
+
+from headless.celery_app import start_inasafe, app
 from headless.celeryconfig import task_always_eager
 from headless.settings import OUTPUT_DIRECTORY, PUSH_TO_REALTIME_GEONODE
 from headless.tasks.inasafe_analysis import (
@@ -39,8 +41,10 @@ from safe.definitions.layer_purposes import (
     layer_purpose_aggregation,
     layer_purpose_exposure_summary,
     layer_purpose_analysis_impacted)
+from safe.gui.tools.minimum_needs.needs_profile import NeedsProfile
 from safe.report.impact_report import ImpactReport
 from safe.test.utilities import get_qgis_app, standard_data_path
+from safe.utilities.settings import setting
 
 QGIS_APP, CANVAS, IFACE, PARENT = get_qgis_app()
 
@@ -78,6 +82,14 @@ geojson_layer_uri = standard_data_path(
 custom_map_template_basename = 'custom-inasafe-map-report-landscape'
 custom_map_template = os.path.join(
     dir_path, 'data', custom_map_template_basename + '.qpt'
+)
+
+settings_path = os.path.join(
+    dir_path, 'data/settings/custom_setting.json'
+)
+
+minimum_needs_mapping_path = os.path.join(
+    dir_path, 'data/settings/custom_locale_minimum_needs_mapping.json'
 )
 
 
@@ -728,6 +740,92 @@ class TestHeadlessCeleryTask(unittest.TestCase):
 
         # It should be empty, if not, above test didn't cleanup
         self.check_layer_registry_empty()
+
+    @unittest.skipUnless(
+        task_always_eager,
+        'This test is only relevant on sync mode')
+    def test_changed_inasafe_settings(self):
+        """Test settings change are resolved correctly."""
+        # Triggering start_inasafe should have reinitialized
+        # Headless environment
+        start_inasafe()
+
+        # Should follow default settings
+        self.assertEqual(
+            os.path.join(
+                QgsApplication.qgisSettingsDirPath(),
+                'inasafe', 'metadata.db'),
+            setting('keywordCachePath'))
+
+        # mock environment variable
+        patched_env = {
+            'INASAFE_SETTINGS_PATH': settings_path
+        }
+        with mock.patch.dict(os.environ, patched_env):
+            start_inasafe()
+
+            self.assertEqual(
+                '/Users/lucernae/.inasafe/keywords.db',
+                setting('keywordCachePath'))
+
+            self.assertEqual(
+                setting('reportDisclaimer'),
+                'om telolet om. kasih telolet yaaa.')
+
+        # now, it should go back
+        start_inasafe()
+
+        self.assertEqual(
+            os.path.join(
+                QgsApplication.qgisSettingsDirPath(),
+                'inasafe', 'metadata.db'),
+            setting('keywordCachePath'))
+
+    @unittest.skipUnless(
+        task_always_eager,
+        'This test is only relevant on sync mode')
+    def test_minimum_needs_switching(self):
+        """Test correct minimum needs is used."""
+        # Check default minimum needs
+        start_inasafe('en')
+
+        profile = NeedsProfile()
+        profile.load()
+
+        self.assertEqual('en', profile.locale)
+        self.assertEqual('BNPB_en', profile.minimum_needs['profile'])
+        self.assertEqual(
+            'The minimum needs are based on Perka 7/2008.',
+            profile.provenance)
+
+        # mock environment variable
+        patched_env = {
+            'MINIMUM_NEEDS_LOCALE_MAPPING_PATH': minimum_needs_mapping_path
+        }
+        with mock.patch.dict(os.environ, patched_env):
+            start_inasafe('id')
+
+            profile = NeedsProfile()
+            profile.load()
+
+            self.assertEqual('id', profile.locale)
+            self.assertEqual('BNPB_id', profile.minimum_needs['profile'])
+            self.assertEqual(
+                'Standar kebutuhan dasar ini berdasarkan pada '
+                'Perka BNPB no.7 tahun 2008.',
+                profile.provenance)
+
+        # Should be back to default
+        start_inasafe('en')
+
+        profile = NeedsProfile()
+        profile.load()
+
+        self.assertEqual('en', profile.locale)
+        self.assertEqual('BNPB_en', profile.minimum_needs['profile'])
+        self.assertEqual(
+            'The minimum needs are based on Perka 7/2008.',
+            profile.provenance)
 
     @unittest.skipUnless(PUSH_TO_REALTIME_GEONODE, geonode_disabled_message)
     def test_push_shapefile_to_geonode(self):

@@ -1,16 +1,68 @@
 # coding=utf-8
+import json
 import os
 import qgis  # noqa
 
 from celery import Celery
-from headless.settings import OUTPUT_DIRECTORY
+from headless import settings as headless_settings
 from raven import Client
 from raven.contrib.celery import register_signal, register_logger_signal
+
+from safe.gui.tools.minimum_needs.needs_profile import NeedsProfile
+from safe.utilities.settings import import_setting
 
 __copyright__ = "Copyright 2018, The InaSAFE Project"
 __license__ = "GPL version 3"
 __email__ = "info@inasafe.org"
 __revision__ = '$Format:%H$'
+
+
+def load_inasafe_settings():
+    """Load InaSAFE settings.
+
+    File to load is given from environment variable.
+    """
+    # Load default settings
+    from safe.definitions import default_settings
+    from safe.utilities.settings import set_setting
+
+    for key, value in default_settings.inasafe_default_settings.iteritems():
+        set_setting(key, value)
+
+    # Override settings from INASAFE_SETTINGS_PATH
+    if headless_settings.INASAFE_SETTINGS_PATH:
+        # Load from custom headless settings
+        import_setting(headless_settings.INASAFE_SETTINGS_PATH)
+
+
+def load_minimum_needs(locale='en_US'):
+    """Load Minimum Needs profile.
+
+    Profile to load is given from environment variable.
+    """
+    minimum_needs_path = None
+
+    if headless_settings.MINIMUM_NEEDS_LOCALE_MAPPING_PATH:
+        with open(headless_settings.MINIMUM_NEEDS_LOCALE_MAPPING_PATH) as f:
+            locale_mapping = json.load(f)
+
+        if locale in locale_mapping:
+            minimum_needs_path = locale_mapping.get(locale, None)
+
+            # Check if it is a relative path
+            if not minimum_needs_path.startswith('/'):
+                package_path = os.path.dirname(__file__)
+                minimum_needs_path = os.path.join(
+                    package_path, minimum_needs_path)
+
+    profile = NeedsProfile()
+    if minimum_needs_path:
+        profile.read_from_file(minimum_needs_path)
+        profile.save()
+    else:
+        # if no path specified, use internal minimum needs
+        profile.minimum_needs = profile._defaults()
+        profile.save()
 
 
 def start_inasafe(locale='en_US'):
@@ -36,14 +88,19 @@ def start_inasafe(locale='en_US'):
     from safe.utilities import settings
     reload(default_settings)
     reload(settings)
+    reload(headless_settings)
 
-    if OUTPUT_DIRECTORY:
+    load_inasafe_settings()
+    load_minimum_needs(locale)
+
+    if headless_settings.OUTPUT_DIRECTORY:
         try:
-            os.makedirs(OUTPUT_DIRECTORY)
+            os.makedirs(headless_settings.OUTPUT_DIRECTORY)
         except OSError:
-            if not os.path.isdir(OUTPUT_DIRECTORY):
+            if not os.path.isdir(headless_settings.OUTPUT_DIRECTORY):
                 raise
-        set_setting('defaultUserDirectory', OUTPUT_DIRECTORY)
+        set_setting(
+            'defaultUserDirectory', headless_settings.OUTPUT_DIRECTORY)
 
     return QGIS_APP, IFACE
 

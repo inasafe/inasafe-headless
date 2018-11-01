@@ -1,0 +1,382 @@
+{
+  "use_debug_analysis": false,
+  "lastCustomTemplate": "",
+  "useDefaultOutputDir": true,
+  "default_value/global/lactating_ratio_field": 0.026000000000000002,
+  "default_value/global/adult_ratio_field": 0.66,
+  "visibleLayersOnlyFlag": true,
+  "showRubberBands": true,
+  "default_value/global/pregnant_ratio_field": 0.024,
+  "currency": "IDR",
+  "ISO19115_URL": "http://inasafe.org",
+  "clip_hard": false,
+  "show_extent_confirmations": true,
+  "default_value/global/child_ratio_field": 0.17300000000000001,
+  "disable_rounding": false,
+  "defaultFemaleRatio": 0.5,
+  "default_value/global/disabled_ratio_field": 0.15,
+  "default_value/global/elderly_ratio_field": 0.09,
+  "useThreadingFlag": false,
+  "previous_version": "4.4.0",
+  "population_preference": {
+    "volcanic_ash": {
+      "ash_hazard_classes": {
+        "very high": {
+          "displacement_rate": 1.0,
+          "affected": true
+        },
+        "high": {
+          "displacement_rate": 1.0,
+          "affected": true
+        },
+        "medium": {
+          "displacement_rate": 0.0,
+          "affected": true
+        },
+        "low": {
+          "displacement_rate": 0.0,
+          "affected": true
+        },
+        "very low": {
+          "displacement_rate": 0.0,
+          "affected": true
+        }
+      },
+      "generic_hazard_classes": {
+        "high": {
+          "displacement_rate": 1.0,
+          "affected": true
+        },
+        "medium": {
+          "displacement_rate": 1.0,
+          "affected": true
+        },
+        "low": {
+          "displacement_rate": 0.0,
+          "affected": false
+        }
+      }
+    },
+    "dam_break": {
+      "generic_hazard_classes": {
+        "high": {
+          "displacement_rate": 1.0,
+          "affected": true
+        },
+        "medium": {
+          "displacement_rate": 1.0,
+          "affected": true
+        },
+        "low": {
+          "displacement_rate": 0.0,
+          "affected": false
+        }
+      },
+      "inundation_dam_class": {
+        "inundation_3": {
+          "displacement_rate": 0.01,
+          "affected": true
+        },
+        "inundation_2": {
+          "displacement_rate": 0.0,
+          "affected": false
+        },
+        "inundation_1": {
+          "displacement_rate": 0.0,
+          "affected": false
+        }
+      }
+    },
+    "hazard_generic": {
+      "generic_hazard_classes": {
+        "high": {
+          "displacement_rate": 1.0,
+          "affected": true
+        },
+        "medium": {
+          "displacement_rate": 1.0,
+          "affected": true
+        },
+        "low": {
+          "displacement_rate": 0.0,
+          "affected": false
+        }
+      }
+    },
+    "flood": {
+      "flood_hazard_classes": {
+        "wet": {
+          "displacement_rate": 0.01,
+          "affected": true
+        },
+        "dry": {
+          "displacement_rate": 0.0,
+          "affected": false
+        }
+      },
+      "flood_petabencana_hazard_classes": {
+        "high": {
+          "displacement_rate": 0.05,
+          "affected": true
+        },
+        "medium": {
+          "displacement_rate": 0.03,
+          "affected": true
+        },
+        "low": {
+          "displacement_rate": 0.01,
+          "affected": true
+        },
+        "use_caution": {
+          "displacement_rate": 0.0,
+          "affected": false
+        }
+      },
+      "generic_hazard_classes": {
+        "high": {
+          "displacement_rate": 1.0,
+          "affected": true
+        },
+        "medium": {
+          "displacement_rate": 1.0,
+          "affected": true
+        },
+        "low": {
+          "displacement_rate": 0.0,
+          "affected": false
+        }
+      }
+    },
+    "tsunami": {
+      "tsunami_hazard_population_classes_ITB": {
+        "very high": {
+          "displacement_rate": 1.0,
+          "affected": true
+        },
+        "high": {
+          "displacement_rate": 1.0,
+          "affected": true
+        },
+        "medium": {
+          "displacement_rate": 1.0,
+          "affected": true
+        },
+        "low": {
+          "displacement_rate": 0.0,
+          "affected": true
+        }
+      },
+      "tsunami_hazard_population_classes": {
+        "high": {
+          "displacement_rate": 1.0,
+          "affected": true
+        },
+        "medium": {
+          "displacement_rate": 1.0,
+          "affected": true
+        },
+        "low": {
+          "displacement_rate": 0.0,
+          "affected": true
+        }
+      }
+    },
+    "cyclone": {
+      "cyclone_au_bom_hazard_classes": {
+        "category_5": {
+          "displacement_rate": 1.0,
+          "affected": true
+        },
+        "category_4": {
+          "displacement_rate": 0.97,
+          "affected": true
+        },
+        "category_3": {
+          "displacement_rate": 0.55,
+          "affected": true
+        },
+        "category_2": {
+          "displacement_rate": 0.06,
+          "affected": true
+        },
+        "category_1": {
+          "displacement_rate": 0.0,
+          "affected": true
+        },
+        "tropical_depression": {
+          "displacement_rate": 0.0,
+          "affected": false
+        }
+      },
+      "cyclone_sshws_hazard_classes": {
+        "category_5": {
+          "displacement_rate": 1.0,
+          "affected": true
+        },
+        "category_4": {
+          "displacement_rate": 0.99,
+          "affected": true
+        },
+        "category_3": {
+          "displacement_rate": 0.9,
+          "affected": true
+        },
+        "category_2": {
+          "displacement_rate": 0.65,
+          "affected": true
+        },
+        "category_1": {
+          "displacement_rate": 0.15,
+          "affected": true
+        },
+        "no_hurricane": {
+          "displacement_rate": 0.0,
+          "affected": false
+        }
+      },
+      "generic_hazard_classes": {
+        "high": {
+          "displacement_rate": 1.0,
+          "affected": true
+        },
+        "medium": {
+          "displacement_rate": 1.0,
+          "affected": true
+        },
+        "low": {
+          "displacement_rate": 0.0,
+          "affected": false
+        }
+      }
+    },
+    "volcano": {
+      "volcano_hazard_classes": {
+        "high": {
+          "displacement_rate": 1.0,
+          "affected": true
+        },
+        "medium": {
+          "displacement_rate": 1.0,
+          "affected": true
+        },
+        "low": {
+          "displacement_rate": 0.0,
+          "affected": false
+        }
+      },
+      "generic_hazard_classes": {
+        "high": {
+          "displacement_rate": 1.0,
+          "affected": true
+        },
+        "medium": {
+          "displacement_rate": 1.0,
+          "affected": true
+        },
+        "low": {
+          "displacement_rate": 0.0,
+          "affected": false
+        }
+      }
+    },
+    "earthquake": {
+      "earthquake_mmi_scale": {
+        "X": {
+          "displacement_rate": 1.0,
+          "affected": true
+        },
+        "IX": {
+          "displacement_rate": 1.0,
+          "affected": true
+        },
+        "VIII": {
+          "displacement_rate": 1.0,
+          "affected": true
+        },
+        "VII": {
+          "displacement_rate": 1.0,
+          "affected": true
+        },
+        "VI": {
+          "displacement_rate": 1.0,
+          "affected": true
+        },
+        "V": {
+          "displacement_rate": 0.0,
+          "affected": true
+        },
+        "IV": {
+          "displacement_rate": 0.0,
+          "affected": true
+        },
+        "III": {
+          "displacement_rate": 0.0,
+          "affected": true
+        },
+        "II": {
+          "displacement_rate": 0.0,
+          "affected": true
+        },
+        "I": {
+          "displacement_rate": 0.0,
+          "affected": false
+        }
+      },
+      "generic_hazard_classes": {
+        "high": {
+          "displacement_rate": 1.0,
+          "affected": true
+        },
+        "medium": {
+          "displacement_rate": 1.0,
+          "affected": true
+        },
+        "low": {
+          "displacement_rate": 0.0,
+          "affected": false
+        }
+      }
+    }
+  },
+  "analysis_extents_mode": "HazardExposureBoundingBox",
+  "useDefaultTemplates": true,
+  "generate_report": true,
+  "default_value/global/infant_ratio_field": 0.092,
+  "default_value/global/under_5_ratio_field": 0.09300000000000001,
+  "developer_mode": true,
+  "show_intermediate_layers": false,
+  "default_value/adult_ratio_field/recent": 0.66,
+  "print_atlas_report": false,
+  "setHideExposureFlag": false,
+  "earthquake_function": "itb_bayesian_fatality_rates",
+  "keywordCachePath": "/Users/lucernae/.inasafe/keywords.db",
+  "default_value/global/female_ratio_field": 0.5,
+  "always_show_welcome_message": true,
+  "useSelectedFeaturesOnly": true,
+  "use_native_zonal_stats": false,
+  "set_layer_from_title_flag": true,
+  "ISO19115_ORGANIZATION": "InaSAFE.org",
+  "ISO19115_LICENSE": "Free use with accreditation",
+  "analysis_extent": "35.110232, -16.574825, 35.112944, -16.572113",
+  "showOrganisationLogoInDockFlag": false,
+  "default_value/elderly_ratio_field/recent": 0.09,
+  "useSentry": true,
+  "set_show_only_impact_on_report": false,
+  "reportTemplatePath": "",
+  "default_value/youth_ratio_field/recent": 0.25,
+  "memory_profile": false,
+  "analysis_extent_crs": "EPSG:4326",
+  "default_value/global/over_60_ratio_field": 0.111,
+  "reportDisclaimer": "om telolet om. kasih telolet yaaa.",
+  "show_extent_warnings": true,
+  "default_value/global/youth_ratio_field": 0.25,
+  "setZoomToImpactFlag": true,
+  "analysisExtentFlag": true,
+  "default_value/global/male_ratio_field": 0.504,
+  "default_value/global/feature_rate_field": 1000000.0,
+  "default_value/global/child_bearing_age_ratio_field": 0.259,
+  "ISO19115_EMAIL": "info@inasafe.org",
+  "ISO19115_TITLE": "InaSAFE analysis result",
+  "default_value/female_ratio_field/recent": 0.5,
+  "template_warning_verbose": true
+}
