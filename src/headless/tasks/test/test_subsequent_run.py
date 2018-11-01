@@ -42,7 +42,7 @@ class TestSubsequentRun(unittest.TestCase):
         ' was on different QGIS Instance, thus will always be success '
         '(and useless) on that setup.'
     )
-    @retry_on_worker_lost_error
+    @retry_on_worker_lost_error()
     def test_layer_registry_empty_on_subsequent_run(self):
         """Test layer registry were properly cleaned up
 
