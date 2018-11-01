@@ -52,9 +52,12 @@ def load_minimum_needs(locale='en_US'):
 
             # Check if it is a relative path
             if not minimum_needs_path.startswith('/'):
-                package_path = os.path.dirname(__file__)
+                # The file specified in mapping file should be relative to
+                # this mapping file itself
+                mapping_dir_path = os.path.dirname(
+                    headless_settings.MINIMUM_NEEDS_LOCALE_MAPPING_PATH)
                 minimum_needs_path = os.path.join(
-                    package_path, minimum_needs_path)
+                    mapping_dir_path, minimum_needs_path)
 
     profile = NeedsProfile()
     if minimum_needs_path:
