@@ -44,7 +44,7 @@ coverage-worker-kill:
 	@docker rm headless_inasafe-headless-worker_run_${WORKER_ID}
 
 coverage-worker:
-	@docker-compose run --rm -d inasafe-headless-worker coverage run --rcfile=/home/app/.coveragerc /usr/local/bin/celery -A headless.celery_app worker -l info -Q inasafe-headless -n inasafe-headless.%h
+	@docker-compose run --rm -d inasafe-headless-worker coverage run --rcfile=/home/app/.coveragerc /usr/local/bin/celery -A headless.celery_app worker -l info -Q inasafe-headless -n inasafe-headless.%h -P solo
 
 coverage-tests:
 	@-docker-compose exec inasafe-headless-worker coverage run -m unittest discover -s headless -v
