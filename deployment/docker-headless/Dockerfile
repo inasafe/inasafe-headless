@@ -30,7 +30,8 @@ RUN unzip ubuntu-font-family-0.83.zip
 RUN mv ubuntu-font-family-0.83 /usr/share/fonts/truetype/ubuntu-font-family
 RUN fc-cache -f -v
 
-ADD sitecustomize.py /usr/local/lib/python2.7/site-packages/sitecustomize.py
+# This image instance uses dist-packages directory
+ADD sitecustomize.py /usr/local/lib/python2.7/dist-packages/sitecustomize.py
 ADD REQUIREMENTS.txt /REQUIREMENTS.txt
 RUN pip install -r REQUIREMENTS.txt
 
