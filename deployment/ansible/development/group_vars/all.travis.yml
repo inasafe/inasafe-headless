@@ -20,7 +20,7 @@ inasafe:
   depth: 1
 
 inasafe_headless_worker:
-  command: dev
+  command: "${HEADLESS_COMMAND}"
   environment:
     TASK_ALWAYS_EAGER: "${TASK_ALWAYS_EAGER}"
     ON_TRAVIS: "${ON_TRAVIS}"
@@ -29,7 +29,8 @@ inasafe_headless_worker:
 
 docker_port_forward:
   inasafe_headless:
-    ssh: *inasafe_headless_ssh_port
+    # Do not port forward, to allow scaling
+    non_ssh: *inasafe_headless_ssh_port
 
 integration_test:
   # Path to inasafe-headless's test data directory

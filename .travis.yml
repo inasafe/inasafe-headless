@@ -7,17 +7,21 @@ python:
 
 env:
   global:
-    - COMPOSE_PROJECT_NAME: headless
+    - COMPOSE_PROJECT_NAME=headless
   matrix:
-    - ON_TRAVIS: 'True'
-      TASK_ALWAYS_EAGER: 'True'
-    - ON_TRAVIS: 'True'
-      TASK_ALWAYS_EAGER: 'False'
-      WORKER_SCALE: 4
+    - ON_TRAVIS=True
+      TASK_ALWAYS_EAGER=True
+      HEADLESS_COMMAND=dev
+    - ON_TRAVIS=True
+      TASK_ALWAYS_EAGER=False
+      HEADLESS_COMMAND="coverage run --rcfile=/home/app/.coveragerc /usr/local/bin/celery -A headless.celery_app worker -l info -Q inasafe-headless -n inasafe-headless.%h -P solo"
+      WORKER_SCALE=1
+      INASAFE_LOG_LEVEL=10 # DEBUG log level
     # Special environment for subsequent run stress testing
-    - ON_TRAVIS: 'True'
-      TASK_ALWAYS_EAGER: 'True'
-      SUBSEQUENT_RUN_TESTING: 'True'
+    - ON_TRAVIS=True
+      TASK_ALWAYS_EAGER=True
+      HEADLESS_COMMAND=dev
+      SUBSEQUENT_RUN_TESTING=True
 
 virtualenv:
   system_site_packages: true
@@ -50,8 +54,7 @@ script:
   - pushd deployment
   - make check-flake8
   - ../src/scripts/start_coverage_unittest_worker.sh
-  - export CURRENT_DIR=${PWD}
-  - pushd ../src; scripts/run_coverage_tests.sh ${CURRENT_DIR}; popd
+  - ../src/scripts/run_coverage_tests.sh ${PWD} ../src
   - ../src/scripts/stop_coverage_unittest_worker.sh || true
   - popd
 
