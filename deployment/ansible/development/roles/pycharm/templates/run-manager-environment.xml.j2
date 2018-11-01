@@ -25,3 +25,13 @@
         <env name="REALTIME_GEONODE_PASSWORD" value="{{ geonode_push.password }}" />
         <env name="REALTIME_GEONODE_URL" value="{{ geonode_push.url }}" />
 
+        {% if 'environment' in inasafe_headless_worker %}
+
+        {% for key, value in inasafe_headless_worker.environment.iteritems() %}
+
+        <env name="{{ key }}" value="{{ value }}" />
+
+        {% endfor %}
+
+        {% endif %}
+

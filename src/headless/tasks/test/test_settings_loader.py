@@ -30,14 +30,20 @@ class TestSettingsLoader(unittest.TestCase):
         """Test settings change are resolved correctly."""
         # Triggering start_inasafe should have reinitialized
         # Headless environment
-        start_inasafe()
 
-        # Should follow default settings
-        self.assertEqual(
-            os.path.join(
-                QgsApplication.qgisSettingsDirPath(),
-                'inasafe', 'metadata.db'),
-            setting('keywordCachePath'))
+        # Check default value
+        patched_env = {
+            'INASAFE_SETTINGS_PATH': ''
+        }
+        with mock.patch.dict(os.environ, patched_env):
+            start_inasafe()
+
+            # Should follow default settings
+            self.assertEqual(
+                os.path.join(
+                    QgsApplication.qgisSettingsDirPath(),
+                    'inasafe', 'metadata.db'),
+                setting('keywordCachePath'))
 
         # mock environment variable
         patched_env = {
@@ -55,13 +61,17 @@ class TestSettingsLoader(unittest.TestCase):
                 'om telolet om. kasih telolet yaaa.')
 
         # now, it should go back
-        start_inasafe()
+        patched_env = {
+            'INASAFE_SETTINGS_PATH': ''
+        }
+        with mock.patch.dict(os.environ, patched_env):
+            start_inasafe()
 
-        self.assertEqual(
-            os.path.join(
-                QgsApplication.qgisSettingsDirPath(),
-                'inasafe', 'metadata.db'),
-            setting('keywordCachePath'))
+            self.assertEqual(
+                os.path.join(
+                    QgsApplication.qgisSettingsDirPath(),
+                    'inasafe', 'metadata.db'),
+                setting('keywordCachePath'))
 
     @unittest.skipUnless(
         task_always_eager,
@@ -69,16 +79,20 @@ class TestSettingsLoader(unittest.TestCase):
     def test_minimum_needs_switching(self):
         """Test correct minimum needs is used."""
         # Check default minimum needs
-        start_inasafe('en')
+        patched_env = {
+            'MINIMUM_NEEDS_LOCALE_MAPPING_PATH': ''
+        }
+        with mock.patch.dict(os.environ, patched_env):
+            start_inasafe('en')
 
-        profile = NeedsProfile()
-        profile.load()
+            profile = NeedsProfile()
+            profile.load()
 
-        self.assertEqual('en', profile.locale)
-        self.assertEqual('BNPB_en', profile.minimum_needs['profile'])
-        self.assertEqual(
-            'The minimum needs are based on Perka 7/2008.',
-            profile.provenance)
+            self.assertEqual('en', profile.locale)
+            self.assertEqual('BNPB_en', profile.minimum_needs['profile'])
+            self.assertEqual(
+                'The minimum needs are based on Perka 7/2008.',
+                profile.provenance)
 
         # mock environment variable
         patched_env = {
@@ -98,13 +112,17 @@ class TestSettingsLoader(unittest.TestCase):
                 profile.provenance)
 
         # Should be back to default
-        start_inasafe('en')
+        patched_env = {
+            'MINIMUM_NEEDS_LOCALE_MAPPING_PATH': ''
+        }
+        with mock.patch.dict(os.environ, patched_env):
+            start_inasafe('en')
 
-        profile = NeedsProfile()
-        profile.load()
+            profile = NeedsProfile()
+            profile.load()
 
-        self.assertEqual('en', profile.locale)
-        self.assertEqual('BNPB_en', profile.minimum_needs['profile'])
-        self.assertEqual(
-            'The minimum needs are based on Perka 7/2008.',
-            profile.provenance)
+            self.assertEqual('en', profile.locale)
+            self.assertEqual('BNPB_en', profile.minimum_needs['profile'])
+            self.assertEqual(
+                'The minimum needs are based on Perka 7/2008.',
+                profile.provenance)
