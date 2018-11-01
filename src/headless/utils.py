@@ -1,4 +1,5 @@
 # coding=utf-8
+import logging
 import os
 
 from qgis.core import QgsMapLayer
@@ -8,6 +9,22 @@ from safe.utilities.keyword_io import KeywordIO
 from safe.utilities.metadata import read_iso19115_metadata
 from safe.utilities.utilities import monkey_patch_keywords
 from safe.gis.tools import load_layer as inasafe_load_layer
+
+from headless import settings as headless_settings
+
+
+def set_logger():
+    """Set default log level"""
+    # Initialize logger
+    logger = logging.getLogger('InaSAFE')
+    logger.setLevel(headless_settings.INASAFE_LOG_LEVEL)
+
+
+def get_headless_logger():
+    """Get an instance of InaSAFE Headless logger."""
+    logger = logging.getLogger('InaSAFE Headless')
+    logger.setLevel(headless_settings.HEADLESS_LOG_LEVEL)
+    return logger
 
 
 def load_layer(full_layer_uri_string, name=None, provider=None):

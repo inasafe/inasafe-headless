@@ -8,6 +8,7 @@ from headless import settings as headless_settings
 from raven import Client
 from raven.contrib.celery import register_signal, register_logger_signal
 
+from headless.utils import set_logger
 from safe.gui.tools.minimum_needs.needs_profile import NeedsProfile
 from safe.utilities.settings import import_setting
 
@@ -74,12 +75,14 @@ def start_inasafe(locale='en_US'):
     :return: Tuple of QGIS application object and IFACE.
     :rtype: tuple
     """
+    set_logger()
+
     # Initialize qgis_app
     from safe.test.utilities import get_qgis_app
     QGIS_APP, CANVAS, IFACE, PARENT = get_qgis_app(locale)
 
     # Load QGIS Expression
-    from safe.utilities.expressions import qgis_expressions  # noqa
+    # from safe.utilities.expressions import qgis_expressions  # noqa
     # Setting
     from safe.utilities.settings import set_setting
 
@@ -108,15 +111,16 @@ def start_inasafe(locale='en_US'):
 class SentryCelery(Celery):
 
     def on_configure(self):
-        client = Client(
-            'http://25f76b1f231344238fa740ef19a24f41:'
-            '4965f3b1f30b4ad89ed56c1276f3250a@sentry.kartoza.com/12')
+        if headless_settings.ENABLE_SENTRY:
+            client = Client(
+                'http://25f76b1f231344238fa740ef19a24f41:'
+                '4965f3b1f30b4ad89ed56c1276f3250a@sentry.kartoza.com/12')
 
-        # register a custom filter to filter out duplicate logs
-        register_logger_signal(client)
+            # register a custom filter to filter out duplicate logs
+            register_logger_signal(client)
 
-        # hook into the Celery error handler
-        register_signal(client)
+            # hook into the Celery error handler
+            register_signal(client)
 
 
 app = SentryCelery('headless.tasks')

@@ -1,5 +1,7 @@
 # coding=utf-8
 """InaSAFE Headless settings."""
+import logging
+from distutils.util import strtobool
 
 __copyright__ = "Copyright 2018, The InaSAFE Project"
 __license__ = "GPL version 3"
@@ -22,6 +24,15 @@ if not os.path.exists(MINIMUM_NEEDS_LOCALE_MAPPING_PATH):
 
 # Setting for output directory where to store the output layers.
 OUTPUT_DIRECTORY = os.environ.get('INASAFE_OUTPUT_DIR')
+
+# set log Lever
+INASAFE_LOG_LEVEL = os.environ.get('INASAFE_LOG_LEVEL', str(logging.ERROR))
+INASAFE_LOG_LEVEL = int(INASAFE_LOG_LEVEL)
+
+HEADLESS_LOG_LEVEL = os.environ.get('HEADLESS_LOG_LEVEL', str(logging.INFO))
+HEADLESS_LOG_LEVEL = int(HEADLESS_LOG_LEVEL)
+
+ENABLE_SENTRY = strtobool(os.environ.get('ENABLE_SENTRY', 'False'))
 
 # GeoNode Settings to push to GeoNode
 PUSH_TO_REALTIME_GEONODE = ast.literal_eval(
