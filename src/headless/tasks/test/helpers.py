@@ -1,5 +1,6 @@
 # coding=utf-8
 import os
+from functools import wraps
 
 from billiard.exceptions import WorkerLostError
 
@@ -60,6 +61,8 @@ def retry_on_worker_lost_error(times=5):
     :type times: int
     """
     def _decorator(func):
+
+        @wraps(func)
         def wrapper(*args, **kwargs):
             for i in range(times):
                 try:

@@ -50,7 +50,8 @@ script:
   - pushd deployment
   - make check-flake8
   - ../src/scripts/start_coverage_unittest_worker.sh
-  - ../src/scripts/run_coverage_tests.sh
+  - export CURRENT_DIR=${PWD}
+  - pushd ../src; scripts/run_coverage_tests.sh ${CURRENT_DIR}; popd
   - ../src/scripts/stop_coverage_unittest_worker.sh || true
   - popd
 
