@@ -8,7 +8,7 @@ from headless import settings as headless_settings
 from raven import Client
 from raven.contrib.celery import register_signal, register_logger_signal
 
-from headless.utils import set_logger
+from headless.utils import set_logger, get_headless_logger
 from safe.gui.tools.minimum_needs.needs_profile import NeedsProfile
 from safe.utilities.settings import import_setting
 
@@ -16,6 +16,9 @@ __copyright__ = "Copyright 2018, The InaSAFE Project"
 __license__ = "GPL version 3"
 __email__ = "info@inasafe.org"
 __revision__ = '$Format:%H$'
+
+
+LOGGER = get_headless_logger()
 
 
 def load_inasafe_settings():
@@ -48,7 +51,7 @@ def load_minimum_needs(locale='en_US'):
             locale_mapping = json.load(f)
 
         if locale in locale_mapping:
-            minimum_needs_path = locale_mapping.get(locale, None)
+            minimum_needs_path = locale_mapping.get(locale, '')
 
             # Check if it is a relative path
             if not minimum_needs_path.startswith('/'):
@@ -61,12 +64,16 @@ def load_minimum_needs(locale='en_US'):
 
     profile = NeedsProfile()
     if minimum_needs_path:
-        profile.read_from_file(minimum_needs_path)
-        profile.save()
+        try:
+            profile.read_from_file(minimum_needs_path)
+        except BaseException as e:
+            LOGGER.debug(e)
+            profile.minimum_needs = profile._defaults()
     else:
         # if no path specified, use internal minimum needs
         profile.minimum_needs = profile._defaults()
-        profile.save()
+
+    profile.save()
 
 
 def start_inasafe(locale='en_US'):

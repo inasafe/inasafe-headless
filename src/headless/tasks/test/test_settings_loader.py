@@ -111,6 +111,18 @@ class TestSettingsLoader(unittest.TestCase):
                 'Perka BNPB no.7 tahun 2008.',
                 profile.provenance)
 
+            # unknown locale will default to default minimum needs
+            start_inasafe('es')
+
+            profile = NeedsProfile()
+            profile.load()
+
+            self.assertEqual('es', profile.locale)
+            self.assertEqual('BNPB_en', profile.minimum_needs['profile'])
+            self.assertEqual(
+                'The minimum needs are based on Perka 7/2008.',
+                profile.provenance)
+
         # Should be back to default
         patched_env = {
             'MINIMUM_NEEDS_LOCALE_MAPPING_PATH': ''
