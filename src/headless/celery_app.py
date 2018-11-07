@@ -128,8 +128,6 @@ def start_inasafe(locale='en_US'):
     from safe.test.utilities import get_qgis_app
     QGIS_APP, CANVAS, IFACE, PARENT = get_qgis_app(locale)
 
-    # Load QGIS Expression
-    # from safe.utilities.expressions import qgis_expressions  # noqa
     # Setting
     from safe.utilities.settings import set_setting
 
@@ -146,6 +144,9 @@ def start_inasafe(locale='en_US'):
     # reload minimum needs definitions
     # redeclarations are needed for report
     reload_definitions()
+
+    # Load QGIS Expression
+    from safe.utilities.expressions import qgis_expressions  # noqa
 
     if headless_settings.OUTPUT_DIRECTORY:
         try:
