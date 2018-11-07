@@ -1,8 +1,7 @@
 # coding=utf-8
-import importlib
+import contextlib
 import json
 import os
-import qgis  # noqa
 
 from celery import Celery
 from headless import settings as headless_settings
@@ -12,6 +11,7 @@ from raven.contrib.celery import register_signal, register_logger_signal
 from headless.utils import set_logger, get_headless_logger
 from safe.gui.tools.minimum_needs.needs_profile import NeedsProfile
 from safe.utilities.settings import import_setting
+from safe.utilities.utilities import reload_inasafe_modules
 
 __copyright__ = "Copyright 2018, The InaSAFE Project"
 __license__ = "GPL version 3"
@@ -77,42 +77,7 @@ def load_minimum_needs(locale='en_US'):
     profile.save()
 
 
-def reload_definitions():
-    """Brute force reload all related InaSAFE definitions to apply
-    current locale."""
-    package_list = [
-        # Reload minimum needs
-        'safe.definitions.minimum_needs',
-        # Reload everything that depends on minimum_needs
-        'safe.definitions.fields',
-        'safe.definitions',
-
-        # Reload min needs postprocessors
-        'safe.processors.minimum_needs_post_processors',
-        # Reload everything that depends on postprocessors
-        'safe.processors',
-        'safe.impact_function.postprocessors',
-        'safe.impact_function',
-
-        # Reload everything that depends on reporting
-        'safe.report.extractors.aggregate_postprocessors',
-        'safe.report.extractors.minimum_needs',
-        'safe.report'
-    ]
-    for p in package_list:
-        reload(importlib.import_module(p))
-
-    from safe.definitions import minimum_needs
-    from safe import processors
-    LOGGER.debug('Minimum Needs list:')
-    for m in minimum_needs.minimum_needs_fields:
-        LOGGER.debug(m)
-
-    LOGGER.debug('Minimum Needs Processors list:')
-    for m in processors.minimum_needs_post_processors:
-        LOGGER.debug(m)
-
-
+@contextlib.contextmanager
 def start_inasafe(locale='en_US'):
     """Initialize QGIS application and prepare InaSAFE settings.
 
@@ -122,42 +87,45 @@ def start_inasafe(locale='en_US'):
     :return: Tuple of QGIS application object and IFACE.
     :rtype: tuple
     """
-    set_logger()
+    try:
+        set_logger()
 
-    # Initialize qgis_app
-    from safe.test.utilities import get_qgis_app
-    QGIS_APP, CANVAS, IFACE, PARENT = get_qgis_app(locale)
+        # Initialize qgis_app
+        from safe.test.utilities import get_qgis_app
+        QGIS_APP, CANVAS, IFACE, PARENT = get_qgis_app(locale)
 
-    # Setting
-    from safe.utilities.settings import set_setting
+        # Setting
+        from safe.utilities.settings import set_setting
 
-    # Reload default settings first
-    from safe.definitions import default_settings
-    from safe.utilities import settings
-    reload(default_settings)
-    reload(settings)
-    reload(headless_settings)
+        # Reload default settings first
+        from safe.definitions import default_settings
+        from safe.utilities import settings
+        reload(default_settings)
+        reload(settings)
+        reload(headless_settings)
 
-    load_inasafe_settings()
-    load_minimum_needs(locale)
+        load_inasafe_settings()
+        load_minimum_needs(locale)
 
-    # reload minimum needs definitions
-    # redeclarations are needed for report
-    reload_definitions()
+        # reload minimum needs definitions
+        # redeclarations are needed for report
+        reload_inasafe_modules()
 
-    # Load QGIS Expression
-    from safe.utilities.expressions import qgis_expressions  # noqa
+        # Load QGIS Expression
+        from safe.utilities.expressions import qgis_expressions  # noqa
 
-    if headless_settings.OUTPUT_DIRECTORY:
-        try:
-            os.makedirs(headless_settings.OUTPUT_DIRECTORY)
-        except OSError:
-            if not os.path.isdir(headless_settings.OUTPUT_DIRECTORY):
-                raise
-        set_setting(
-            'defaultUserDirectory', headless_settings.OUTPUT_DIRECTORY)
+        if headless_settings.OUTPUT_DIRECTORY:
+            try:
+                os.makedirs(headless_settings.OUTPUT_DIRECTORY)
+            except OSError:
+                if not os.path.isdir(headless_settings.OUTPUT_DIRECTORY):
+                    raise
+            set_setting(
+                'defaultUserDirectory', headless_settings.OUTPUT_DIRECTORY)
 
-    return QGIS_APP, IFACE
+        yield QGIS_APP, IFACE
+    finally:
+        QGIS_APP.exit()
 
 
 class SentryCelery(Celery):
