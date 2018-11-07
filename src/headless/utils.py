@@ -4,13 +4,12 @@ import os
 
 from qgis.core import QgsMapLayer
 
+from headless import settings as headless_settings
 from safe.common.exceptions import NoKeywordsFoundError
+from safe.gis.tools import load_layer as inasafe_load_layer
 from safe.utilities.keyword_io import KeywordIO
 from safe.utilities.metadata import read_iso19115_metadata
 from safe.utilities.utilities import monkey_patch_keywords
-from safe.gis.tools import load_layer as inasafe_load_layer
-
-from headless import settings as headless_settings
 
 
 def set_logger():

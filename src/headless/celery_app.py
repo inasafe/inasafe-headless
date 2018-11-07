@@ -1,4 +1,5 @@
 # coding=utf-8
+import importlib
 import json
 import os
 import qgis  # noqa
@@ -76,6 +77,42 @@ def load_minimum_needs(locale='en_US'):
     profile.save()
 
 
+def reload_definitions():
+    """Brute force reload all related InaSAFE definitions to apply
+    current locale."""
+    package_list = [
+        # Reload minimum needs
+        'safe.definitions.minimum_needs',
+        # Reload everything that depends on minimum_needs
+        'safe.definitions.fields',
+        'safe.definitions',
+
+        # Reload min needs postprocessors
+        'safe.processors.minimum_needs_post_processors',
+        # Reload everything that depends on postprocessors
+        'safe.processors',
+        'safe.impact_function.postprocessors',
+        'safe.impact_function',
+
+        # Reload everything that depends on reporting
+        'safe.report.extractors.aggregate_postprocessors',
+        'safe.report.extractors.minimum_needs',
+        'safe.report'
+    ]
+    for p in package_list:
+        reload(importlib.import_module(p))
+
+    from safe.definitions import minimum_needs
+    from safe import processors
+    LOGGER.debug('Minimum Needs list:')
+    for m in minimum_needs.minimum_needs_fields:
+        LOGGER.debug(m)
+
+    LOGGER.debug('Minimum Needs Processors list:')
+    for m in processors.minimum_needs_post_processors:
+        LOGGER.debug(m)
+
+
 def start_inasafe(locale='en_US'):
     """Initialize QGIS application and prepare InaSAFE settings.
 
@@ -105,6 +142,10 @@ def start_inasafe(locale='en_US'):
 
     load_inasafe_settings()
     load_minimum_needs(locale)
+
+    # reload minimum needs definitions
+    # redeclarations are needed for report
+    reload_definitions()
 
     if headless_settings.OUTPUT_DIRECTORY:
         try:
