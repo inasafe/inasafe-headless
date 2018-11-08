@@ -28,11 +28,11 @@ def get_keywords(layer_uri, keyword=None):
     :rtype: dict, basestring
     """
     # Initialize QGIS and InaSAFE
-    start_inasafe()
+    with start_inasafe():
 
-    reload(inasafe_analysis)
-    metadata = inasafe_analysis.get_keywords(layer_uri, keyword)
-    return metadata
+        reload(inasafe_analysis)
+        metadata = inasafe_analysis.get_keywords(layer_uri, keyword)
+        return metadata
 
 
 @app.task(
@@ -74,13 +74,13 @@ def run_analysis(
     }
     """
     # Initialize QGIS and InaSAFE
-    start_inasafe(locale)
+    with start_inasafe(locale):
 
-    reload(inasafe_analysis)
-    retval = inasafe_analysis.inasafe_analysis(
-        hazard_layer_uri, exposure_layer_uri, aggregation_layer_uri, crs)
+        reload(inasafe_analysis)
+        retval = inasafe_analysis.inasafe_analysis(
+            hazard_layer_uri, exposure_layer_uri, aggregation_layer_uri, crs)
 
-    return retval
+        return retval
 
 
 @app.task(
@@ -133,13 +133,13 @@ def run_multi_exposure_analysis(
     }
     """
     # Initialize QGIS and InaSAFE
-    start_inasafe(locale)
+    with start_inasafe(locale):
 
-    reload(inasafe_analysis)
-    retval = inasafe_analysis.inasafe_multi_exposure_analysis(
-        hazard_layer_uri, exposure_layer_uris, aggregation_layer_uri, crs)
+        reload(inasafe_analysis)
+        retval = inasafe_analysis.inasafe_multi_exposure_analysis(
+            hazard_layer_uri, exposure_layer_uris, aggregation_layer_uri, crs)
 
-    return retval
+        return retval
 
 
 @app.task(
@@ -193,18 +193,19 @@ def generate_report(
 
     """
     # Initialize QGIS and InaSAFE
-    _, IFACE = start_inasafe(locale)
+    with start_inasafe(locale) as app_instance:
+        __, IFACE = app_instance
 
-    reload(inasafe_analysis)
-    retval = inasafe_analysis.generate_report(
-        impact_layer_uri,
-        custom_report_template_uri,
-        custom_layer_order,
-        custom_legend_layer,
-        use_template_extent,
-        IFACE)
+        reload(inasafe_analysis)
+        retval = inasafe_analysis.generate_report(
+            impact_layer_uri,
+            custom_report_template_uri,
+            custom_layer_order,
+            custom_legend_layer,
+            use_template_extent,
+            IFACE)
 
-    return retval
+        return retval
 
 
 @app.task(
@@ -246,11 +247,11 @@ def get_generated_report(impact_layer_uri):
     }
     """
     # Initialize QGIS and InaSAFE
-    start_inasafe()
+    with start_inasafe():
 
-    reload(inasafe_analysis)
-    result = inasafe_analysis.get_generated_report(impact_layer_uri)
-    return result
+        reload(inasafe_analysis)
+        result = inasafe_analysis.get_generated_report(impact_layer_uri)
+        return result
 
 
 @app.task(
@@ -270,11 +271,11 @@ def generate_contour(layer_uri):
     current_datetime format: 25January2018_09h25-17.597909
     """
     # Initialize QGIS and InaSAFE
-    start_inasafe()
+    with start_inasafe():
 
-    reload(inasafe_analysis)
-    result = inasafe_analysis.generate_contour(layer_uri)
-    return result
+        reload(inasafe_analysis)
+        result = inasafe_analysis.generate_contour(layer_uri)
+        return result
 
 
 @app.task(
@@ -311,8 +312,8 @@ def push_to_geonode(layer_uri):
     }
     """
     # Initialize QGIS and InaSAFE
-    start_inasafe()
+    with start_inasafe():
 
-    reload(inasafe_analysis)
-    result = inasafe_analysis.push_to_geonode(layer_uri)
-    return result
+        reload(inasafe_analysis)
+        result = inasafe_analysis.push_to_geonode(layer_uri)
+        return result
