@@ -384,13 +384,23 @@ def generate_report(
             override_component_template(
                 map_report, custom_report_template_uri))
 
+    def _preprocess_callback(impact_report=None):
+        """Set additional customization for generating report.
+
+        :param impact_report: ImpactReport object
+        :type impact_report: safe.report.impact_report.ImpactReport
+        """
+        impact_report.qgis_composition_context.save_as_raster = False
+        return impact_report
+
     error_code, message = (
         impact_function.generate_report(
             generated_components,
             iface=IFACE,
             ordered_layers_uri=custom_layer_order,
             legend_layers_uri=custom_legend_layer,
-            use_template_extent=use_template_extent))
+            use_template_extent=use_template_extent,
+            pre_process_callback=_preprocess_callback))
 
     # Clean up layer registry after using
     layer_registry.removeAllMapLayers()

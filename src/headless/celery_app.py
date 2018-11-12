@@ -2,7 +2,6 @@
 import importlib
 import json
 import os
-import qgis  # noqa
 
 from celery import Celery
 from headless import settings as headless_settings
@@ -125,8 +124,10 @@ def start_inasafe(locale='en_US'):
     set_logger()
 
     # Initialize qgis_app
-    from safe.test.utilities import get_qgis_app
+    from safe.test.utilities import get_qgis_app, set_canvas_crs
     QGIS_APP, CANVAS, IFACE, PARENT = get_qgis_app(locale)
+
+    set_canvas_crs(4326, True)
 
     # Setting
     from safe.utilities.settings import set_setting
@@ -146,6 +147,7 @@ def start_inasafe(locale='en_US'):
     reload_definitions()
 
     # Load QGIS Expression
+    # noinspection PyUnresolvedReferences
     from safe.utilities.expressions import qgis_expressions  # noqa
 
     if headless_settings.OUTPUT_DIRECTORY:
