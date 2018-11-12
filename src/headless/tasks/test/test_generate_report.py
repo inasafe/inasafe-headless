@@ -241,6 +241,53 @@ class TestGenerateReport(unittest.TestCase):
         self.assertNotIn('inasafe-map-report-landscape', product_keys)
 
     @retry_on_worker_lost_error()
+    def test_generate_report_with_basemap(self):
+        """Test generate report with basemap."""
+        # Run analysis first
+        result_delay = run_analysis.delay(
+            earthquake_layer_uri,
+            population_multi_fields_layer_uri,
+            aggregation_layer_uri
+        )
+        result = result_delay.get()
+        self.assertEqual(ANALYSIS_SUCCESS, result['status'],
+                         result['message'])
+        self.assertLess(0, len(result['output']))
+        for key, layer_uri in result['output'].items():
+            self.assertTrue(os.path.exists(layer_uri))
+            self.assertTrue(layer_uri.startswith(OUTPUT_DIRECTORY))
+
+        # Retrieve impact analysis uri
+        impact_analysis_uri = result['output'][
+            layer_purpose_exposure_summary['key']]
+
+        custom_layer_order = [
+            # first will be on top
+            impact_analysis_uri,
+            # put basemap source uri with QGIS provider info
+            'type=xyz&url=http://tile.openstreetmap.org/{z}/{x}/{y}.png'
+            '|qgis_provider=wms',
+        ]
+
+        # Generate reports
+        async_result = generate_report.delay(
+            impact_analysis_uri,
+            custom_layer_order=custom_layer_order,
+            custom_legend_layer=custom_layer_order[:1])
+        result = async_result.get()
+        self.assertEqual(
+            ImpactReport.REPORT_GENERATION_SUCCESS, result['status'])
+        product_keys = []
+        for key, products in result['output'].items():
+            for product_key, product_uri in products.items():
+                product_keys.append(product_key)
+                message = 'Product %s is not found in %s' % (
+                    product_key, product_uri)
+                self.assertTrue(os.path.exists(product_uri), message)
+                if custom_map_template_basename == product_key:
+                    print product_uri
+
+    @retry_on_worker_lost_error()
     def test_get_generated_report(self):
         """Test get generated report task."""
         # Run analysis first
