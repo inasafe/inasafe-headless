@@ -1,5 +1,6 @@
 # coding=utf-8
 """Unit test for celery task."""
+from past.builtins import basestring
 import os
 import pickle
 import unittest

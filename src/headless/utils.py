@@ -2,7 +2,7 @@
 import logging
 import os
 
-from qgis.core import QgsMapLayer
+from qgis.core import QgsLayerDefinition
 
 from headless import settings as headless_settings
 from safe.common.exceptions import NoKeywordsFoundError
@@ -50,11 +50,12 @@ def load_layer(full_layer_uri_string, name=None, provider=None):
     base, ext = os.path.splitext(full_layer_uri_string)
 
     if ext.lower() == '.qlr':
-        layer = QgsMapLayer.fromLayerDefinitionFile(full_layer_uri_string)
-        if not layer:
+        layers = QgsLayerDefinition.loadLayerDefinitionLayers(
+            full_layer_uri_string)
+        if not layers:
             return None, None
 
-        layer = layer[0]
+        layer = layers[0]
         if layer.isValid():
             keyword_io = KeywordIO()
 

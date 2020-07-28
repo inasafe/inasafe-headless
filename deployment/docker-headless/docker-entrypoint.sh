@@ -2,7 +2,7 @@
 
 # Wait run xvfb
 while [ -z  "$(pidof /usr/bin/Xvfb)" ]; do
-  start-stop-daemon --start -b -x /usr/bin/Xvfb ${DISPLAY}
+  start-stop-daemon --start -b -x /usr/bin/Xvfb ${DISPLAY} -- -screen 0 1024x768x24 -ac +extension GLX +render -noreset -nolisten tcp
   sleep 5
 done
 

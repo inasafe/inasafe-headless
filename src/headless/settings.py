@@ -1,5 +1,6 @@
 # coding=utf-8
 """InaSAFE Headless settings."""
+from builtins import str
 import logging
 from distutils.util import strtobool
 

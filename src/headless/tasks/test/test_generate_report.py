@@ -1,7 +1,8 @@
 # coding=utf-8
+from __future__ import print_function
+from past.builtins import basestring
 import os
 import unittest
-from distutils.util import strtobool
 
 from headless.settings import OUTPUT_DIRECTORY
 from headless.tasks.inasafe_analysis import (
@@ -36,9 +37,6 @@ __revision__ = '$Format:%H$'
 
 class TestGenerateReport(unittest.TestCase):
 
-    @unittest.skipIf(
-        strtobool(os.environ.get('ON_TRAVIS', 'False')),
-        """Skipped because we don't have remote service QLR anymore.""")
     @retry_on_worker_lost_error()
     def test_generate_report_qlr(self):
         """Test generating report with QLR files."""
@@ -52,7 +50,7 @@ class TestGenerateReport(unittest.TestCase):
         self.assertEqual(ANALYSIS_SUCCESS, result['status'],
                          result['message'])
         self.assertLess(0, len(result['output']))
-        for key, layer_uri in result['output'].items():
+        for key, layer_uri in list(result['output'].items()):
             self.assertTrue(os.path.exists(layer_uri))
             self.assertTrue(layer_uri.startswith(OUTPUT_DIRECTORY))
 
@@ -71,8 +69,8 @@ class TestGenerateReport(unittest.TestCase):
         result = async_result.get()
         self.assertEqual(
             ImpactReport.REPORT_GENERATION_SUCCESS, result['status'])
-        for key, products in result['output'].items():
-            for product_key, product_uri in products.items():
+        for key, products in list(result['output'].items()):
+            for product_key, product_uri in list(products.items()):
                 message = 'Product %s is not found in %s' % (
                     product_key, product_uri)
                 self.assertTrue(os.path.exists(product_uri), message)
@@ -88,7 +86,7 @@ class TestGenerateReport(unittest.TestCase):
         result = result_delay.get()
         self.assertEqual(ANALYSIS_SUCCESS, result['status'], result['message'])
         self.assertLess(0, len(result['output']))
-        for key, layer_uri in result['output'].items():
+        for key, layer_uri in list(result['output'].items()):
             self.assertTrue(os.path.exists(layer_uri))
             self.assertTrue(layer_uri.startswith(OUTPUT_DIRECTORY))
 
@@ -107,8 +105,8 @@ class TestGenerateReport(unittest.TestCase):
         result = async_result.get()
         self.assertEqual(
             ImpactReport.REPORT_GENERATION_SUCCESS, result['status'])
-        for key, products in result['output'].items():
-            for product_key, product_uri in products.items():
+        for key, products in list(result['output'].items()):
+            for product_key, product_uri in list(products.items()):
                 message = 'Product %s is not found in %s' % (
                     product_key, product_uri)
                 self.assertTrue(os.path.exists(product_uri), message)
@@ -124,7 +122,7 @@ class TestGenerateReport(unittest.TestCase):
         result = result_delay.get()
         self.assertEqual(0, result['status'], result['message'])
         self.assertLess(0, len(result['output']))
-        for key, layer_uri in result['output'].items():
+        for key, layer_uri in list(result['output'].items()):
             self.assertTrue(os.path.exists(layer_uri))
             self.assertTrue(layer_uri.startswith(OUTPUT_DIRECTORY))
 
@@ -143,8 +141,8 @@ class TestGenerateReport(unittest.TestCase):
         result = async_result.get()
         self.assertEqual(
             ImpactReport.REPORT_GENERATION_SUCCESS, result['status'])
-        for key, products in result['output'].items():
-            for product_key, product_uri in products.items():
+        for key, products in list(result['output'].items()):
+            for product_key, product_uri in list(products.items()):
                 message = 'Product %s is not found in %s' % (
                     product_key, product_uri)
                 self.assertTrue(os.path.exists(product_uri), message)
@@ -164,13 +162,13 @@ class TestGenerateReport(unittest.TestCase):
         self.assertEqual(ANALYSIS_SUCCESS, result['status'], result['message'])
         self.assertLess(0, len(result['output']))
         num_exposure_output = 0
-        for key, layer_uri in result['output'].items():
+        for key, layer_uri in list(result['output'].items()):
             if isinstance(layer_uri, basestring):
                 self.assertTrue(os.path.exists(layer_uri))
                 self.assertTrue(layer_uri.startswith(OUTPUT_DIRECTORY))
             elif isinstance(layer_uri, dict):
                 num_exposure_output += 1
-                for the_key, the_layer_uri in layer_uri.items():
+                for the_key, the_layer_uri in list(layer_uri.items()):
                     self.assertTrue(os.path.exists(the_layer_uri))
                     self.assertTrue(the_layer_uri.startswith(OUTPUT_DIRECTORY))
 
@@ -189,8 +187,8 @@ class TestGenerateReport(unittest.TestCase):
         result = async_result.get()
         self.assertEqual(
             ImpactReport.REPORT_GENERATION_SUCCESS, result['status'])
-        for key, products in result['output'].items():
-            for product_key, product_uri in products.items():
+        for key, products in list(result['output'].items()):
+            for product_key, product_uri in list(products.items()):
                 message = 'Product %s is not found in %s' % (
                     product_key, product_uri)
                 self.assertTrue(os.path.exists(product_uri), message)
@@ -207,7 +205,7 @@ class TestGenerateReport(unittest.TestCase):
         result = result_delay.get()
         self.assertEqual(ANALYSIS_SUCCESS, result['status'], result['message'])
         self.assertLess(0, len(result['output']))
-        for key, layer_uri in result['output'].items():
+        for key, layer_uri in list(result['output'].items()):
             self.assertTrue(os.path.exists(layer_uri))
             self.assertTrue(layer_uri.startswith(OUTPUT_DIRECTORY))
 
@@ -222,14 +220,14 @@ class TestGenerateReport(unittest.TestCase):
         self.assertEqual(
             ImpactReport.REPORT_GENERATION_SUCCESS, result['status'])
         product_keys = []
-        for key, products in result['output'].items():
-            for product_key, product_uri in products.items():
+        for key, products in list(result['output'].items()):
+            for product_key, product_uri in list(products.items()):
                 product_keys.append(product_key)
                 message = 'Product %s is not found in %s' % (
                     product_key, product_uri)
                 self.assertTrue(os.path.exists(product_uri), message)
                 if custom_map_template_basename == product_key:
-                    print product_uri
+                    print(product_uri)
 
         # Check if custom map template found.
         self.assertIn(custom_map_template_basename, product_keys)
@@ -250,7 +248,7 @@ class TestGenerateReport(unittest.TestCase):
         self.assertEqual(ANALYSIS_SUCCESS, result['status'],
                          result['message'])
         self.assertLess(0, len(result['output']))
-        for key, layer_uri in result['output'].items():
+        for key, layer_uri in list(result['output'].items()):
             self.assertTrue(os.path.exists(layer_uri))
             self.assertTrue(layer_uri.startswith(OUTPUT_DIRECTORY))
 
@@ -275,14 +273,14 @@ class TestGenerateReport(unittest.TestCase):
         self.assertEqual(
             ImpactReport.REPORT_GENERATION_SUCCESS, result['status'])
         product_keys = []
-        for key, products in result['output'].items():
-            for product_key, product_uri in products.items():
+        for key, products in list(result['output'].items()):
+            for product_key, product_uri in list(products.items()):
                 product_keys.append(product_key)
                 message = 'Product %s is not found in %s' % (
                     product_key, product_uri)
                 self.assertTrue(os.path.exists(product_uri), message)
                 if custom_map_template_basename == product_key:
-                    print product_uri
+                    print(product_uri)
 
     @retry_on_worker_lost_error()
     def test_get_generated_report(self):
@@ -293,7 +291,7 @@ class TestGenerateReport(unittest.TestCase):
         result = result_delay.get()
         self.assertEqual(ANALYSIS_SUCCESS, result['status'], result['message'])
         self.assertLess(0, len(result['output']))
-        for key, layer_uri in result['output'].items():
+        for key, layer_uri in list(result['output'].items()):
             self.assertTrue(os.path.exists(layer_uri))
             self.assertTrue(layer_uri.startswith(OUTPUT_DIRECTORY))
 

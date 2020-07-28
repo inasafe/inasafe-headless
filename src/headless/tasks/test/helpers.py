@@ -1,4 +1,5 @@
 # coding=utf-8
+from builtins import range
 import os
 from functools import wraps
 
@@ -23,7 +24,7 @@ population_multi_fields_layer_uri = os.path.join(
 buildings_layer_uri = os.path.join(
     dir_path, 'data', 'input_layers', 'buildings.geojson')
 buildings_layer_qlr_uri = os.path.join(
-    dir_path, 'data', 'input_layers', 'buildings.qlr')
+    dir_path, 'data', 'input_layers', 'buildings_geojson.qlr')
 
 shapefile_layer_uri = standard_data_path('exposure', 'airports.shp')
 ascii_layer_uri = standard_data_path('gisv4', 'hazard', 'earthquake.asc')

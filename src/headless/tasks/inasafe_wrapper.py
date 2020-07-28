@@ -1,6 +1,6 @@
 # coding=utf-8
 """Task for InaSAFE Headless."""
-
+from importlib import reload
 from headless.celery_app import app, start_inasafe
 from headless.tasks import inasafe_analysis
 from headless.utils import get_headless_logger
