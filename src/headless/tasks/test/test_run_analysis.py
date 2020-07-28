@@ -103,8 +103,7 @@ class TestRunAnalysis(unittest.TestCase):
 
     @unittest.skipIf(
         strtobool(os.environ.get('ON_TRAVIS', 'False')),
-        'Skipped because of weird error, module not found when using '
-        'unittest.')
+        """Skipped because we don't have remote service QLR anymore.""")
     @retry_on_worker_lost_error()
     def test_run_analysis_qlr(self):
         """Test running analysis with QLR files."""
