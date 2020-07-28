@@ -3,7 +3,6 @@ import os
 import unittest
 from distutils.util import strtobool
 
-from headless.celery_app import app
 from headless.settings import OUTPUT_DIRECTORY
 from headless.tasks.inasafe_analysis import (
     REPORT_METADATA_NOT_EXIST,
@@ -38,10 +37,8 @@ __revision__ = '$Format:%H$'
 class TestGenerateReport(unittest.TestCase):
 
     @unittest.skipIf(
-        app.conf.get('task_always_eager')
-        and strtobool(os.environ.get('ON_TRAVIS', 'False')),
-        'Skipped because of weird error, module not found when using '
-        'unittest.')
+        strtobool(os.environ.get('ON_TRAVIS', 'False')),
+        """Skipped because we don't have remote service QLR anymore.""")
     @retry_on_worker_lost_error()
     def test_generate_report_qlr(self):
         """Test generating report with QLR files."""
