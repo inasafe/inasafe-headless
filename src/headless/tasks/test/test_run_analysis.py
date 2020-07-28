@@ -3,7 +3,6 @@ import os
 import unittest
 from distutils.util import strtobool
 
-from headless.celery_app import app
 from headless.settings import OUTPUT_DIRECTORY
 from headless.tasks.inasafe_wrapper import (
     run_analysis,
@@ -103,8 +102,7 @@ class TestRunAnalysis(unittest.TestCase):
         self.assertEqual(num_exposure_output, len(exposure_layer_uris))
 
     @unittest.skipIf(
-        app.conf.get('task_always_eager')
-        and strtobool(os.environ.get('ON_TRAVIS', 'False')),
+        strtobool(os.environ.get('ON_TRAVIS', 'False')),
         'Skipped because of weird error, module not found when using '
         'unittest.')
     @retry_on_worker_lost_error()
