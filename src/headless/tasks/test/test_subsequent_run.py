@@ -2,7 +2,7 @@
 import os
 import unittest
 
-from qgis.core import QgsMapLayerRegistry
+from qgis.core import QgsProject
 
 from headless.celeryconfig import task_always_eager
 from headless.tasks.inasafe_wrapper import (
@@ -32,7 +32,7 @@ class TestSubsequentRun(unittest.TestCase):
 
     def check_layer_registry_empty(self):
         # Layer registry should be empty between run
-        layer_registry = QgsMapLayerRegistry.instance()
+        layer_registry = QgsProject.instance()
         self.assertDictEqual(layer_registry.mapLayers(), {})
 
     @unittest.skipUnless(

@@ -16,7 +16,7 @@ interpreters:
 inasafe:
   repo: https://github.com/inasafe/inasafe.git
   remote: upstream
-  version: inasafe_4
+  version: maintenance-fix
   depth: 1
 
 inasafe_headless_worker:

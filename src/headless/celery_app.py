@@ -1,5 +1,6 @@
 # coding=utf-8
 import importlib
+from importlib import reload
 import json
 import os
 

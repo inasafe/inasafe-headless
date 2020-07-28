@@ -3,7 +3,6 @@ from __future__ import print_function
 from past.builtins import basestring
 import os
 import unittest
-from distutils.util import strtobool
 
 from headless.settings import OUTPUT_DIRECTORY
 from headless.tasks.inasafe_analysis import (
@@ -38,9 +37,6 @@ __revision__ = '$Format:%H$'
 
 class TestGenerateReport(unittest.TestCase):
 
-    @unittest.skipIf(
-        strtobool(os.environ.get('ON_TRAVIS', 'False')),
-        """Skipped because we don't have remote service QLR anymore.""")
     @retry_on_worker_lost_error()
     def test_generate_report_qlr(self):
         """Test generating report with QLR files."""

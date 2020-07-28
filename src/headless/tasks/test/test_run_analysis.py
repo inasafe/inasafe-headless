@@ -2,7 +2,6 @@
 from past.builtins import basestring
 import os
 import unittest
-from distutils.util import strtobool
 
 from headless.settings import OUTPUT_DIRECTORY
 from headless.tasks.inasafe_wrapper import (
@@ -102,9 +101,6 @@ class TestRunAnalysis(unittest.TestCase):
         # of exposures
         self.assertEqual(num_exposure_output, len(exposure_layer_uris))
 
-    @unittest.skipIf(
-        strtobool(os.environ.get('ON_TRAVIS', 'False')),
-        """Skipped because we don't have remote service QLR anymore.""")
     @retry_on_worker_lost_error()
     def test_run_analysis_qlr(self):
         """Test running analysis with QLR files."""

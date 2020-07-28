@@ -5,10 +5,10 @@ import os
 
 from copy import deepcopy
 from datetime import datetime
-from PyQt4.QtCore import QUrl
+from qgis.PyQt.QtCore import QUrl
 
 from qgis.core import (
-    QgsCoordinateReferenceSystem, QgsMapLayerRegistry, QgsProject)
+    QgsCoordinateReferenceSystem, QgsProject)
 
 from safe.definitions.constants import (
     PREPARE_SUCCESS, ANALYSIS_SUCCESS, MULTI_EXPOSURE_ANALYSIS_FLAG)
@@ -118,7 +118,7 @@ def inasafe_analysis(
     """
     # Clean up layer registry before using
     # In case previous task exited prematurely before cleanup
-    layer_registry = QgsMapLayerRegistry.instance()
+    layer_registry = QgsProject.instance()
     layer_registry.removeAllMapLayers()
 
     impact_function = ImpactFunction()
@@ -213,7 +213,7 @@ def inasafe_multi_exposure_analysis(
     """
     # Clean up layer registry before using
     # In case previous task exited prematurely before cleanup
-    layer_registry = QgsMapLayerRegistry.instance()
+    layer_registry = QgsProject.instance()
     layer_registry.removeAllMapLayers()
 
     multi_exposure_if = MultiExposureImpactFunction()
@@ -324,7 +324,7 @@ def generate_report(
     """
     # Clean up layer registry before using
     # In case previous task exited prematurely before cleanup
-    layer_registry = QgsMapLayerRegistry.instance()
+    layer_registry = QgsProject.instance()
     layer_registry.removeAllMapLayers()
 
     output_metadata = read_iso19115_metadata(impact_layer_uri)
@@ -344,14 +344,14 @@ def generate_report(
         root = QgsProject.instance().layerTreeRoot()
 
         group_analysis = root.insertGroup(0, impact_function.name)
-        group_analysis.setVisible(True)
+        group_analysis.setItemVisibilityChecked(True)
         group_analysis.setCustomProperty(
             MULTI_EXPOSURE_ANALYSIS_FLAG, True)
 
         for layer in impact_function.outputs:
-            QgsMapLayerRegistry.instance().addMapLayer(layer, False)
+            QgsProject.instance().addMapLayer(layer, False)
             layer_node = group_analysis.addLayer(layer)
-            layer_node.setVisible(False)
+            layer_node.setItemVisibilityChecked(False)
 
             # set layer title if any
             try:
@@ -362,7 +362,7 @@ def generate_report(
 
         for analysis in impact_function.impact_functions:
             detailed_group = group_analysis.insertGroup(0, analysis.name)
-            detailed_group.setVisible(True)
+            detailed_group.setItemVisibilityChecked(True)
             add_impact_layers_to_canvas(analysis, group=detailed_group)
     else:
         impact_function = (
