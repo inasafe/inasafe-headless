@@ -55,7 +55,7 @@ def clean_metadata(metadata):
     :param metadata: Metadata as dictionary.
     :type metadata: dict
     """
-    for key, value in metadata.items():
+    for key, value in list(metadata.items()):
         if isinstance(value, dict):
             clean_metadata(value)
         if isinstance(value, QUrl):
@@ -515,7 +515,7 @@ def push_to_geonode(layer_uri):
         'username': REALTIME_GEONODE_USER,
         'password': REALTIME_GEONODE_PASSWORD
     }
-    for key, value in requirements.items():
+    for key, value in list(requirements.items()):
         if not value:
             message = 'Can not upload to geonode because the %s is empty' % key
             LOGGER.warning(message)

@@ -30,7 +30,7 @@ def load_inasafe_settings():
     from safe.definitions import default_settings
     from safe.utilities.settings import set_setting
 
-    for key, value in default_settings.inasafe_default_settings.iteritems():
+    for key, value in list(default_settings.inasafe_default_settings.items()):
         set_setting(key, value)
 
     # Override settings from INASAFE_SETTINGS_PATH
