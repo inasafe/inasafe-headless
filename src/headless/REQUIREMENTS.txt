@@ -1,6 +1,6 @@
 requests>=2.6.2
 tzlocal==1.2
-celery==4.1.0
+celery==5.2.2
 nosexcover
 nose2==0.6.5
 coverage==4.4.2
